@@ -10,8 +10,8 @@ We needed a way to automatically update .NET Core 2.x apps (not UWP apps) instal
 6. The service can install new apps that aren't already on the device.  However, this feature is disabled by default for security reasons.
 
 ### Process to Update an App
-1. Add a new package definition to the manifest with an incremented file version and release date.
-2. Upload the zip file containing the updated files (EXEs, DLLs, etc.).
+1. Add a new package definition to the manifest with an incremented file version, new release date, new source URI, and new checksum.
+2. Upload the app update package (i.e. zip file) containing the updated application files (EXEs, DLLs, etc.).
 3. The next time the service checks for updates the new package definition is detected and the package is automatically downloaded to the device and installed.
 
 ### Sample Service Configuration
