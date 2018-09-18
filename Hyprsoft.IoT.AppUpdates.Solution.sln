@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyprsoft.IoT.AppUpdates.Tests", "Hyprsoft.IoT.AppUpdates.Tests\Hyprsoft.IoT.AppUpdates.Tests.csproj", "{038C0832-FB6E-4F5D-A8B2-F5C47C4FA52F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{8E8178DD-39AC-4984-B66F-1FB167AD1608}"
+	ProjectSection(SolutionItems) = preProject
+		install.bat = install.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{2CE88A93-6A54-45FF-8911-5FE508C8C96F}"
+	ProjectSection(SolutionItems) = preProject
+		Testing\Data\app-update-manifest.json = Testing\Data\app-update-manifest.json
+		Testing\Data\testapp01_1000.zip = Testing\Data\testapp01_1000.zip
+		Testing\Data\testapp01_1010.zip = Testing\Data\testapp01_1010.zip
+		Testing\Data\testapp02_1000.zip = Testing\Data\testapp02_1000.zip
+		Testing\Data\testapp02_1010.zip = Testing\Data\testapp02_1010.zip
+		Testing\Data\testapp02_1020.zip = Testing\Data\testapp02_1020.zip
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyprsoft.IoT.AppUpdates.TestApp", "Hyprsoft.IoT.AppUpdates.TestApp\Hyprsoft.IoT.AppUpdates.TestApp.csproj", "{60D3BD28-3613-40C5-8235-3CF92BC2E608}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyprsoft.IoT.AppUpdates.Service", "Hyprsoft.IoT.AppUpdates.Service\Hyprsoft.IoT.AppUpdates.Service.csproj", "{B12D748E-6BD5-469E-9F74-C4D03A3864EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyprsoft.IoT.AppUpdates", "Hyprsoft.IoT.AppUpdates\Hyprsoft.IoT.AppUpdates.csproj", "{9651315D-692D-4FBD-AB0D-CE8CF71B8C53}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{038C0832-FB6E-4F5D-A8B2-F5C47C4FA52F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{038C0832-FB6E-4F5D-A8B2-F5C47C4FA52F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{038C0832-FB6E-4F5D-A8B2-F5C47C4FA52F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{038C0832-FB6E-4F5D-A8B2-F5C47C4FA52F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60D3BD28-3613-40C5-8235-3CF92BC2E608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60D3BD28-3613-40C5-8235-3CF92BC2E608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60D3BD28-3613-40C5-8235-3CF92BC2E608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60D3BD28-3613-40C5-8235-3CF92BC2E608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B12D748E-6BD5-469E-9F74-C4D03A3864EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B12D748E-6BD5-469E-9F74-C4D03A3864EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B12D748E-6BD5-469E-9F74-C4D03A3864EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B12D748E-6BD5-469E-9F74-C4D03A3864EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9651315D-692D-4FBD-AB0D-CE8CF71B8C53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9651315D-692D-4FBD-AB0D-CE8CF71B8C53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9651315D-692D-4FBD-AB0D-CE8CF71B8C53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9651315D-692D-4FBD-AB0D-CE8CF71B8C53}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2CE88A93-6A54-45FF-8911-5FE508C8C96F} = {8E8178DD-39AC-4984-B66F-1FB167AD1608}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {644AC415-44A3-4038-88C5-178AB1E37B21}
+	EndGlobalSection
+EndGlobal

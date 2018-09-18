@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Hyprsoft.IoT.AppUpdates.TestApp": {
+      "commandName": "Project",
+      "commandLineArgs": "param1 param2"
+    }
+  }
+}

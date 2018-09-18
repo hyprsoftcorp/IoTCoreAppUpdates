@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RuntimeFrameworkVersion>2.1.4</RuntimeFrameworkVersion>
+    <Authors>Hyprsoft Corporation</Authors>
+    <Company>Hyprsoft Corporation</Company>
+    <Product>Hyprsoft IoT App Updates Test App</Product>
+    <Copyright>Copyright © 2018 by Hyprsoft Corporation</Copyright>
+    <Description>Hyprsoft IoT App Updates Test App</Description>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <Version>1.0.2</Version>
+  </PropertyGroup>
+
+</Project>
