@@ -1,8 +1,8 @@
 # IoTCoreAppUpdates
-We needed a way to automatically and remotely update .NET Core 2.x apps (not UWP apps) installed on devices running Windows 10 IoT Core.  Our solution was to create a Windows service that reads an app update manifest from a remote URI and updates locally installed apps on the device accordingly.
+We needed a way to automatically update .NET Core 2.x apps (not UWP apps) installed on devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a remote URI and updates locally installed apps on the device as needed.
 
 ### Current Features
-1. The app update manifest and associated app update packages can be hosted on the local file system (for testing), a website, Azure storage, Dropbox, One Drive, Google Drive, etc.
+1. The app update manifest and associated app update packages can be hosted on the local file system for testing, a website, Azure storage, Dropbox, One Drive, Google Drive, etc.
 2. Configurable daily check time (defaults to 3am). 
 3. The service can update multiple apps.
 4. Package integrity is validated using a MD5 hash.
@@ -20,7 +20,7 @@ We needed a way to automatically and remotely update .NET Core 2.x apps (not UWP
 {
   "AllowInstalls": false,
   "CheckTime": "03:00:00",
-  "NextCheck": "2018-09-18T03:00:00",
+  "NextCheckDateUtc": "2018-09-18T03:00:00",
   "ManifestUri": "https://hyprsoft.blob.core.windows.net/appupdates/app-update-manifest.json",
   "InstalledApps": [
     {
@@ -28,6 +28,7 @@ We needed a way to automatically and remotely update .NET Core 2.x apps (not UWP
       "InstallUri": "c:\\testapp"
     }
   ]
+}
 ```
 ### Sample Manifest
 
@@ -85,5 +86,5 @@ We needed a way to automatically and remotely update .NET Core 2.x apps (not UWP
 ]
 ```
 
-### Warnings
+### Security Concerns
 The app update service runs on the device under the 'NT AUTHORITY\SYSTEM' context and has full rights/access to the operating system and file system.  This means that the processes the service invokes after an update also run under the same unrestricted context. **This can be a security risk!**
