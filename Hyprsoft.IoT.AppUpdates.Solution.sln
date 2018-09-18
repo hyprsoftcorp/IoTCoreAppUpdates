@@ -24,7 +24,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyprsoft.IoT.AppUpdates.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyprsoft.IoT.AppUpdates.Service", "Hyprsoft.IoT.AppUpdates.Service\Hyprsoft.IoT.AppUpdates.Service.csproj", "{B12D748E-6BD5-469E-9F74-C4D03A3864EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyprsoft.IoT.AppUpdates", "Hyprsoft.IoT.AppUpdates\Hyprsoft.IoT.AppUpdates.csproj", "{9651315D-692D-4FBD-AB0D-CE8CF71B8C53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyprsoft.IoT.AppUpdates", "Hyprsoft.IoT.AppUpdates\Hyprsoft.IoT.AppUpdates.csproj", "{9651315D-692D-4FBD-AB0D-CE8CF71B8C53}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3BDFEB80-709D-4776-B972-47DA1AB480EF}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
