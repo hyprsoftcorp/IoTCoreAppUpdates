@@ -64,7 +64,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         public TimeSpan CheckTime { get; set; } = new TimeSpan(3, 0, 0);
 
         [JsonProperty]
-        public DateTime NextCheck { get; internal set; }
+        public DateTime NextCheckDate { get; internal set; }
 
         [JsonProperty]
         public Uri ManifestUri { get; set; }
@@ -102,8 +102,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         {
             while (!token.IsCancellationRequested)
             {
-                if (_isFirstCheck || DateTime.Now >= NextCheck)
-                {
+                if (_isFirstCheck || DateTime.Now >= NextCheckDate)                {
                     try
                     {
                         _isFirstCheck = false;
@@ -124,10 +123,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                             else
                                 _logger.LogWarning($"The app with id '{appInstall.ApplicationId}' doesn't exist in the manifest.  No update will be applied.");
                         }
-
-                        var now = DateTime.Now;
-                        NextCheck = new DateTime(now.Year, now.Month, now.Day, CheckTime.Hours, CheckTime.Minutes, CheckTime.Seconds).Add(TimeSpan.FromDays(1));
-                        SaveConfiguration();
+                        UpdateNextCheckDate();
                     }
                     catch (Exception ex)
                     {
@@ -144,6 +140,13 @@ namespace Hyprsoft.IoT.AppUpdates.Service
             _logger.LogInformation("Stopping service.");
             if (_updateCheckTask != null)
                 await _updateCheckTask;
+        }
+
+        private void UpdateNextCheckDate()
+        {
+            var now = DateTime.Now;
+            NextCheckDate = new DateTime(now.Year, now.Month, now.Day, CheckTime.Hours, CheckTime.Minutes, CheckTime.Seconds).Add(TimeSpan.FromDays(1));
+            SaveConfiguration();
         }
 
         private void LoadConfiguration()
@@ -174,9 +177,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
             }   // file exists?
 
             _logger.LogInformation("Using default configuration.");
-            var now = DateTime.Now;
-            NextCheck = new DateTime(now.Year, now.Month, now.Day, CheckTime.Hours, CheckTime.Minutes, CheckTime.Seconds).Add(TimeSpan.FromDays(1));
-            SaveConfiguration();
+            UpdateNextCheckDate();
         }
 
         private void SaveConfiguration()

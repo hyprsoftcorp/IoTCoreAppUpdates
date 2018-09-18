@@ -20,8 +20,8 @@ We needed a way to automatically update .NET Core 2.x apps (not UWP apps) instal
 {
   "AllowInstalls": false,
   "CheckTime": "03:00:00",
-  "NextCheckDateUtc": "2018-09-18T03:00:00",
-  "ManifestUri": "https://hyprsoft.blob.core.windows.net/appupdates/app-update-manifest.json",
+  "NextCheckDate": "2018-09-18T03:00:00",
+  "ManifestUri": "https://hyprsoft.blob.core.windows.net/appupdates/app-update-manifest.json?sp=r&st=2018-09-18T16:16:41Z&se=2099-09-19T00:16:41Z&spr=https&sv=2017-11-09&sig=0UkUjglKo0NDoJs9ZPLvnGiwK38vj6G2l4NibOSorWQ%3D&sr=b",
   "InstalledApps": [
     {
       "ApplicationId": "04fc007e-db18-430f-b4fa-f5b54de1e142",
@@ -53,7 +53,7 @@ We needed a way to automatically update .NET Core 2.x apps (not UWP apps) instal
           "MinorRevision": 0
         },
         "ReleaseDateUtc": "2018-09-01T00:00:00",
-        "SourceUri": "https://hyprsoft.blob.core.windows.net/appupdates/testapp01_1000.zip",
+        "SourceUri": "https://hyprsoft.blob.core.windows.net/appupdates/testapp01_1000.zip?sp=r&st=2018-09-18T16:18:09Z&se=2099-09-19T00:18:09Z&spr=https&sv=2017-11-09&sig=aCWyOnZ0TnPzrwWbUIgfFjutiLBERaX0t7HwNOR1%2BG8%3D&sr=b",
         "Checksum": "bddf0cd85b9b4985fb10a1555e10ab6d",
         "Changes": []
       },
@@ -68,7 +68,7 @@ We needed a way to automatically update .NET Core 2.x apps (not UWP apps) instal
           "MinorRevision": 0
         },
         "ReleaseDateUtc": "2018-09-16T00:00:00",
-        "SourceUri": "https://hyprsoft.blob.core.windows.net/appupdates/testapp01_1010.zip",
+        "SourceUri": "https://hyprsoft.blob.core.windows.net/appupdates/testapp01_1010.zip?sp=r&st=2018-09-18T16:18:46Z&se=2099-09-19T00:18:46Z&spr=https&sv=2017-11-09&sig=7LTMdPFGlmBl0FmjjXcJ%2BSiwPLH3VSx1XGtHPMJ2aL8%3D&sr=b",
         "Checksum": "e6276631b2c67664810132f1ee565d59",
         "Changes": [
           {
@@ -77,7 +77,7 @@ We needed a way to automatically update .NET Core 2.x apps (not UWP apps) instal
           },
           {
             "Title": "Enhancement",
-            "Notes": "Implemented enhancement."
+            "Notes": "Implemented the enhancement."
           }
         ]
       }
