@@ -56,7 +56,7 @@ namespace Hyprsoft.IoT.AppUpdates
         public Uri ManifestUri { get; private set; }
 
         /// <summary>
-        /// Get's the appliction logger.
+        /// Get's the application logger.
         /// </summary>
         public ILogger Logger { get; private set; }
 
@@ -89,7 +89,7 @@ namespace Hyprsoft.IoT.AppUpdates
                     Applications = JsonConvert.DeserializeObject<List<Application>>(await client.GetStringAsync(ManifestUri));
             }
 
-            // Hook up our heiarchy.
+            // Hook up our hierarchy.
             foreach (var app in Applications)
             {
                 app.UpdateManager = this;
@@ -129,7 +129,7 @@ namespace Hyprsoft.IoT.AppUpdates
         /// </summary>
         /// <param name="package">The package used to update the app.</param>
         /// <param name="installUri">The install URI of the app.  Ex. c:\testapp.</param>
-        /// <param name="token">Cancecllation token.</param>
+        /// <param name="token">Cancellation token.</param>
         /// <exception cref="ArgumentNullException">Thrown when package is null./></exception>
         /// <exception cref="ArgumentNullException">Thrown when installUri is null./></exception>
         public async Task Update(Package package, Uri installUri, CancellationToken token)
@@ -187,7 +187,7 @@ namespace Hyprsoft.IoT.AppUpdates
                 // STEP 4 = Kill application process.
                 await KillProcess(package.Application.ExeFilename, Logger);
 
-                // STEP 5 - Unzip our package to the install uri.
+                // STEP 5 - Unzip our package to the install URI.
                 Logger.LogInformation($"Extracting package '{packageFilename}' to '{installUri.LocalPath.ToLower()}'.");
                 ZipFile.ExtractToDirectory(packageFilename, installUri.LocalPath, true);
                 if (!package.SourceUri.IsFile)
@@ -211,9 +211,9 @@ namespace Hyprsoft.IoT.AppUpdates
         }
 
         /// <summary>
-        /// Kills the specidfied process.
+        /// Kills the specified process.
         /// </summary>
-        /// <param name="exeFilename">Full exe filename of the process to kill.</param>
+        /// <param name="exeFilename">Exe filename of the process to kill.</param>
         /// <param name="logger">The application logger.  <see cref="Logger"./></param>
         public static async Task KillProcess(string exeFilename, ILogger logger)
         {

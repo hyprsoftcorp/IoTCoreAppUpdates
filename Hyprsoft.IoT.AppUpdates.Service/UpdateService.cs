@@ -171,7 +171,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                 }
                 catch (Exception ex)
                 {
-                    // Ignore any errors reading our configurartion file.  Just use the defaults.
+                    // Ignore any errors reading our configuration file.  Just use the defaults.
                     _logger.LogCritical(ex, "Unable to load the configuration file.");
                 }
             }   // file exists?
