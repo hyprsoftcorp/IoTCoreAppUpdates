@@ -112,6 +112,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                     try
                     {
                         _logger.LogInformation("Checking for updates.");
+                        await _manager.Load();
                         foreach (var app in InstalledApps)
                             await _manager.Update(_manager.Applications.FirstOrDefault(a => a.Id == app.ApplicationId)?.GetLatestPackage(), app.InstallUri, token);
 
