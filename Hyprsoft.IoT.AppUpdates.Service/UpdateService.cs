@@ -33,6 +33,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
 
         #region Fields
 
+        private bool _isFirstCheck = true;
         private Task _updateCheckTask;
         private readonly object _lockObject = new object();
         private UpdateManager _manager;
@@ -75,46 +76,54 @@ namespace Hyprsoft.IoT.AppUpdates.Service
 
         #region Methods
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
-
             _logger.LogInformation("Starting service.");
             LoadConfiguration();
+
             if (ManifestUri == null)
             {
                 _logger.LogWarning($"The configuration is missing the required manifest URI.  Please update the '{ConfigurationFilename}' configuration file and restart the service.");
-                return;
+                return Task.CompletedTask;
             }   // missing manifest URI?
             if (InstalledApps.Count <= 0)
             {
                 _logger.LogWarning($"The configuration does not have any apps listed to update.  Please update the '{ConfigurationFilename}' configuration file and restart the service.");
-                return;
+                return Task.CompletedTask;
             }   // no installed apps?
 
-            try
-            {
-                _manager = new UpdateManager(ManifestUri, _loggerFactory) { AllowInstalls = AllowInstalls };
-                await _manager.Load();
-                _updateCheckTask = Update(cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical(ex, "Unable to to load the manifest.");
-            }
+            _manager = new UpdateManager(ManifestUri, _loggerFactory) { AllowInstalls = AllowInstalls };
+            _updateCheckTask = Update(cancellationToken);
+
+            return Task.CompletedTask;
         }
 
         private async Task Update(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
-                if (DateTime.Now >= NextCheck)
+                if (_isFirstCheck || DateTime.Now >= NextCheck)
                 {
                     try
                     {
+                        _isFirstCheck = false;
                         _logger.LogInformation("Checking for updates.");
+                        // Always re-load our manifest in case it has been altered since our last check.
                         await _manager.Load();
-                        foreach (var app in InstalledApps)
-                            await _manager.Update(_manager.Applications.FirstOrDefault(a => a.Id == app.ApplicationId)?.GetLatestPackage(), app.InstallUri, token);
+                        foreach (var appInstall in InstalledApps)
+                        {
+                            var app = _manager.Applications.FirstOrDefault(a => a.Id == appInstall.ApplicationId);
+                            if (app != null)
+                            {
+                                var package = app.GetLatestPackage();
+                                if (package != null)
+                                    await _manager.Update(package, appInstall.InstallUri, token);
+                                else
+                                    _logger.LogWarning($"Unable to get the latest package for app '{app.Name}'.  No update will be applied.");
+                            }
+                            else
+                                _logger.LogWarning($"The app with id '{appInstall.ApplicationId}' doesn't exist in the manifest.  No update will be applied.");
+                        }
 
                         var now = DateTime.Now;
                         NextCheck = new DateTime(now.Year, now.Month, now.Day, CheckTime.Hours, CheckTime.Minutes, CheckTime.Seconds).Add(TimeSpan.FromDays(1));
