@@ -9,8 +9,9 @@
     <Product>Hyprsoft IoT App Updates Test App</Product>
     <Copyright>Copyright © 2018 by Hyprsoft Corporation</Copyright>
     <Description>Hyprsoft IoT App Updates Test App</Description>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Version>1.0.0</Version>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
 
 </Project>
