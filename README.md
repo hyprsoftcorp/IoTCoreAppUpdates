@@ -1,4 +1,4 @@
-# IoTCoreAppUpdates
+# Windows 10 IoT Core App Update Service
 We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed on devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a secure remote URI and updates locally installed apps on the device as needed.
 
 ### Current Features
