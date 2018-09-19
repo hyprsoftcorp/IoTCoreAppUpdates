@@ -11,7 +11,7 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
 
 ### Process to Update an App
 1. Add a new package definition to the manifest with an incremented file version, new release date, new source URI, and new checksum.
-2. Upload the app update package (i.e. zip file) containing the updated application files (EXEs, DLLs, etc.).
+2. Upload the app update package (i.e. zip file) containing the updated application files (EXEs, DLLs, etc.) to your desired "host" (i.e  file sharing service).
 3. The next time the service checks for updates the new package definition is detected and the package is automatically downloaded to the device and installed.
 
 ### Sample Service Configuration
@@ -87,4 +87,4 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
 ```
 
 ### Security Concerns
-The app update service runs on the device under the 'NT AUTHORITY\SYSTEM' context and has full rights/access to the operating system and file system.  This means that the processes the service invokes after an update also run under the same unrestricted context. **This can be a security risk!**
+By default the app update service runs on the device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file system.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!**
