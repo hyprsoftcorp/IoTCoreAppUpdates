@@ -20,9 +20,11 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                     {
                         options.AddConsole();
                         options.AddDebug();
-#if !DEBUG
-                        options.AddEventLog();
-#endif
+                        options.AddFile(o =>
+                        {
+                            o.RootPath = hostContext.HostingEnvironment.ContentRootPath;
+                            o.FallbackFileName = "appupdates.log";
+                        });
                     });
                     services.AddHostedService<UpdateService>();
                 });

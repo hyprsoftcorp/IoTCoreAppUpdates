@@ -1,0 +1,149 @@
+﻿@model List<Application>
+
+@{
+    ViewData["Title"] = "Apps";
+    var manifestUri = $"{Context.Request.Scheme}://{Context.Request.Host}/{UpdateManager.DefaultAppUpdateManifestFilename}";
+}
+
+<h3>@ViewData["Title"]</h3>
+<p>Your app manifest URI is: <a href="@manifestUri" title="Manifest URI">@manifestUri</a></p>
+
+<p>
+    <a asp-action="Create">Add App &raquo;</a>
+</p>
+
+@if (Model.Count <= 0)
+{
+    <p class="text-danger">The are no apps configured.  <a asp-action="Create">Add</a> an app.</p>
+}
+else
+{
+    @foreach (var item in Model.OrderBy(e => e.Name))
+    {
+        <section id="item-@item.Id">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <div class="dropdown float-right">
+                        <button class="btn btn-link text-dark px-2 py-0" type="button" id="menu-@item.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="menu-@item.Id">
+                            <a class="dropdown-item" href="@Url.Action("Edit", new { id = item.Id })">Edit</a>
+                            <a class="dropdown-item" href="#" onclick="page.delete('@Url.Action("Delete", new { id = item.Id })', 'item-@item.Id', 'Are you sure you want to permanently delete this app and all its associated packages?'); return false;">Delete</a>
+                        </div>
+                    </div>
+                    <h4 class="card-title">@item.Name</h4>
+                    <p>@item.Description</p>
+                    <dl class="row">
+                        <dt class="col-md-2 font-weight-normal">
+                            @Html.DisplayNameFor(model => model[0].Id)
+                        </dt>
+                        <dd class="col-md-10">
+                            <a href="@Url.Action("Edit", new { id = item.Id })">@Html.DisplayFor(modelItem => item.Id)</a>
+                        </dd>
+                        <dt class="col-md-2 font-weight-normal">
+                            @Html.DisplayNameFor(model => model[0].ExeFilename)
+                        </dt>
+                        <dd class="col-md-10">
+                            @Html.DisplayFor(modelItem => item.ExeFilename)
+                        </dd>
+                        <dt class="col-md-2 font-weight-normal">
+                            @Html.DisplayNameFor(model => model[0].VersionFilename)
+                        </dt>
+                        <dd class="col-md-10">
+                            @Html.DisplayFor(modelItem => item.VersionFilename)
+                        </dd>
+                        <dt class="col-md-2 font-weight-normal">
+                            @Html.DisplayNameFor(model => model[0].CommandLine)
+                        </dt>
+                        <dd class="col-md-10">
+                            @if (String.IsNullOrWhiteSpace(item.CommandLine))
+                            {
+                                <span>[none]</span>
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(modelItem => item.CommandLine)
+                            }
+                        </dd>
+                    </dl>
+                    <hr />
+                    <h5>@Html.DisplayNameFor(model => model[0].Packages)</h5>
+                    <p>
+                        <a href="@Url.Action("Create", "Packages", new { applicationId = item.Id })">Add Package &raquo;</a>
+                    </p>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">
+                                    </th>
+                                    <th scope="col">
+                                        @Html.DisplayNameFor(model => model[0].Packages[0].IsAvailable)
+                                    </th>
+                                    <th scope="col">
+                                        @Html.DisplayNameFor(model => model[0].Packages[0].Id)
+                                    </th>
+                                    <th scope="col">
+                                        @Html.DisplayNameFor(model => model[0].Packages[0].FileVersion)
+                                    </th>
+                                    <th scope="col">
+                                        @Html.DisplayNameFor(model => model[0].Packages[0].ReleaseDateUtc)
+                                    </th>
+                                    <th scope="col">
+                                        @Html.DisplayNameFor(model => model[0].Packages[0].Checksum)
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (item.Packages.Count <= 0)
+                                {
+                                    <tr>
+                                        <td class="text-danger" colspan="6">
+                                            The are no packages configured.  <a href="@Url.Action("Create", "Packages", new { applicationId = item.Id })">Add</a> a package.
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var package in item.Packages.OrderBy(b => b.ReleaseDateUtc))
+                                    {
+                                        <tr id="row-@package.Id">
+                                            <td scope="row" nowrap>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-link text-dark px-2 py-0" type="button" id="menu-@item.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu" aria-labelledby="menu-@item.Id">
+                                                        <a class="dropdown-item" href="@Url.Action("Edit", "Packages", new { applicationId = item.Id, id = package.Id })">Edit</a>
+                                                        <a class="dropdown-item" href="#" onclick="page.delete('@Url.Action("Delete", "Packages", new { applicationId = item.Id, id = package.Id })', 'row-@package.Id', 'Are you sure you want to permanently delete this package?'); return false;">Delete</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td scope="row" nowrap>
+                                                <i class="fas @(package.IsAvailable ? "fa-check-square text-success" : "fa-square text-muted")"></i>
+                                            </td>
+                                            <td scope="row" nowrap>
+                                                <a href="@Url.Action("Edit", "Packages", new { applicationId = item.Id, id = package.Id })" title="Edit Package">@Html.DisplayFor(modelItem => package.Id)</a>
+                                            </td>
+                                            <td scope="row" nowrap>
+                                                @Html.DisplayFor(modelItem => package.FileVersion)
+                                            </td>
+                                            <td scope="row" nowrap>
+                                                @Html.DisplayFor(modelItem => package.ReleaseDateUtc)
+                                            </td>
+                                            <td scope="row" nowrap>
+                                                @Html.DisplayFor(modelItem => package.Checksum)
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <br />
+        </section>
+    }
+}

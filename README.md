@@ -1,4 +1,4 @@
-# Windows 10 IoT Core App Update Service
+# Windows 10 IoT Core App Updates Service
 We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed on devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a secure remote URI and updates locally installed apps on the device as needed.
 
 ### Current Features
@@ -21,7 +21,7 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
   "AllowInstalls": false,
   "CheckTime": "03:00:00",
   "NextCheckDate": "2018-09-18T03:00:00",
-  "ManifestUri": "https://hyprsoft.blob.core.windows.net/appupdates/app-update-manifest.json?sp=r&st=2018-09-18T16:16:41Z&se=2099-09-19T00:16:41Z&spr=https&sv=2017-11-09&sig=0UkUjglKo0NDoJs9ZPLvnGiwK38vj6G2l4NibOSorWQ%3D&sr=b",
+  "ManifestUri": "http://www.hyprsoft.com/app-update-manifest.json",
   "InstalledApps": [
     {
       "ApplicationId": "04fc007e-db18-430f-b4fa-f5b54de1e142",
@@ -36,50 +36,27 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
 [
   {
     "Id": "04fc007e-db18-430f-b4fa-f5b54de1e142",
-    "Name": "Test App 01",
-    "Description": "Test App 01",
-    "ExeFilename": "hyprsoft.iot.appupdates.testapp.exe",
-    "VersionFilename": "hyprsoft.iot.appupdates.testapp.dll",
+    "Name": "My Awesome App",
+    "Description": "My Awesome App Description",
+    "ExeFilename": "hyprsoft.my.awesome.app.exe",
+    "VersionFilename": "hyprsoft.my.awesome.app.dll",
     "CommandLine": "param1",
     "Packages": [
       {
         "Id": "02902554-4d3d-4159-b106-41e0ac158733",
-        "Version": {
-          "Major": 1,
-          "Minor": 0,
-          "Build": 0,
-          "Revision": 0,
-          "MajorRevision": 0,
-          "MinorRevision": 0
-        },
+        "IsAvailable": true,
+        "Version": "1.0.0.0",
         "ReleaseDateUtc": "2018-09-01T00:00:00",
-        "SourceUri": "https://hyprsoft.blob.core.windows.net/appupdates/testapp01_1000.zip?sp=r&st=2018-09-18T16:18:09Z&se=2099-09-19T00:18:09Z&spr=https&sv=2017-11-09&sig=aCWyOnZ0TnPzrwWbUIgfFjutiLBERaX0t7HwNOR1%2BG8%3D&sr=b",
-        "Checksum": "bddf0cd85b9b4985fb10a1555e10ab6d",
-        "Changes": []
+        "SourceUri": "http://www.hyprsoft.com/packages/hyprsoft.my.awesome.app-1000.zip",
+        "Checksum": "bddf0cd85b9b4985fb10a1555e10ab6d"
       },
       {
         "Id": "02902554-4d3d-4159-b106-41e0ac158733",
-        "Version": {
-          "Major": 1,
-          "Minor": 0,
-          "Build": 1,
-          "Revision": 0,
-          "MajorRevision": 0,
-          "MinorRevision": 0
-        },
+        "IsAvailable": true,
+        "Version": "1.0.1.0",
         "ReleaseDateUtc": "2018-09-16T00:00:00",
-        "SourceUri": "https://hyprsoft.blob.core.windows.net/appupdates/testapp01_1010.zip?sp=r&st=2018-09-18T16:18:46Z&se=2099-09-19T00:18:46Z&spr=https&sv=2017-11-09&sig=7LTMdPFGlmBl0FmjjXcJ%2BSiwPLH3VSx1XGtHPMJ2aL8%3D&sr=b",
-        "Checksum": "e6276631b2c67664810132f1ee565d59",
-        "Changes": [
-          {
-            "Title": "Bug Fix",
-            "Notes": "Fixed a bug."
-          },
-          {
-            "Title": "Enhancement",
-            "Notes": "Implemented the enhancement."
-          }
-        ]
+        "SourceUri": "http://www.hyprsoft.com/packages/hyprsoft.my.awesome.app-1010.zip",
+        "Checksum": "e6276631b2c67664810132f1ee565d59"
       }
     ]
   }

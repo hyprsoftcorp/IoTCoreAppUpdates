@@ -1,0 +1,50 @@
+[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/bootstrap-bundle.min.css",
+    "inputFiles": [
+      "node_modules/bootstrap/dist/css/bootstrap.min.css"
+    ],
+    "minify": { "enabled": false },
+    "includeInProject": true
+  },
+  {
+    "outputFileName": "wwwroot/css/fas.min.css",
+    "inputFiles": [
+      "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+    ],
+    "minify": {
+      "enabled": false,
+      "adjustRelativePaths": false
+    },
+    "includeInProject": true
+  },
+  {
+    "outputFileName": "wwwroot/js/bootstrap-bundle.min.js",
+    "inputFiles": [
+      "node_modules/jquery/dist/jquery.min.js",
+      "node_modules/popper.js/dist/umd/popper.min.js",
+      "node_modules/bootstrap/dist/js/bootstrap.min.js"
+    ],
+    "minify": {
+      "enabled": false,
+      "renameLocals": false
+    },
+    "sourceMap": false,
+    "includeInProject": true
+  },
+  {
+    "outputFileName": "wwwroot/js/validation-bundle.min.js",
+    "inputFiles": [
+      "node_modules/jquery-validation/dist/jquery.validate.min.js",
+      "node_modules/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"
+    ],
+    "minify": { "enabled": false },
+    "includeInProject": true
+  }
+]

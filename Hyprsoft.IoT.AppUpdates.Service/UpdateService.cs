@@ -116,7 +116,14 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                             {
                                 var package = app.GetLatestPackage();
                                 if (package != null)
-                                    await _manager.Update(package, appInstall.InstallUri, token);
+                                    try
+                                    {
+                                        await _manager.Update(package, appInstall.InstallUri, token);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.LogCritical(ex, $"Unable to update application '{package.Application.Name}'.");
+                                    }
                                 else
                                     _logger.LogWarning($"Unable to get the latest package for app '{app.Name}'.  No update will be applied.");
                             }

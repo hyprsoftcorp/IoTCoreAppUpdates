@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace Hyprsoft.IoT.AppUpdates
@@ -10,28 +11,28 @@ namespace Hyprsoft.IoT.AppUpdates
         #region Properties
 
         [JsonIgnore]
-        public UpdateManager UpdateManager { get; internal set; }
+        public UpdateManager UpdateManager { get; set; }
+
+        [Required, JsonProperty]
+        public Guid Id { get; set; }
+
+        [Required, JsonProperty]
+        public string Name { get; set; }
+
+        [Required, JsonProperty]
+        public string Description { get; set; }
+
+        [Required, JsonProperty, Display(Name = "Exe Filename")]
+        public string ExeFilename { get; set; }
+
+        [Required, JsonProperty, Display(Name = "Version Filename")]
+        public string VersionFilename { get; set; }
+
+        [JsonProperty, Display(Name = "Command Line")]
+        public string CommandLine { get; set; }
 
         [JsonProperty]
-        public Guid Id { get; internal set; }
-
-        [JsonProperty]
-        public string Name { get; internal set; }
-
-        [JsonProperty]
-        public string Description { get; internal set; }
-
-        [JsonProperty]
-        public string ExeFilename { get; internal set; }
-
-        [JsonProperty]
-        public string VersionFilename { get; internal set; }
-
-        [JsonProperty]
-        public string CommandLine { get; internal set; }
-
-        [JsonProperty]
-        public List<Package> Packages { get; internal set; } = new List<Package>();
+        public List<Package> Packages { get; set; } = new List<Package>();
 
         #endregion
 
@@ -39,7 +40,7 @@ namespace Hyprsoft.IoT.AppUpdates
 
         public Package GetLatestPackage()
         {
-            return Packages.OrderByDescending(p => p.ReleaseDateUtc).FirstOrDefault();
+            return Packages.Where(p => p.IsAvailable).OrderByDescending(p => p.ReleaseDateUtc).FirstOrDefault();
         }
 
         public override string ToString()

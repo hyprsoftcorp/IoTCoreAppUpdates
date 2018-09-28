@@ -1,0 +1,43 @@
+﻿<div class="jumbotron mt-3">
+    <h1 class="display-4 text-primary">IoT Core App Updates</h1>
+    <p class="lead">Remotely update .NET Core 2.x apps running on Windows 10 IoT Core devices.</p>
+    <hr class="my-4">
+    <p>
+        This functionality can be added to any existing ASP.NET Core 2.x MVC website by adding the Hyprsoft.IoT.AppUpdates.Web Nuget package
+        and the code below in <b>bold</b> to the Startup class.
+    </p>
+    <p>
+        <code>
+            <pre>
+            public Startup(IConfiguration configuration, <b>IHostingEnvironment env</b>)
+            {
+                Configuration = configuration;
+                <b>HostingEnvironment = env;</b>
+            }
+            
+            public IConfiguration Configuration { get; }
+
+            <b>public IHostingEnvironment HostingEnvironment { get; }</b>
+
+            public void ConfigureServices(IServiceCollection services)
+            {
+                <b>services.AddAppUpdates(options => options.ManifestUri = 
+                    new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultAppUpdateManifestFilename)));</b>
+                services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            }
+
+            public void Configure(IApplicationBuilder app)
+            {
+                if (<b>HostingEnvironment</b>.IsDevelopment())
+                    app.UseDeveloperExceptionPage();
+                else
+                    app.UseExceptionHandler("/Home/Error");
+            
+                <b>app.UseAppUpdates();</b>
+                app.UseMvc(routes => routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}"));
+            }
+            </pre>
+        </code>
+    </p>
+    <a class="btn btn-primary" href="~/appupdates" role="button">Get Started</a>
+</div>

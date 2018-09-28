@@ -1,0 +1,56 @@
+﻿@model Application
+
+@{
+    ViewData["Title"] = "Edit App";
+}
+
+<h3>@ViewData["Title"]</h3>
+
+<div class="card bg-light mt-3">
+    <div class="card-body">
+        <form asp-action="Edit" method="post" class="form-horizontal">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="Id" type="hidden" />
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Id"></label>*
+                    <input asp-for="Id" class="form-control" readonly />
+                    <span asp-validation-for="Id" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Name"></label>*
+                    <input asp-for="Name" class="form-control" placeholder="Ex: My Awesome App" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description"></label>*
+                <textarea asp-for="Description" class="form-control" placeholder="Ex: My Awesome App that solves world problems"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="ExeFilename"></label>*
+                    <input asp-for="ExeFilename" class="form-control" placeholder="Ex: My.Awesome.App.exe" />
+                    <span asp-validation-for="ExeFilename" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="VersionFilename"></label>*
+                    <input asp-for="VersionFilename" class="form-control" placeholder="Ex: My.Awesome.App.dll" />
+                    <span asp-validation-for="VersionFilename" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="CommandLine"></label>
+                <input asp-for="CommandLine" class="form-control" placeholder="Ex: param1 param2" />
+                <span asp-validation-for="CommandLine" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+
+<div class="my-3">
+    <a asp-action="List">&laquo; Back to Apps</a>
+</div>
+

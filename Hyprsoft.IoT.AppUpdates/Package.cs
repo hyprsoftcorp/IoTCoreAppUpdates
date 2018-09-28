@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Hyprsoft.IoT.AppUpdates
 {
@@ -9,25 +9,25 @@ namespace Hyprsoft.IoT.AppUpdates
         #region Properties
 
         [JsonIgnore]
-        public Application Application { get; internal set; }
+        public Application Application { get; set; }
 
-        [JsonProperty]
-        public Guid Id { get; internal set; }
+        [Required, JsonProperty]
+        public Guid Id { get; set; }
 
-        [JsonProperty]
-        public Version Version { get; internal set; }
+        [Display(Name = "Available?")]
+        public bool IsAvailable { get; set; } = true;
 
-        [JsonProperty]
-        public DateTime ReleaseDateUtc { get; internal set; }
+        [Required, JsonProperty, Display(Name = "Version")]
+        public string FileVersion { get; set; }
 
-        [JsonProperty]
-        public Uri SourceUri { get; internal set; }
+        [Required, JsonProperty, Display(Name = "Released"), DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:g}")]
+        public DateTime ReleaseDateUtc { get; set; }
 
-        [JsonProperty]
-        public string Checksum { get; internal set; }
+        [Required, JsonProperty, Display(Name = "Source")]
+        public Uri SourceUri { get; set; }
 
-        [JsonProperty]
-        public List<Change> Changes { get; internal set; } = new List<Change>();
+        [Required, JsonProperty]
+        public string Checksum { get; set; }
 
         #endregion
 
@@ -35,7 +35,7 @@ namespace Hyprsoft.IoT.AppUpdates
 
         public override string ToString()
         {
-            return $"Id: {Id} Version: {Version} Released: {ReleaseDateUtc} Changes: {Changes.Count}";
+            return $"Id: {Id} Version: {FileVersion} Released: {ReleaseDateUtc}";
         }
 
         #endregion

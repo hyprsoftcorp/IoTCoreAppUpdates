@@ -1,0 +1,133 @@
+﻿@{
+    var requestPath = $"{ViewContext.RouteData.Values["controller"]}Controller-{ViewContext.RouteData.Values["action"]}";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no" />
+    <title>@ViewData["Title"] - App Updates</title>
+
+    <link href="~/appupdates/css/bootstrap-bundle.min.css" rel="stylesheet">
+    <environment include="Development">
+        <link rel="stylesheet" href="~/appupdates/css/site.css">
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/appupdates/css/site.min.css" asp-append-version="true">
+    </environment>
+    <link rel="stylesheet" href="~/appupdates/css/fas.min.css">
+</head>
+<body>
+    <nav class="navbar fixed-top navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" asp-area="appupdates" asp-controller="Apps" asp-action="List">App Updates</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item @(requestPath == $"{nameof(Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers.AppsController)}-{nameof(Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers.AppsController.List)}" ? "active" : String.Empty)">
+                        <a class="nav-link" asp-area="appupdates" asp-controller="Home" asp-action="List">Apps</a>
+                    </li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <form class="form-inline" asp-area="appupdates" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("List", "Apps", new { area = "AppUpdates" })" method="post">
+                                <button type="submit" class="btn btn-link nav-link">Logout</button>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        @RenderBody()
+    </div>
+    <br />
+
+    <div id="snackbar" class="fixed-bottom p-3 text-light text-center"></div>
+
+    <div class="modal fade" id="deleteConfirmationDialog" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete Confirmation</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="h6"></p>
+                    <p class="text-danger">This operation cannot be undone!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/appupdates/js/bootstrap-bundle.min.js"></script>
+    <script src="~/appupdates/js/validation-bundle.min.js"></script>
+    <script>
+    var page = {
+            snackbarTimerId: 0,
+            userActivityTimerId: 0,
+            deleteConfirmationDialog: document.getElementById('deleteConfirmationDialog'),
+            deleteConfirmationDialogAction: () => { },
+            getToken: () => {
+                var token = '@Html.AntiForgeryToken()';
+                token = $(token).val();
+                return token;
+            },
+            showSnackbar: (message, isError) => {
+                let snackbar = document.getElementById("snackbar");
+                snackbar.classList.remove('bg-info', 'bg-danger');
+                snackbar.innerText = message;
+                snackbar.classList.add('show', isError ? 'bg-danger' : 'bg-info');
+                clearTimeout(page.snackbarTimerId);
+                page.snackbarTimerId = setTimeout(() => snackbar.classList.remove('show'), 5400);
+            }
+        };
+        page.delete = (url, containerId, prompt) => {
+            page.deleteConfirmationDialog.querySelector('.modal-body p').innerText = prompt;
+            page.deleteConfirmationDialogAction = () => {
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: { __RequestVerificationToken: page.getToken() },
+                    cache: false
+                }).done((response) => {
+                    if (!response.isError) {
+                        document.getElementById(containerId).parentNode.removeChild(document.getElementById(containerId));
+                    }
+                    page.showSnackbar(response.message, response.isError);
+                }).fail((jqXHR, textStatus, errorThrown) => {
+                    page.showSnackbar('Uh oh...something unexpected happened.  Please try again later.  Error: ' + errorThrown, true);
+                });
+            };
+            $(page.deleteConfirmationDialog).modal('show');
+        };
+        $(() => {
+            $(page.deleteConfirmationDialog).on('show.bs.modal', e => {
+                page.deleteConfirmationDialog.querySelector('button.btn.btn-primary').addEventListener('click', page.deleteConfirmationDialogAction);
+            });
+            $('#deleteConfirmationDialog').on('hide.bs.modal', e => {
+                page.deleteConfirmationDialog.querySelector('button.btn.btn-primary').removeEventListener('click', page.deleteConfirmationDialogAction);
+            });
+            @if (TempData["Feedback"] != null)
+            {
+                <text>page.showSnackbar("@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(TempData["Feedback"].ToString().Replace("\r\n", " ")))", false);</text>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <text>page.showSnackbar("@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(TempData["Error"].ToString().Replace("\r\n", " ")))", true);</text>
+            }
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

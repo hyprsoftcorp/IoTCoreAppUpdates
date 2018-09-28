@@ -1,0 +1,76 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <ItemGroup>
+    <None Remove="wwwroot\css\bootstrap-bundle.min.css" />
+    <None Remove="wwwroot\css\fas.min.css" />
+    <None Remove="wwwroot\css\site.css" />
+    <None Remove="wwwroot\css\site.min.css" />
+    <None Remove="wwwroot\js\bootstrap-bundle.min.js" />
+    <None Remove="wwwroot\js\validation-bundle.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\css\bootstrap-bundle.min.css" />
+    <EmbeddedResource Include="wwwroot\css\fas.min.css" />
+    <EmbeddedResource Include="wwwroot\css\site.css" />
+    <EmbeddedResource Include="wwwroot\css\site.min.css" />
+    <EmbeddedResource Include="wwwroot\js\bootstrap-bundle.min.js" />
+    <EmbeddedResource Include="wwwroot\js\validation-bundle.min.js" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-brands-400.eot" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-brands-400.svg" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-brands-400.ttf" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-brands-400.woff" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-brands-400.woff2" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-regular-400.eot" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-regular-400.svg" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-regular-400.ttf" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-regular-400.woff" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-regular-400.woff2" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-solid-900.eot" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-solid-900.svg" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-solid-900.ttf" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-solid-900.woff" />
+    <EmbeddedResource Include="wwwroot\webfonts\fa-solid-900.woff2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectCapability Include="DotNetCoreWeb" />
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Hyprsoft Corporation</Authors>
+    <Product>Hyprsoft IoT App Updates Web</Product>
+    <Copyright>Copyright © 2018 by Hyprsoft Corporation</Copyright>
+    <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
+    <Version>1.0.0</Version>
+    <UseRazorBuildServer>false</UseRazorBuildServer>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Hyprsoft IoT App Updates Web</Description>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="BuildBundlerMinifier" Version="2.8.391" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.2" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup> 
+
+  <ItemGroup>
+    <Content Update="Areas\AppUpdates\Views\Apps\List.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup> 
+
+  <ItemGroup>
+    <Folder Include="Areas\AppUpdates\Views\Account\" />
+  </ItemGroup> 
+
+  <ItemGroup>
+    <ProjectReference Include="..\Hyprsoft.IoT.AppUpdates\Hyprsoft.IoT.AppUpdates.csproj" />
+  </ItemGroup>
+
+</Project>
