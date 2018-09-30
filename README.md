@@ -10,11 +10,15 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
 6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.x project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the startup class configuration changes noted below. 
 
 ### Process to Update an App
-1. Add a new package definition to the manifest with an incremented file version, new release date, new source URI, and new checksum.
+#### Automated
+1. Integrate the administrative website NuGet package into your existing ASP.NET Core 2.x website and manage updates and packages via your browser.  See the sample startup.cs code and administrative website screenshots below.
+
+#### Manually
+1. Add a new package definition to the app update manifest with an incremented file version, new release date, new source URI, and new checksum.
 2. Upload the app update package (i.e. zip file) containing the updated application files (EXEs, DLLs, etc.) to your desired "host" (i.e  file sharing service).
-3. The next time the service checks for updates the new package definition is detected and the package is automatically downloaded to the device and installed.
 
 ### Sample Service Configuration
+The service configuration Json file resides on each device.
 ```json
 {
   "CheckTime": "03:00:00",
@@ -28,7 +32,8 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
   ]
 }
 ```
-### Sample Manifest
+### Sample App Update Manifest
+The app update manifest Json file and app packages can reside on a website or any file sharing service.
 ```json
 [
   {
@@ -59,8 +64,8 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
   }
 ]
 ```
-### Sample Startup.cs Configuration (optional)
-The administrative website can be accessed using http[s]://[www.your-domain.com]/appupdates.
+### Sample Startup.cs (optional)
+If you would like to incorporate the app updates administrative website functionality into your own website, you just need to install the Hyprsoft.Iot.AppUpdates.Web NuGet package and configure your startup.cs like below.  Once integrated and deployed, the administrative website can be accessed using http[s]://[www.your-domain.com]/appupdates.
 ```csharp
 public class Startup
 {
@@ -95,21 +100,21 @@ public class Startup
 ### Security Concerns
 By default the app update service runs on the device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file system.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!**
 
-### Admin Website Screen Shots
+### Administrative Website Screenshots
 #### Login
 ![Login](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/login-thumb.png)
 
-#### Apps - List
-![Apps - List](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-list-thumb.png)
+#### List of defined Apps
+![List of defined Apps](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-list-thumb.png)
 
-#### Apps - Add
-![Apps - Add](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-add-thumb.png)
+#### Add a new App
+![Add a new App](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-add-thumb.png)
 
-#### Apps - Edit
-![Apps - Edit](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-edit-thumb.png)
+#### Edit an existing App
+![Edit an existing App](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-edit-thumb.png)
 
-#### Packages - Add
-![Packages - Add](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-add-thumb.png)
+#### Add an app update package
+![Add an app update package](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-add-thumb.png)
 
-#### Packages - Edit
-![Packages - Edit](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-edit-thumb.png)
+#### Edit an app update package
+![Edit an app update package](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-edit-thumb.png)
