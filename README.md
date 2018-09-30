@@ -7,7 +7,7 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
 3. The service can update multiple apps.
 4. Package integrity is validated using a MD5 hash.
 5. The update manager will automatically "kill" processes being updated and restart them after they've been updated.
-6. The server side App Update Administrative functionality can be added to any existing ASP.NET Core 2.x project by adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the startup class configuration changes noted below. 
+6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.x project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the startup class configuration changes noted below. 
 
 ### Process to Update an App
 1. Add a new package definition to the manifest with an incremented file version, new release date, new source URI, and new checksum.
@@ -59,7 +59,7 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
   }
 ]
 ```
-### Sample Startup.cs Configuration
+### Sample Startup.cs Configuration (optional)
 The administrative website can be accessed using http[s]://[www.your-domain.com]/appupdates.
 ```csharp
 public class Startup
@@ -96,15 +96,20 @@ public class Startup
 By default the app update service runs on the device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file system.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!**
 
 ### Screen Shots
-Login
+**Login**
 ![Login](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/login.jpg)
-Apps - List
+
+**Apps - List**
 ![Apps - List](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-list.jpg)
-Apps - Add
+
+**Apps - Add**
 ![Apps - Add](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-add.jpg)
-Apps - Edit
+
+**Apps - Edit**
 ![Apps - Edit](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-edit.jpg)
-Packages - Add
+
+**Packages - Add**
 ![Packages - Add](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-add.jpg)
-Packages - Edit
+
+**Packages - Edit**
 ![Packages - Edit](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-edit.jpg)
