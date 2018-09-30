@@ -65,7 +65,6 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
                 using (var stream = new FileStream(packageFilename, FileMode.OpenOrCreate))
                     await zipfile.CopyToAsync(stream);
 
-                model.Checksum = UpdateManager.CalculateMD5Checksum(new Uri(packageFilename));
                 model.SourceUri = new Uri($"{Request.Scheme}://{Request.Host}/packages/{zipfile.FileName}");
 
                 try

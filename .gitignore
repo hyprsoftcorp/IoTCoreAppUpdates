@@ -263,3 +263,4 @@ __pycache__/
 Testing/Install/Test App 01
 Testing/Install/Test App 02
 node_modules
+!**/*.cshtml
