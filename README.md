@@ -97,19 +97,19 @@ By default the app update service runs on the device under the 'NT AUTHORITY\SYS
 
 ### Admin Website Screen Shots
 **Login**
-![Login](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/login-thumb.jpg)
+![Login](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/login-thumb.png)
 
 **Apps - List**
-![Apps - List](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-list-thumb.jpg)
+![Apps - List](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-list-thumb.png)
 
 **Apps - Add**
-![Apps - Add](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-add-thumb.jpg)
+![Apps - Add](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-add-thumb.png)
 
 **Apps - Edit**
-![Apps - Edit](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-edit-thumb.jpg)
+![Apps - Edit](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-edit-thumb.png)
 
 **Packages - Add**
-![Packages - Add](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-add-thumb.jpg)
+![Packages - Add](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-add-thumb.png)
 
 **Packages - Edit**
-![Packages - Edit](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-edit-thumb.jpg)
+![Packages - Edit](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-edit-thumb.png)
