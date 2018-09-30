@@ -21,9 +21,9 @@ namespace Hyprsoft.IoT.AppUpdates.Web
 
         #region Default Usernames and Passwords Related
 
-        public const string DefaultUsername = "appupdateadmin";
+        public const string DefaultUsername = "appupdatesadmin";
 
-        public const string DefaultPassword = "appupdateadmin!";
+        public const string DefaultPassword = "appupdatesadmin!";
 
         public const int UsernameMinLength = 8;
 

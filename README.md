@@ -95,21 +95,21 @@ public class Startup
 ### Security Concerns
 By default the app update service runs on the device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file system.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!**
 
-### Screen Shots
+### Admin Website Screen Shots
 **Login**
-![Login](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/login.jpg)
+![Login](Media/login-thumb.jpg)
 
 **Apps - List**
-![Apps - List](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-list.jpg)
+![Apps - List](Media/apps-list-thumb.jpg)
 
 **Apps - Add**
-![Apps - Add](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-add.jpg)
+![Apps - Add](Media/apps-add-thumb.jpg)
 
 **Apps - Edit**
-![Apps - Edit](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-edit.jpg)
+![Apps - Edit](Media/apps-edit-thumb.jpg)
 
 **Packages - Add**
-![Packages - Add](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-add.jpg)
+![Packages - Add](Media/packages-add-thumb.jpg)
 
 **Packages - Edit**
-![Packages - Edit](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-edit.jpg)
+![Packages - Edit](Media/packages-edit-thumb.jpg)

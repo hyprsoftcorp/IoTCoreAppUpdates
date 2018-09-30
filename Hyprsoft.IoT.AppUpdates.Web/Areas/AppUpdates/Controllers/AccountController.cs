@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -11,9 +12,18 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 {
     public class AccountController : BaseController
     {
+        #region Fields
+
+        private readonly IConfiguration _configuration;
+
+        #endregion
+
         #region Constructors
 
-        public AccountController(UpdateManager manager) : base(manager) { }
+        public AccountController(UpdateManager manager, IConfiguration configuration) : base(manager)
+        {
+            _configuration = configuration;
+        }
 
         #endregion
 
@@ -37,9 +47,11 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.Compare(model.Username, AuthenticationHelper.DefaultUsername, true) == 0 && model.Password == AuthenticationHelper.DefaultPassword)
+                var credentialProvider = await new CredentialProviderHelper(_configuration).CreateProviderAsync();
+                var username = await credentialProvider.GetUsernameAsync();
+                if (String.Compare(model.Username, username, true) == 0 && model.Password == await credentialProvider.GetPasswordAsync())
                 {
-                    var claims = new List<Claim> { new Claim(ClaimTypes.Name, AuthenticationHelper.DefaultUsername) };
+                    var claims = new List<Claim> { new Claim(ClaimTypes.Name, username) };
                     var authenticationProperties = new AuthenticationProperties
                     {
                         AllowRefresh = true,
@@ -53,6 +65,8 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
                     else
                         return RedirectToAction("List", "Apps", new { Area = "AppUpdates" });
                 }
+                else
+                    TempData["Error"] = "Invalid login attempt.  Please try again.";
             }   // model state valid?
             return View(model);
         }
