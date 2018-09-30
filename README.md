@@ -106,10 +106,10 @@ By default the app update service runs on the device under the 'NT AUTHORITY\SYS
 ![Apps - Add](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-add-thumb.jpg)
 
 **Apps - Edit**
-![Apps - Edit]https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/(Media/apps-edit-thumb.jpg)
+![Apps - Edit](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/apps-edit-thumb.jpg)
 
 **Packages - Add**
-![Packages - Add]https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/(Media/packages-add-thumb.jpg)
+![Packages - Add](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-add-thumb.jpg)
 
 **Packages - Edit**
 ![Packages - Edit](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/packages-edit-thumb.jpg)
