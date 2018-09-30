@@ -33,7 +33,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyprsoft.IoT.AppUpdates.Web", "Hyprsoft.IoT.AppUpdates.Web\Hyprsoft.IoT.AppUpdates.Web.csproj", "{7A6758B3-B413-4760-9D98-248682F9CB5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyprsoft.IoT.AppUpdates.TestWeb", "Hyprsoft.IoT.AppUpdates.TestWeb\Hyprsoft.IoT.AppUpdates.TestWeb.csproj", "{FDADD182-EBFB-4A72-AC2E-902831CADFFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyprsoft.IoT.AppUpdates.TestWeb", "Hyprsoft.IoT.AppUpdates.TestWeb\Hyprsoft.IoT.AppUpdates.TestWeb.csproj", "{FDADD182-EBFB-4A72-AC2E-902831CADFFD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Media", "Media", "{6EC7535D-0724-487C-8854-A8B942760EE7}"
+	ProjectSection(SolutionItems) = preProject
+		Media\apps-add.jpg = Media\apps-add.jpg
+		Media\apps-edit.jpg = Media\apps-edit.jpg
+		Media\apps-list.jpg = Media\apps-list.jpg
+		Media\login.jpg = Media\login.jpg
+		Media\packages-add.jpg = Media\packages-add.jpg
+		Media\packages-edit.jpg = Media\packages-edit.jpg
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +81,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2CE88A93-6A54-45FF-8911-5FE508C8C96F} = {8E8178DD-39AC-4984-B66F-1FB167AD1608}
+		{6EC7535D-0724-487C-8854-A8B942760EE7} = {3BDFEB80-709D-4776-B972-47DA1AB480EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {644AC415-44A3-4038-88C5-178AB1E37B21}

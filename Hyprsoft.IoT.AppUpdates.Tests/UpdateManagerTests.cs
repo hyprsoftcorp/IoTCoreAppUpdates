@@ -38,7 +38,6 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
         {
             var manager = CreateManager(new Uri(Path.Combine(_testDataFolder, UpdateManager.DefaultAppUpdateManifestFilename)));
             Assert.AreEqual(false, manager.IsLoaded);
-            Assert.AreEqual(false, manager.AllowInstalls);
             Assert.AreEqual(new Uri(Path.Combine(_testDataFolder, UpdateManager.DefaultAppUpdateManifestFilename)), manager.ManifestUri);
             Assert.AreEqual(0, manager.Applications.Count);
         }
@@ -68,7 +67,6 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
             var installUri = new Uri(Path.Combine(_testInstallFolder, "Test App 01"));
 
             await _manager.Load();
-            _manager.AllowInstalls = true;
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _manager.Update(null, installUri, CancellationToken.None));
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _manager.Update(_manager.Applications.First().Packages.First(), null, CancellationToken.None));
@@ -78,31 +76,9 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
         }
 
         [TestMethod]
-        public async Task AllowInstalls()
-        {
-            var installUri = new Uri(Path.Combine(_testInstallFolder, "Test App 01"));
-
-            await _manager.Load();
-
-            var package = _manager.Applications.SelectMany(a => a.Packages).First(p => p.Id == Guid.Parse("02902554-4D3D-4159-B106-41E0AC158733"));
-            await UpdateManager.KillProcess(package.Application.ExeFilename, _manager.Logger);
-
-            var directory = new DirectoryInfo(installUri.LocalPath);
-            foreach (var file in directory.EnumerateFiles()) file.Delete();
-            foreach (var subDirectory in directory.EnumerateDirectories()) subDirectory.Delete(true);
-
-            await _manager.Update(package, installUri, CancellationToken.None);
-            Assert.AreEqual(0, Directory.GetFiles(installUri.LocalPath).Length);
-
-            _manager.AllowInstalls = true;
-            await ValidateUpdate(_manager, Guid.Parse("02902554-4D3D-4159-B106-41E0AC158733"), installUri);
-        }
-
-        [TestMethod]
         public async Task MultipleApps()
         {
             await _manager.Load();
-            _manager.AllowInstalls = true;
 
             await ValidateUpdate(_manager, Guid.Parse("61038014-97C6-418A-9262-94D78DB167E8"), new Uri(Path.Combine(_testInstallFolder, "Test App 01")));
             await ValidateUpdate(_manager, Guid.Parse("941D4BF3-4F6B-4D16-B254-0C2A6BA3808B"), new Uri(Path.Combine(_testInstallFolder, "Test App 02")));

@@ -58,16 +58,13 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         public string ConfigurationFilename => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "app-update-config.json").ToLower();
 
         [JsonProperty]
-        public bool AllowInstalls { get; set; }
-
-        [JsonProperty]
         public TimeSpan CheckTime { get; set; } = new TimeSpan(3, 0, 0);
 
         [JsonProperty]
         public DateTime NextCheckDate { get; internal set; }
 
         [JsonProperty]
-        public Uri ManifestUri { get; set; }
+        public Uri ManifestUri { get; set; } = new Uri("http://appupd.azurewebsites.net/app-update-manifest.json");
 
         [JsonProperty]
         public List<AppInstall> InstalledApps { get; internal set; } = new List<AppInstall>();
@@ -82,27 +79,33 @@ namespace Hyprsoft.IoT.AppUpdates.Service
             LoadConfiguration();
 
             if (ManifestUri == null)
-            {
                 _logger.LogWarning($"The configuration is missing the required manifest URI.  Please update the '{ConfigurationFilename}' configuration file and restart the service.");
-                return Task.CompletedTask;
-            }   // missing manifest URI?
             if (InstalledApps.Count <= 0)
-            {
                 _logger.LogWarning($"The configuration does not have any apps listed to update.  Please update the '{ConfigurationFilename}' configuration file and restart the service.");
-                return Task.CompletedTask;
-            }   // no installed apps?
 
-            _manager = new UpdateManager(ManifestUri, _loggerFactory) { AllowInstalls = AllowInstalls };
-            _updateCheckTask = Update(cancellationToken);
+            if (ManifestUri != null && InstalledApps.Count > 0)
+            {
+                _logger.LogInformation($"Using manifest '{ManifestUri.ToString().ToLower()}' to check '{InstalledApps.Count}' app(s) for updates.");
+                _manager = new UpdateManager(ManifestUri, _loggerFactory);
+                _updateCheckTask = Update(cancellationToken);
+            }   // manifest URI valid and installed app count > 0?
 
             return Task.CompletedTask;
+        }
+
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Stopping service.");
+            if (_updateCheckTask != null)
+                await _updateCheckTask;
         }
 
         private async Task Update(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
-                if (_isFirstCheck || DateTime.Now >= NextCheckDate)                {
+                if (_isFirstCheck || DateTime.Now >= NextCheckDate)
+                {
                     try
                     {
                         _isFirstCheck = false;
@@ -142,13 +145,6 @@ namespace Hyprsoft.IoT.AppUpdates.Service
             }   // cancellation requested?
         }
 
-        public async Task StopAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Stopping service.");
-            if (_updateCheckTask != null)
-                await _updateCheckTask;
-        }
-
         private void UpdateNextCheckDate()
         {
             var now = DateTime.Now;
@@ -162,7 +158,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
             {
                 try
                 {
-                    _logger.LogInformation($"Loading configuration from '{ConfigurationFilename}'.");
+                    _logger.LogInformation($"Loading service configuration from '{ConfigurationFilename}'.");
                     var instance = JsonConvert.DeserializeObject<UpdateService>(File.ReadAllText(ConfigurationFilename));
                     var bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic;
                     foreach (var prop in instance.GetType().GetProperties(bindingFlags))
@@ -183,7 +179,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                 }
             }   // file exists?
 
-            _logger.LogInformation("Using default configuration.");
+            _logger.LogInformation("Using default service configuration.");
             UpdateNextCheckDate();
         }
 

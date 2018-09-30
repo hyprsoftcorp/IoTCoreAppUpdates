@@ -7,7 +7,7 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
 3. The service can update multiple apps.
 4. Package integrity is validated using a MD5 hash.
 5. The update manager will automatically "kill" processes being updated and restart them after they've been updated.
-6. The service can install new apps that aren't already on the device.  However, this feature is disabled by default for security reasons.
+6. The server side App Update Administrative functionality can be added to any existing ASP.NET Core 2.x project by adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the startup class configuration changes noted below. 
 
 ### Process to Update an App
 1. Add a new package definition to the manifest with an incremented file version, new release date, new source URI, and new checksum.
@@ -15,10 +15,8 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
 3. The next time the service checks for updates the new package definition is detected and the package is automatically downloaded to the device and installed.
 
 ### Sample Service Configuration
-
 ```json
 {
-  "AllowInstalls": false,
   "CheckTime": "03:00:00",
   "NextCheckDate": "2018-09-18T03:00:00",
   "ManifestUri": "http://www.hyprsoft.com/app-update-manifest.json",
@@ -31,7 +29,6 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
 }
 ```
 ### Sample Manifest
-
 ```json
 [
   {
@@ -62,6 +59,41 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
   }
 ]
 ```
+### Sample Startup.cs Configuration
+The administrative website can be accessed using http[s]://[www.your-domain.com]/appupdates.
+```csharp
+public class Startup
+{
+    public Startup(IConfiguration configuration, IHostingEnvironment env)
+    {
+        Configuration = configuration;
+        HostingEnvironment = env;
+    }
+
+    public IConfiguration Configuration { get; }
+
+    public IHostingEnvironment HostingEnvironment { get; }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddAppUpdates(options => options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultAppUpdateManifestFilename)));
+        services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        if (HostingEnvironment.IsDevelopment())
+            app.UseDeveloperExceptionPage();
+        else
+            app.UseExceptionHandler("/Home/Error");
+
+        app.UseAppUpdates();
+        app.UseMvc(routes => routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}"));
+    }
+}
+```
+### Screen Shots
+Coming soon!
 
 ### Security Concerns
 By default the app update service runs on the device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file system.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!**

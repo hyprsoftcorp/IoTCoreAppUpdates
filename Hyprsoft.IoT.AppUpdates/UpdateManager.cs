@@ -45,12 +45,6 @@ namespace Hyprsoft.IoT.AppUpdates
         public bool IsLoaded { get; private set; }
 
         /// <summary>
-        /// Gets or sets whether or not the update manager can update applications that don't exists.
-        /// </summary>
-        /// <remarks>WARNING! Allowing applications to be updated that don't exist is a security risk.</remarks>
-        public bool AllowInstalls { get; set; }
-
-        /// <summary>
         /// Gets the app update manifest URI.
         /// </summary>
         public Uri ManifestUri { get; private set; }
@@ -141,7 +135,11 @@ namespace Hyprsoft.IoT.AppUpdates
 
             if (token.IsCancellationRequested) return;
 
-            // STEP 1 - Check to see if our app needs to be updated.
+            // STEP 1 - Make sure our install folder exists
+            if (!Directory.Exists(installUri.LocalPath))
+                Directory.CreateDirectory(installUri.LocalPath);
+
+            // STEP 2 - Check to see if our app needs to be updated.
             var versionFilename = Path.Combine(installUri.LocalPath, package.Application.VersionFilename).ToLower();
             Logger.LogInformation($"Checking '{package.Application.Name}' version using '{versionFilename}'.");
             if (File.Exists(versionFilename))
@@ -155,87 +153,74 @@ namespace Hyprsoft.IoT.AppUpdates
                 }   // file versions the same?
             }
             else
-            {
-                Logger.LogInformation($"'{package.Application.Name}' does not exist.");
-                if (!AllowInstalls)
-                    return;
-            }
+                Logger.LogInformation($"'{package.Application.Name}' does not exist and will be installed.");
 
-            // STEP 2 - Make sure we have file ownership and permissions.
-            /*
-             * This doesn't work.  Files get flashed onto the device with read and execute (RX) file permissions.
-             * SYSTEM, which is the context in which our service runs under, doesn't have write permissions so
-             * we can't overwrite files.
-             * 
-            Logger.LogInformation($"Taking ownership of folder '{installUri.LocalPath.ToLower()}'.");
-            var process = Process.Start($"takeown", "/f \"{installUri.LocalPath}\\*\" /r");
-            process.WaitForExit();
-            Logger.LogInformation($"'{process.StartInfo.FileName} {process.StartInfo.Arguments}' exited with '{process.ExitCode}'.");
-            Logger.LogInformation($"Granting file permissions on folder '{installUri.LocalPath.ToLower()}'.");
-            process = Process.Start($"icacls", "\"{installUri.LocalPath}\\*\" /grant SYSTEM:(f) /t");
-            process.WaitForExit();
-            Logger.LogInformation($"'{process.StartInfo.FileName} {process.StartInfo.Arguments}' exited with '{process.ExitCode}'.");
-            */
 
-            // STEP 3 - Download package.
             string packageFilename = (package.SourceUri.IsFile ? package.SourceUri.LocalPath : Path.GetTempFileName()).ToLower();
-            Logger.LogInformation($"Updating '{package.Application.Name}' using package '{package.SourceUri}'.");
-            if (!package.SourceUri.IsFile)
+            try
             {
-                Logger.LogInformation($"Downloading package to '{packageFilename}'.");
-                using (var client = new HttpClient())
-                    File.WriteAllBytes(packageFilename, await client.GetByteArrayAsync(package.SourceUri));
-            }
-
-            // STEP 4 - Check package integrity.
-            Logger.LogInformation($"Checking package checksum for '{packageFilename}'.");
-            if (package.Checksum != CalculateMD5Checksum(new Uri(packageFilename)))
-            {
+                // STEP 3 - Download package.
+                Logger.LogInformation($"Updating '{package.Application.Name}' using package '{package.SourceUri}'.");
                 if (!package.SourceUri.IsFile)
-                    File.Delete(packageFilename);
-                Logger.LogWarning($"Checksum mismatch detected.");
-                return;
-            }
-
-            // STEP 5 - Kill application process.
-            await KillProcess(package.Application.ExeFilename, Logger);
-
-            // STEP 6 - Unzip our package to the install URI.
-            Logger.LogInformation($"Extracting package '{packageFilename}' to '{installUri.LocalPath.ToLower()}'.");
-            using (var zip = ZipFile.Open(packageFilename, ZipArchiveMode.Read))
-            {
-                foreach (var entry in zip.Entries)
                 {
-                    var filename = Path.Combine(installUri.LocalPath, entry.FullName);
-                    var folder = Path.GetDirectoryName(filename);
-                    if (!Directory.Exists(folder))
-                        Directory.CreateDirectory(folder);
-                    entry.ExtractToFile(filename, true);
-                }   // for each zip entry
-            }   // using zip file.
-            if (!package.SourceUri.IsFile)
-                File.Delete(packageFilename);
+                    Logger.LogInformation($"Downloading package to '{packageFilename}'.");
+                    using (var client = new HttpClient())
+                        File.WriteAllBytes(packageFilename, await client.GetByteArrayAsync(package.SourceUri));
+                }
 
-            // STEP 7 - Restart our process.
-            var installFolder = installUri.LocalPath.EndsWith(Path.DirectorySeparatorChar.ToString()) ? installUri.LocalPath : installUri.LocalPath + Path.DirectorySeparatorChar;
-            var processFilename = Path.Combine(installFolder, package.Application.ExeFilename);
-            Logger.LogInformation($"Starting process '{processFilename}'.");
-            Process.Start(new ProcessStartInfo
+                // STEP 4 - Check package integrity.
+                Logger.LogInformation($"Checking package checksum for '{packageFilename}'.");
+                var checksum = CalculateMD5Checksum(new Uri(packageFilename));
+                if (package.Checksum != checksum)
+                {
+                    Logger.LogWarning($"Checksum mismatch detected.  Expected '{package.Checksum}' and calculated '{checksum}'.");
+                    return;
+                }
+
+                // STEP 5 - Kill application process.
+                await KillProcessIfRunning(package.Application.ExeFilename, Logger);
+
+                // STEP 6 - Unzip our package to the install URI.
+                Logger.LogInformation($"Extracting package '{packageFilename}' to '{installUri.LocalPath.ToLower()}'.");
+                using (var zip = ZipFile.Open(packageFilename, ZipArchiveMode.Read))
+                {
+                    foreach (var entry in zip.Entries)
+                    {
+                        var filename = Path.Combine(installUri.LocalPath, entry.FullName);
+                        var folder = Path.GetDirectoryName(filename);
+                        if (!Directory.Exists(folder))
+                            Directory.CreateDirectory(folder);
+                        entry.ExtractToFile(filename, true);
+                    }   // for each zip entry
+                }   // using zip file.
+
+                // STEP 7 - Restart our process.
+                var installFolder = installUri.LocalPath.EndsWith(Path.DirectorySeparatorChar.ToString()) ? installUri.LocalPath : installUri.LocalPath + Path.DirectorySeparatorChar;
+                var processFilename = Path.Combine(installFolder, package.Application.ExeFilename);
+                Logger.LogInformation($"Starting process '{processFilename}'.");
+                Process.Start(new ProcessStartInfo
+                {
+                    Arguments = package.Application.CommandLine,
+                    FileName = processFilename,
+                    WorkingDirectory = installFolder
+                });
+
+                Logger.LogInformation($"'{package.Application.Name}' successfully updated to version '{package.FileVersion}'.");
+            }
+            finally
             {
-                Arguments = package.Application.CommandLine,
-                FileName = processFilename,
-                WorkingDirectory = installFolder
-            });
-
-            Logger.LogInformation($"'{package.Application.Name}' successfully updated to version '{package.FileVersion}'.");
+                // If we downloaded our source package, make sure we cleanup our temp package file.
+                if (!package.SourceUri.IsFile && File.Exists(packageFilename))
+                    File.Delete(packageFilename);
+            }
         }
 
         /// <summary>
-        /// Kills the specified process.
+        /// Kills the specified process if running.
         /// </summary>
         /// <param name="exeFilename">Exe filename of the process to kill.</param>
         /// <param name="logger">The application logger.  <see cref="Logger"./></param>
-        public static async Task KillProcess(string exeFilename, ILogger logger)
+        public static async Task KillProcessIfRunning(string exeFilename, ILogger logger)
         {
             foreach (var process in Process.GetProcessesByName(Path.GetFileNameWithoutExtension(exeFilename)))
             {
