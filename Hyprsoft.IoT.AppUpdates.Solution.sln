@@ -45,6 +45,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Media", "Media", "{6EC7535D
 		Media\packages-edit.jpg = Media\packages-edit.jpg
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{BE0DB9A2-6CA2-40A7-B5FF-D52ED603D820}"
+	ProjectSection(SolutionItems) = preProject
+		Nuget\CredentialProvider.VSS.exe = Nuget\CredentialProvider.VSS.exe
+		Nuget\deploy.bat = Nuget\deploy.bat
+		Nuget\NuGet.exe = Nuget\NuGet.exe
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
