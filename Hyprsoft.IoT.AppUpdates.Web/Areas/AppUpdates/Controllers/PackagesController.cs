@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 
 namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 {
-    [Authorize(AuthenticationSchemes = AuthenticationHelper.CookieAuthenticationScheme)]
-    [Route("apps/{applicationId}/[controller]/[action]/{id?}")]
+    [Authorize(AuthenticationSchemes = AuthenticationSettings.CookieAuthenticationScheme)]
+    [Route("[area]/apps/{applicationId}/[controller]/[action]/{id?}")]
     public class PackagesController : BaseController
     {
         #region Fields
@@ -58,14 +58,16 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
             model.Application = item;
             if (ModelState.IsValid && zipfile != null && zipfile.Length > 0)
             {
-                var packagesFolder = Path.Combine(_hostingEnv.WebRootPath, "packages");
+                // We place the package outside the wwwroot folder so it's not easily accessible via the static files middleware.
+                var packagesFolder = Path.Combine(_hostingEnv.ContentRootPath, "packages");
                 var packageFilename = Path.Combine(packagesFolder, zipfile.FileName);
                 if (!Directory.Exists(packagesFolder))
                     Directory.CreateDirectory(packagesFolder);
                 using (var stream = new FileStream(packageFilename, FileMode.OpenOrCreate))
                     await zipfile.CopyToAsync(stream);
 
-                model.SourceUri = new Uri($"{Request.Scheme}://{Request.Host}/packages/{zipfile.FileName}");
+                model.Checksum = UpdateManager.CalculateMD5Checksum(new Uri(packageFilename));
+                model.SourceUri = new Uri($"{Request.Scheme}://{Request.Host}/appupdates/apps/{applicationId}/packages/download/{zipfile.FileName}");
 
                 try
                 {
@@ -109,7 +111,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 
                         try
                         {
-                            var packageFilename = Path.Combine(Path.Combine(_hostingEnv.WebRootPath, "packages"), Path.GetFileName(model.SourceUri.ToString()));
+                            var packageFilename = Path.Combine(Path.Combine(_hostingEnv.ContentRootPath, "packages"), Path.GetFileName(model.SourceUri.ToString()));
                             ValidatePackage(model, packageFilename);
                         }
                         catch (Exception ex)
@@ -140,6 +142,9 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
             var item = UpdateManager.Applications.SelectMany(a => a.Packages).FirstOrDefault(p => p.Id == id);
             if (item != null)
             {
+                var packageFilename = Path.Combine(Path.Combine(_hostingEnv.ContentRootPath, "packages"), Path.GetFileName(item.SourceUri.ToString()));
+                if (System.IO.File.Exists(packageFilename))
+                    System.IO.File.Delete(packageFilename);
                 item.Application.Packages.Remove(item);
                 await UpdateManager.Save();
                 return Ok(new AjaxResponse { Message = $"Package '{item.FileVersion}' was successfully deleted." });

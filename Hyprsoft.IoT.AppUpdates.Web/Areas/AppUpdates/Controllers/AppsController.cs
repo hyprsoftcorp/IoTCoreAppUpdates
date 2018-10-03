@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 {
-    [Authorize(AuthenticationSchemes = AuthenticationHelper.CookieAuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = AuthenticationSettings.CookieAuthenticationScheme)]
     public class AppsController : BaseController
     {
         #region Constructors

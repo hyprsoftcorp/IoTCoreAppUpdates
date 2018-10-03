@@ -6,10 +6,10 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.ViewModels
     {
         #region Properties
 
-        [Required, MinLength(AuthenticationHelper.UsernameMinLength)]
+        [Required, MinLength(AuthenticationSettings.UsernameMinLength)]
         public string Username { get; set; }
 
-        [Required, DataType(DataType.Password), MinLength(AuthenticationHelper.PasswordMinLength), MaxLength(AuthenticationHelper.PasswordMaxLength)]
+        [Required, DataType(DataType.Password), MinLength(AuthenticationSettings.PasswordMinLength), MaxLength(AuthenticationSettings.PasswordMaxLength)]
         public string Password { get; set; }
 
         #endregion

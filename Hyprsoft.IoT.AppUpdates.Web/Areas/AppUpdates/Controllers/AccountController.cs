@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
@@ -55,11 +58,11 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
                     var authenticationProperties = new AuthenticationProperties
                     {
                         AllowRefresh = true,
-                        ExpiresUtc = DateTimeOffset.UtcNow.AddDays(AuthenticationHelper.CookieExpirationDays),
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddDays(AuthenticationSettings.CookieExpirationDays),
                         IsPersistent = false,
                         IssuedUtc = DateTime.UtcNow
                     };
-                    await HttpContext.SignInAsync(AuthenticationHelper.CookieAuthenticationScheme, new ClaimsPrincipal(new ClaimsIdentity(claims, AuthenticationHelper.CookieAuthenticationScheme)), authenticationProperties);
+                    await HttpContext.SignInAsync(AuthenticationSettings.CookieAuthenticationScheme, new ClaimsPrincipal(new ClaimsIdentity(claims, AuthenticationSettings.CookieAuthenticationScheme)), authenticationProperties);
                     if (Url.IsLocalUrl(returnUrl))
                         return Redirect(returnUrl);
                     else
@@ -74,8 +77,27 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(AuthenticationHelper.CookieAuthenticationScheme);
+            await HttpContext.SignOutAsync(AuthenticationSettings.CookieAuthenticationScheme);
             return RedirectToAction("List", "Apps", new { Area = "AppUpdates" });
+        }
+
+        [HttpPost]
+        public IActionResult Token([FromBody] Login model)
+        {
+            if (String.Compare(BearerAuthenticationSettings.DefaultUsername, model.Username, true) != 0 || model.Password != BearerAuthenticationSettings.DefaultPassword)
+                return Unauthorized();
+
+            var claims = new List<Claim> { new Claim(ClaimTypes.Name, model.Username) };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthenticationSettings.DefaultBearerSecurityKey));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                issuer: AuthenticationSettings.DefaultBearerIssuer,
+                audience: AuthenticationSettings.DefaultBearerAudience,
+                claims: claims,
+                expires: DateTime.Now.AddDays(AuthenticationSettings.BearerTokenExpirationDays),
+                signingCredentials: credentials);
+
+            return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
         }
 
         #endregion

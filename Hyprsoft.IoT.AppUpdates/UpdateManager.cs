@@ -10,6 +10,8 @@ using System.Security.Cryptography;
 using System.Diagnostics;
 using System.IO.Compression;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
+using System.Text;
 
 [assembly: InternalsVisibleTo("Hyprsoft.IoT.AppUpdates.Tests")]
 namespace Hyprsoft.IoT.AppUpdates
@@ -48,6 +50,18 @@ namespace Hyprsoft.IoT.AppUpdates
         /// Gets the app update manifest URI.
         /// </summary>
         public Uri ManifestUri { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the username used to authenticate package downloads.
+        /// </summary>
+        /// <remarks>If left blank no authentication will occur.</remarks>
+        public string Username { get; set; }
+
+        /// <summary>
+        /// Gets or sets the password used to authenticate package downloads.
+        /// </summary>
+        /// <remarks>If left blank no authentication will occur.</remarks>
+        public string Password { get; set; }
 
         /// <summary>
         /// Get's the application logger.
@@ -151,7 +165,7 @@ namespace Hyprsoft.IoT.AppUpdates
                     Logger.LogInformation($"Application is up to date.");
                     return;
                 }   // file versions the same?
-            }
+            }   // version file exists?
             else
                 Logger.LogInformation($"'{package.Application.Name}' does not exist and will be installed.");
 
@@ -165,8 +179,25 @@ namespace Hyprsoft.IoT.AppUpdates
                 {
                     Logger.LogInformation($"Downloading package to '{packageFilename}'.");
                     using (var client = new HttpClient())
+                    {
+                        if (!String.IsNullOrWhiteSpace(Username) && !String.IsNullOrWhiteSpace(Password))
+                        {
+                            var response = await client.PostAsync($"{ManifestUri.Scheme}://{ManifestUri.Host}/appupdates/account/token",
+                                new StringContent(JsonConvert.SerializeObject(new { username = Username, password = Password }), Encoding.UTF8, "application/json"));
+                            if (response.IsSuccessStatusCode)
+                            {
+                                var payload = JsonConvert.DeserializeAnonymousType(await response.Content.ReadAsStringAsync(), new { Token = String.Empty });
+                                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", payload.Token);
+                            }
+                            else
+                            {
+                                Logger.LogWarning($"Package download failed.  Unable to authenticate. Status: {response.StatusCode}");
+                                return;
+                            }
+                        }   // username and password not null?
                         File.WriteAllBytes(packageFilename, await client.GetByteArrayAsync(package.SourceUri));
-                }
+                    }
+                }   // file URI?
 
                 // STEP 4 - Check package integrity.
                 Logger.LogInformation($"Checking package checksum for '{packageFilename}'.");
@@ -175,7 +206,7 @@ namespace Hyprsoft.IoT.AppUpdates
                 {
                     Logger.LogWarning($"Checksum mismatch detected.  Expected '{package.Checksum}' and calculated '{checksum}'.");
                     return;
-                }
+                }   // checksums match?
 
                 // STEP 5 - Kill application process.
                 await KillProcessIfRunning(package.Application.ExeFilename, Logger);
@@ -211,7 +242,10 @@ namespace Hyprsoft.IoT.AppUpdates
             {
                 // If we downloaded our source package, make sure we cleanup our temp package file.
                 if (!package.SourceUri.IsFile && File.Exists(packageFilename))
+                {
+                    Logger.LogInformation($"Deleting temporary package '{packageFilename}'.");
                     File.Delete(packageFilename);
+                }
             }
         }
 

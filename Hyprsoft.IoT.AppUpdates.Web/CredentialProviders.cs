@@ -31,9 +31,9 @@ namespace Hyprsoft.IoT.AppUpdates.Web
     {
         public DefaultCredentialProvider(IConfiguration configuration) : base(configuration) { }
 
-        public override Task<string> GetUsernameAsync() => Task.FromResult(AuthenticationHelper.DefaultUsername);
+        public override Task<string> GetUsernameAsync() => Task.FromResult(AuthenticationSettings.DefaultUsername);
 
-        public override Task<string> GetPasswordAsync() => Task.FromResult(AuthenticationHelper.DefaultPassword);
+        public override Task<string> GetPasswordAsync() => Task.FromResult(AuthenticationSettings.DefaultPassword);
     }
 
     public class AppSettingsCredentialProvider : CredentialProviderBase

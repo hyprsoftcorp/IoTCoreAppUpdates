@@ -13,9 +13,9 @@ namespace Hyprsoft.IoT.AppUpdates.Service
 {
     public class UpdateService : IHostedService
     {
-        #region AppInstall Helper Class
+        #region InstalledApp Helper Class
 
-        public class AppInstall
+        public class InstalledApp
         {
             [JsonProperty]
             public Guid ApplicationId { get; internal set; }
@@ -58,16 +58,19 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         public string ConfigurationFilename => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "app-update-config.json").ToLower();
 
         [JsonProperty]
+        public bool IsAuthenticationRequired { get; set; } = false;
+
+        [JsonProperty]
         public TimeSpan CheckTime { get; set; } = new TimeSpan(3, 0, 0);
 
         [JsonProperty]
-        public DateTime NextCheckDate { get; internal set; }
+        public DateTime NextCheckDate { get; set; }
 
         [JsonProperty]
-        public Uri ManifestUri { get; set; } = new Uri("http://appupd.azurewebsites.net/app-update-manifest.json");
+        public Uri ManifestUri { get; set; } = new Uri("http://www.hyprsoft.com/app-update-manifest.json");
 
         [JsonProperty]
-        public List<AppInstall> InstalledApps { get; internal set; } = new List<AppInstall>();
+        public List<InstalledApp> InstalledApps { get; set; } = new List<InstalledApp>();
 
         #endregion
 
@@ -87,6 +90,11 @@ namespace Hyprsoft.IoT.AppUpdates.Service
             {
                 _logger.LogInformation($"Using manifest '{ManifestUri.ToString().ToLower()}' to check '{InstalledApps.Count}' app(s) for updates.");
                 _manager = new UpdateManager(ManifestUri, _loggerFactory);
+                if (IsAuthenticationRequired)
+                {
+                    _manager.Username = BearerAuthenticationSettings.DefaultUsername;
+                    _manager.Password = BearerAuthenticationSettings.DefaultPassword;
+                }   // authentication required.
                 _updateCheckTask = Update(cancellationToken);
             }   // manifest URI valid and installed app count > 0?
 
@@ -112,16 +120,16 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                         _logger.LogInformation("Checking for updates.");
                         // Always re-load our manifest in case it has been altered since our last check.
                         await _manager.Load();
-                        foreach (var appInstall in InstalledApps)
+                        foreach (var install in InstalledApps)
                         {
-                            var app = _manager.Applications.FirstOrDefault(a => a.Id == appInstall.ApplicationId);
+                            var app = _manager.Applications.FirstOrDefault(a => a.Id == install.ApplicationId);
                             if (app != null)
                             {
                                 var package = app.GetLatestPackage();
                                 if (package != null)
                                     try
                                     {
-                                        await _manager.Update(package, appInstall.InstallUri, token);
+                                        await _manager.Update(package, install.InstallUri, token);
                                     }
                                     catch (Exception ex)
                                     {
@@ -131,7 +139,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                                     _logger.LogWarning($"Unable to get the latest package for app '{app.Name}'.  No update will be applied.");
                             }
                             else
-                                _logger.LogWarning($"The app with id '{appInstall.ApplicationId}' doesn't exist in the manifest.  No update will be applied.");
+                                _logger.LogWarning($"The app with id '{install.ApplicationId}' doesn't exist in the manifest.  No update will be applied.");
                         }
                         UpdateNextCheckDate();
                     }
@@ -185,7 +193,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
 
         private void SaveConfiguration()
         {
-            _logger.LogInformation($"Saving configuration to '{ConfigurationFilename}'.");
+            _logger.LogInformation($"Saving service configuration to '{ConfigurationFilename}'.");
             lock (_lockObject)
                 File.WriteAllText(ConfigurationFilename, JsonConvert.SerializeObject(this, Formatting.Indented));
         }
