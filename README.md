@@ -1,5 +1,5 @@
 # Windows 10 IoT Core App Updates Service
-We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed on IoT devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a remote host and updates locally installed apps on the device as needed.
+We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed on IoT devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a remote host and updates locally installed apps on the device as needed.  Please note that this service was designed for and has only been tested with .NET Core 2.x binaries.
 
 ### Current Features
 1. The app update manifest and associated app update packages can be hosted on any website, Azure storage, Dropbox, One Drive, Google Drive, etc.
@@ -8,7 +8,7 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
 4. Package integrity is validated using a MD5 hash.
 5. The update manager will automatically "kill" processes being updated and restart them after they've been updated.
 6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.x project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the startup class configuration changes noted below.
-7. If the Hyprsoft.IoT.AppUpdates.Web NuGet package is utilized, update package endpoints are automatically protected using simple token authentication.  This prevents unauthorized downloads of your app packages.
+7. If the Hyprsoft.IoT.AppUpdates.Web NuGet package is utilized, update package endpoints are automatically protected using simple bearer token authentication.  This prevents unauthorized downloads of your app packages.
 
 ### Process to Update an App
 #### Automatically
@@ -25,7 +25,7 @@ The service configuration Json file resides on each device.
   "IsAuthenticationRequired": true,
   "CheckTime": "03:00:00",
   "NextCheckDate": "2018-09-18T03:00:00",
-  "ManifestUri": "http://www.hyprsoft.com/app-update-manifest.json",
+  "ManifestUri": "http://www.yourdomain.com/app-update-manifest.json",
   "InstalledApps": [
     {
       "ApplicationId": "04fc007e-db18-430f-b4fa-f5b54de1e142",
@@ -51,7 +51,7 @@ The app update manifest Json file and app packages can reside on a website or an
         "IsAvailable": true,
         "Version": "1.0.0.0",
         "ReleaseDateUtc": "2018-09-01T00:00:00",
-        "SourceUri": "http://www.hyprsoft.com/packages/hyprsoft.my.awesome.app-1000.zip",
+        "SourceUri": "http://www.yourdomain.com/appupdates/apps/04fc007e-db18-430f-b4fa-f5b54de1e142/packages/download/hyprsoft.my.awesome.app-1000.zip",
         "Checksum": "bddf0cd85b9b4985fb10a1555e10ab6d"
       },
       {
@@ -59,7 +59,7 @@ The app update manifest Json file and app packages can reside on a website or an
         "IsAvailable": true,
         "Version": "1.0.1.0",
         "ReleaseDateUtc": "2018-09-16T00:00:00",
-        "SourceUri": "http://www.hyprsoft.com/packages/hyprsoft.my.awesome.app-1010.zip",
+        "SourceUri": "http://www.yourdomain.com/appupdates/apps/04fc007e-db18-430f-b4fa-f5b54de1e142/packages/download/hyprsoft.my.awesome.app-1010.zip",
         "Checksum": "e6276631b2c67664810132f1ee565d59"
       }
     ]
@@ -99,6 +99,14 @@ public class Startup
     }
 }
 ```
+### Usage Notes
+1. When dealing with versions of EXE and DLL files it is important to note that the "File Version" is used as opposed to the "Product Version". 
+
+![File Properties](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/file-properties.jpg)
+
+2. When the update manager searches for the latest package to install, the package's ReleasedDateUtc is used instead of the assembly file version.  So the package with the most recent ReleasedDateUtc will be chosen regardless of the assembly file version.
+3. File checksums can be manually calculated using the [Microsoft File Checksum Integrity Verifier](https://www.microsoft.com/en-us/download/details.aspx?id=11533) utility.  Ex: fciv.exe -MD5 hyprsoft.my.awesome.app-1010.zip
+
 ### Security Concerns
 By default the app update service runs on the IoT device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file systems.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!  Use at your own risk!**
 

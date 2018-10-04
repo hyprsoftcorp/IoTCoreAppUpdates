@@ -18,10 +18,10 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         public class InstalledApp
         {
             [JsonProperty]
-            public Guid ApplicationId { get; internal set; }
+            public Guid ApplicationId { get; set; }
 
             [JsonProperty]
-            public Uri InstallUri { get; internal set; }
+            public Uri InstallUri { get; set; }
 
             public override string ToString()
             {
