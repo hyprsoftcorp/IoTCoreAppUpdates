@@ -1,33 +1,35 @@
 # Windows 10 IoT Core App Updates Service
-We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed on devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a secure remote URI and updates locally installed apps on the device as needed.
+We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed on IoT devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a remote host and updates locally installed apps on the device as needed.
 
 ### Current Features
-1. The app update manifest and associated app update packages can be hosted on the local file system for testing, a website, Azure storage, Dropbox, One Drive, Google Drive, etc.
+1. The app update manifest and associated app update packages can be hosted on any website, Azure storage, Dropbox, One Drive, Google Drive, etc.
 2. Configurable daily check time (defaults to 3am). 
 3. The service can update multiple apps.
 4. Package integrity is validated using a MD5 hash.
 5. The update manager will automatically "kill" processes being updated and restart them after they've been updated.
-6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.x project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the startup class configuration changes noted below. 
+6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.x project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the startup class configuration changes noted below.
+7. If the Hyprsoft.IoT.AppUpdates.Web NuGet package is utilized, update package endpoints are automatically protected using simple token authentication.  This prevents unauthorized downloads of your app packages.
 
 ### Process to Update an App
-#### Automated
+#### Automatically
 1. Integrate the administrative website NuGet package into your existing ASP.NET Core 2.x website and manage updates and packages via your browser.  See the sample startup.cs code and administrative website screenshots below.
 
 #### Manually
 1. Add a new package definition to the app update manifest with an incremented file version, new release date, new source URI, and new checksum.
-2. Upload the app update package (i.e. zip file) containing the updated application files (EXEs, DLLs, etc.) to your desired "host" (i.e  file sharing service).
+2. Upload the app update package (i.e. zip file) containing the updated application files (EXEs, DLLs, etc.) to your desired "host" (i.e  website or file sharing service).
 
 ### Sample Service Configuration
 The service configuration Json file resides on each device.
 ```json
 {
+  "IsAuthenticationRequired": true,
   "CheckTime": "03:00:00",
   "NextCheckDate": "2018-09-18T03:00:00",
   "ManifestUri": "http://www.hyprsoft.com/app-update-manifest.json",
   "InstalledApps": [
     {
       "ApplicationId": "04fc007e-db18-430f-b4fa-f5b54de1e142",
-      "InstallUri": "c:\\testapp"
+      "InstallUri": "c:\\data\\testapp"
     }
   ]
 }
@@ -98,7 +100,7 @@ public class Startup
 }
 ```
 ### Security Concerns
-By default the app update service runs on the device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file system.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!**
+By default the app update service runs on the IoT device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file systems.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!  Use at your own risk!**
 
 ### Administrative Website Screenshots
 #### Login
