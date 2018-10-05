@@ -9,6 +9,7 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
 5. The update manager will automatically "kill" processes being updated and restart them after they've been updated.
 6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.x project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the startup class configuration changes noted below.
 7. If the Hyprsoft.IoT.AppUpdates.Web NuGet package is utilized, update package endpoints are automatically protected using simple bearer token authentication.  This prevents unauthorized downloads of your app packages.
+8. Credentials for accessing the administrative website can be supplied using Azure App Service settings or Azure Key Vault.
 
 ### Process to Update an App
 #### Automatically
@@ -99,7 +100,7 @@ public class Startup
     }
 }
 ```
-### Usage Notes
+### General Usage Notes
 1. When dealing with versions of EXE and DLL files it is important to note that the "File Version" is used as opposed to the "Product Version". 
 
 ![File Properties](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/file-properties.jpg)
@@ -109,6 +110,28 @@ public class Startup
 
 ### Security Concerns
 By default the app update service runs on the IoT device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file systems.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!  Use at your own risk!**
+
+### Administrative Website Credentials
+Credentials can be provided in two ways.  Both require adding Azure App Service settings.
+#### Azure App Service
+Setting Name | Example Value
+--- | ---
+AppUpdatesUsername | myusername
+AppUpdatesPassword | myp@ssw0rd
+
+#### Azure Key Vault
+Setting up a key vault is tedious and outside the scope of this document but here is a summary of the process:
+1. Setup an App Registration in AAD and note the Application ID.  This is the AppUpdatesKeyVaultClientId.
+2. Add a password key to the app registration and note it's value (displayed only on creation).  This is the AppUpdatesKeyVaultClientSecret.
+3. Add a secret to the key vault for the username and note the secret identifier.  This is the AppUpdatesKeyVaultUsernameSecret.
+4. Add a secret to the key vault for the password and note the secret identifier.  This is the AppUpdatesKeyVaultPasswordSecret.
+
+Setting Name | Example Value
+--- | --- 
+AppUpdatesKeyVaultClientId | bce7fe0f-09a4-4ded-be30-372c0e90d9e5
+AppUpdatesKeyVaultClientSecret | aS/zHfJ118SOKwvEQ1sWzMc2fkreFG+s+qtz5oQUbks=
+AppUpdatesKeyVaultUsernameSecret | https://mykeyvault.vault.azure.net/secrets/AppUpdatesUsername/4d10318a536c13e4ae37c1571fc88d1c
+AppUpdatesKeyVaultPasswordSecret | https://mykeyvault.vault.azure.net/secrets/AppUpdatesPassword/d00a91afcc4d45b196e2c1de94b21a4b
 
 ### Administrative Website Screenshots
 #### Login

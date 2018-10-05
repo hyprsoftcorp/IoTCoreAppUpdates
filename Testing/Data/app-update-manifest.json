@@ -9,15 +9,17 @@
     "Packages": [
       {
         "Id": "02902554-4d3d-4159-b106-41e0ac158733",
+        "IsAvailable": true,
         "FileVersion": "1.0.0.0",
-        "ReleaseDateUtc": "2017-01-01T00:00:00",
+        "ReleaseDateUtc": "2018-10-01T00:00:00",
         "SourceUri": "D:\\Source\\Hyprsoft.IoT.AppUpdates.Solution\\Hyprsoft.IoT.AppUpdates.Tests\\..\\Testing\\Data\\testapp01_1000.zip",
         "Checksum": "f186cbd924b3dea18a02e2fb3f49cc67"
       },
       {
         "Id": "61038014-97c6-418a-9262-94d78db167e8",
+        "IsAvailable": true,
         "FileVersion": "1.0.1.0",
-        "ReleaseDateUtc": "2018-01-01T00:00:00",
+        "ReleaseDateUtc": "2018-10-02T00:00:00",
         "SourceUri": "D:\\Source\\Hyprsoft.IoT.AppUpdates.Solution\\Hyprsoft.IoT.AppUpdates.Tests\\..\\Testing\\Data\\testapp01_1010.zip",
         "Checksum": "fa91dca06a74d40a495697cd3d5ad8d8"
       }
@@ -33,22 +35,25 @@
     "Packages": [
       {
         "Id": "97630359-bcdc-401f-917e-f940483b5a71",
+        "IsAvailable": true,
         "FileVersion": "1.0.0.0",
-        "ReleaseDateUtc": "2017-01-01T00:00:00",
+        "ReleaseDateUtc": "2018-10-01T00:00:00",
         "SourceUri": "D:\\Source\\Hyprsoft.IoT.AppUpdates.Solution\\Hyprsoft.IoT.AppUpdates.Tests\\..\\Testing\\Data\\testapp02_1000.zip",
         "Checksum": "4327e6e5df780992ce581769c0b247d8"
       },
       {
         "Id": "1783071c-ae5a-431c-bd84-3845d822f0bc",
+        "IsAvailable": true,
         "FileVersion": "1.0.1.0",
-        "ReleaseDateUtc": "2018-01-01T00:00:00",
+        "ReleaseDateUtc": "2018-10-02T00:00:00",
         "SourceUri": "D:\\Source\\Hyprsoft.IoT.AppUpdates.Solution\\Hyprsoft.IoT.AppUpdates.Tests\\..\\Testing\\Data\\testapp02_1010.zip",
         "Checksum": "f7234293caba292d42ba7a7df063718c"
       },
       {
         "Id": "941d4bf3-4f6b-4d16-b254-0c2a6ba3808b",
+        "IsAvailable": true,
         "FileVersion": "1.0.2.0",
-        "ReleaseDateUtc": "2018-09-01T00:00:00",
+        "ReleaseDateUtc": "2018-10-03T00:00:00",
         "SourceUri": "D:\\Source\\Hyprsoft.IoT.AppUpdates.Solution\\Hyprsoft.IoT.AppUpdates.Tests\\..\\Testing\\Data\\testapp02_1020.zip",
         "Checksum": "039cf55bfd3aa5e4f5c2fbf7cca46737"
       }

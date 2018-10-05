@@ -19,6 +19,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
 
         private string _testDataFolder;
         private string _testInstallFolder;
+        private Uri _manifestUri;
         private UpdateManager _manager;
 
         #endregion
@@ -26,20 +27,25 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
         #region Methods
 
         [TestInitialize]
-        public void Initialize()
+        public async Task Initialize()
         {
             _testDataFolder = Path.Combine(Path.GetDirectoryName(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName), "..\\Testing\\Data");
             _testInstallFolder = Path.Combine(Path.GetDirectoryName(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName), "..\\Testing\\Install");
-            _manager = CreateManager(new Uri(Path.Combine(_testDataFolder, UpdateManager.DefaultAppUpdateManifestFilename)));
+            _manifestUri = new Uri(Path.Combine(_testDataFolder, UpdateManager.DefaultAppUpdateManifestFilename));
+            _manager = CreateManager(_manifestUri);
+            await CreateUnitTestAppUpdateManifest();
         }
 
         [TestMethod]
         public void Defaults()
         {
-            var manager = CreateManager(new Uri(Path.Combine(_testDataFolder, UpdateManager.DefaultAppUpdateManifestFilename)));
-            Assert.AreEqual(false, manager.IsLoaded);
-            Assert.AreEqual(new Uri(Path.Combine(_testDataFolder, UpdateManager.DefaultAppUpdateManifestFilename)), manager.ManifestUri);
+            var manager = CreateManager(_manifestUri);
+            Assert.IsFalse(manager.IsLoaded);
+            Assert.AreEqual(_manifestUri, manager.ManifestUri);
             Assert.AreEqual(0, manager.Applications.Count);
+            Assert.IsNull(manager.Username);
+            Assert.IsNull(manager.Password);
+            Assert.IsNotNull(manager.Logger);
         }
 
         [TestMethod]
@@ -54,11 +60,30 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
         {
             await _manager.Load();
 
-            Assert.AreEqual(true, _manager.IsLoaded);
+            Assert.IsTrue(_manager.IsLoaded);
             Assert.AreEqual(2, _manager.Applications.Count);
 
             Assert.AreEqual(2, _manager.Applications[0].Packages.Count);
             Assert.AreEqual(3, _manager.Applications[1].Packages.Count);
+        }
+
+        [TestMethod]
+        public async Task Saved()
+        {
+            await _manager.Load();
+            _manager.Applications.Clear();
+            await _manager.Save();
+
+            var manager = CreateManager(_manifestUri);
+            Assert.IsFalse(manager.IsLoaded);
+            await manager.Load();
+
+            Assert.IsTrue(manager.IsLoaded);
+            Assert.AreEqual(_manifestUri, manager.ManifestUri);
+            Assert.AreEqual(0, manager.Applications.Count);
+            Assert.IsNull(manager.Username);
+            Assert.IsNull(manager.Password);
+            Assert.IsNotNull(manager.Logger);
         }
 
         [TestMethod]
@@ -82,6 +107,22 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
 
             await ValidateUpdate(_manager, Guid.Parse("61038014-97C6-418A-9262-94D78DB167E8"), new Uri(Path.Combine(_testInstallFolder, "Test App 01")));
             await ValidateUpdate(_manager, Guid.Parse("941D4BF3-4F6B-4D16-B254-0C2A6BA3808B"), new Uri(Path.Combine(_testInstallFolder, "Test App 02")));
+        }
+
+        [TestMethod]
+        public async Task LatestPackage()
+        {
+            await _manager.Load();
+
+            // IsAvailable
+            Assert.AreEqual(_manager.Applications[0].GetLatestPackage(), _manager.Applications.SelectMany(a => a.Packages).First(p => p.Id == Guid.Parse("61038014-97C6-418A-9262-94D78DB167E8")));
+            _manager.Applications[0].Packages[1].IsAvailable = false;
+            Assert.AreEqual(_manager.Applications[0].GetLatestPackage(), _manager.Applications.SelectMany(a => a.Packages).First(p => p.Id == Guid.Parse("02902554-4D3D-4159-B106-41E0AC158733")));
+
+            // ReleasedDateUtc
+            Assert.AreEqual(_manager.Applications[1].GetLatestPackage(), _manager.Applications.SelectMany(a => a.Packages).First(p => p.Id == Guid.Parse("941D4BF3-4F6B-4D16-B254-0C2A6BA3808B")));
+            _manager.Applications[1].Packages[0].ReleaseDateUtc = DateTime.UtcNow;
+            Assert.AreEqual(_manager.Applications[1].GetLatestPackage(), _manager.Applications.SelectMany(a => a.Packages).First(p => p.Id == Guid.Parse("97630359-BCDC-401F-917E-F940483B5A71")));
         }
 
         private UpdateManager CreateManager(Uri manifestUri)
@@ -108,7 +149,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
             return count;
         }
 
-        private async Task CreateTestManifest()
+        private async Task CreateUnitTestAppUpdateManifest()
         {
             _manager.Applications.Add(new Application
             {
@@ -123,7 +164,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
                     new Package
                     {
                         Id = Guid.Parse("02902554-4D3D-4159-B106-41E0AC158733"),
-                        ReleaseDateUtc = DateTime.Parse("01/01/2017"),
+                        ReleaseDateUtc = DateTime.Parse("10/01/2018"),
                         FileVersion = "1.0.0.0",
                         SourceUri = new Uri($"{Path.Combine(_testDataFolder, "testapp01_1000.zip")}"),
                         Checksum = UpdateManager.CalculateMD5Checksum(new Uri($"{Path.Combine(_testDataFolder, "testapp01_1000.zip")}"))
@@ -131,7 +172,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
                     new Package
                     {
                         Id = Guid.Parse("61038014-97C6-418A-9262-94D78DB167E8"),
-                        ReleaseDateUtc = DateTime.Parse("01/01/2018"),
+                        ReleaseDateUtc = DateTime.Parse("10/02/2018"),
                         FileVersion ="1.0.1.0",
                         SourceUri = new Uri($"{Path.Combine(_testDataFolder, "testapp01_1010.zip")}"),
                         Checksum = UpdateManager.CalculateMD5Checksum(new Uri($"{Path.Combine(_testDataFolder, "testapp01_1010.zip")}"))
@@ -151,7 +192,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
                     new Package
                     {
                         Id = Guid.Parse("97630359-BCDC-401F-917E-F940483B5A71"),
-                        ReleaseDateUtc = DateTime.Parse("01/01/2017"),
+                        ReleaseDateUtc = DateTime.Parse("10/01/2018"),
                         FileVersion = "1.0.0.0",
                         SourceUri = new Uri($"{Path.Combine(_testDataFolder, "testapp02_1000.zip")}"),
                         Checksum = UpdateManager.CalculateMD5Checksum(new Uri($"{Path.Combine(_testDataFolder, "testapp02_1000.zip")}")),
@@ -159,7 +200,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
                     new Package
                     {
                         Id = Guid.Parse("1783071C-AE5A-431C-BD84-3845D822F0BC"),
-                        ReleaseDateUtc = DateTime.Parse("01/01/2018"),
+                        ReleaseDateUtc = DateTime.Parse("10/02/2018"),
                         FileVersion = "1.0.1.0",
                         SourceUri = new Uri($"{Path.Combine(_testDataFolder, "testapp02_1010.zip")}"),
                         Checksum = UpdateManager.CalculateMD5Checksum(new Uri($"{Path.Combine(_testDataFolder, "testapp02_1010.zip")}"))
@@ -167,7 +208,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
                     new Package
                     {
                         Id = Guid.Parse("941D4BF3-4F6B-4D16-B254-0C2A6BA3808B"),
-                        ReleaseDateUtc = DateTime.Parse("09/01/2018"),
+                        ReleaseDateUtc = DateTime.Parse("10/03/2018"),
                         FileVersion = "1.0.2.0",
                         SourceUri = new Uri($"{Path.Combine(_testDataFolder, "testapp02_1020.zip")}"),
                         Checksum = UpdateManager.CalculateMD5Checksum(new Uri($"{Path.Combine(_testDataFolder, "testapp02_1020.zip")}"))

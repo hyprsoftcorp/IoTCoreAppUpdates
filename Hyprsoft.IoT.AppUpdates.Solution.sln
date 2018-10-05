@@ -40,6 +40,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Media", "Media", "{6EC7535D
 		Media\apps-add.jpg = Media\apps-add.jpg
 		Media\apps-edit.jpg = Media\apps-edit.jpg
 		Media\apps-list.jpg = Media\apps-list.jpg
+		Media\file-properties.jpg = Media\file-properties.jpg
 		Media\login.jpg = Media\login.jpg
 		Media\packages-add.jpg = Media\packages-add.jpg
 		Media\packages-edit.jpg = Media\packages-edit.jpg

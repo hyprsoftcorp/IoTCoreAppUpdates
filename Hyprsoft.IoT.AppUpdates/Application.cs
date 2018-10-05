@@ -43,10 +43,7 @@ namespace Hyprsoft.IoT.AppUpdates
             return Packages.Where(p => p.IsAvailable).OrderByDescending(p => p.ReleaseDateUtc).FirstOrDefault();
         }
 
-        public override string ToString()
-        {
-            return $"Id: {Id} Name: {Name} Exe: {ExeFilename} Packages: {Packages.Count}";
-        }
+        public override string ToString() =>$"Id: {Id} Name: {Name} Exe: {ExeFilename} Packages: {Packages.Count}";
 
         #endregion
     }

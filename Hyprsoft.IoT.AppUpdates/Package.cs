@@ -33,10 +33,7 @@ namespace Hyprsoft.IoT.AppUpdates
 
         #region Methods
 
-        public override string ToString()
-        {
-            return $"Id: {Id} Version: {FileVersion} Released: {ReleaseDateUtc}";
-        }
+        public override string ToString() => $"Id: {Id} Version: {FileVersion} Released: {ReleaseDateUtc}";
 
         #endregion
     }

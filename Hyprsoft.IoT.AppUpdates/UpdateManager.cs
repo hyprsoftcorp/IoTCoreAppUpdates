@@ -285,10 +285,7 @@ namespace Hyprsoft.IoT.AppUpdates
             }   // using MD5
         }
 
-        public override string ToString()
-        {
-            return $"Manifest: {ManifestUri.ToString().ToLower()} Applications: {Applications.Count}";
-        }
+        public override string ToString() => $"Manifest: {ManifestUri.ToString().ToLower()} Applications: {Applications.Count}";
 
         #endregion
     }

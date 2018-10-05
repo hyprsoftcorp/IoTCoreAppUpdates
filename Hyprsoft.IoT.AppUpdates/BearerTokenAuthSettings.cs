@@ -1,7 +1,7 @@
 ﻿
 namespace Hyprsoft.IoT.AppUpdates
 {
-    public static class BearerAuthenticationSettings
+    public static class BearerTokenAuthSettings
     {
         #region Properties
 

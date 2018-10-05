@@ -23,10 +23,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
             [JsonProperty]
             public Uri InstallUri { get; set; }
 
-            public override string ToString()
-            {
-                return $"{ApplicationId} {InstallUri.ToString().ToLower()}";
-            }
+            public override string ToString() => $"{ApplicationId} {InstallUri.ToString().ToLower()}";
         }
 
         #endregion
@@ -92,8 +89,8 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                 _manager = new UpdateManager(ManifestUri, _loggerFactory);
                 if (IsAuthenticationRequired)
                 {
-                    _manager.Username = BearerAuthenticationSettings.DefaultUsername;
-                    _manager.Password = BearerAuthenticationSettings.DefaultPassword;
+                    _manager.Username = BearerTokenAuthSettings.DefaultUsername;
+                    _manager.Password = BearerTokenAuthSettings.DefaultPassword;
                 }   // authentication required.
                 _updateCheckTask = Update(cancellationToken);
             }   // manifest URI valid and installed app count > 0?

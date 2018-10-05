@@ -84,7 +84,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
         [HttpPost]
         public IActionResult Token([FromBody] Login model)
         {
-            if (String.Compare(BearerAuthenticationSettings.DefaultUsername, model.Username, true) != 0 || model.Password != BearerAuthenticationSettings.DefaultPassword)
+            if (String.Compare(BearerTokenAuthSettings.DefaultUsername, model.Username, true) != 0 || model.Password != BearerTokenAuthSettings.DefaultPassword)
                 return Unauthorized();
 
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, model.Username) };
