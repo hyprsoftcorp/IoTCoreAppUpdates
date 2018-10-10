@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <None Remove="wwwroot\css\bootstrap-bundle.min.css" />
+    <None Remove="wwwroot\css\bootstrap.min.css.map" />
     <None Remove="wwwroot\css\fas.min.css" />
     <None Remove="wwwroot\css\site.css" />
     <None Remove="wwwroot\css\site.min.css" />
@@ -11,6 +12,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="wwwroot\css\bootstrap-bundle.min.css" />
+    <EmbeddedResource Include="wwwroot\css\bootstrap.min.css.map" />
     <EmbeddedResource Include="wwwroot\css\fas.min.css" />
     <EmbeddedResource Include="wwwroot\css\site.css" />
     <EmbeddedResource Include="wwwroot\css\site.min.css" />
@@ -45,7 +47,7 @@
     <Product>Hyprsoft IoT App Updates Web</Product>
     <Copyright>Copyright © 2018 by Hyprsoft Corporation</Copyright>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <UseRazorBuildServer>false</UseRazorBuildServer>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Hyprsoft IoT App Updates Web</Description>
