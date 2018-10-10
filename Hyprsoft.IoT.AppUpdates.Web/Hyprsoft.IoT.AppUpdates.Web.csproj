@@ -47,7 +47,7 @@
     <Product>Hyprsoft IoT App Updates Web</Product>
     <Copyright>Copyright © 2018 by Hyprsoft Corporation</Copyright>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
-    <Version>1.0.3</Version>
+    <Version>1.0.5</Version>
     <UseRazorBuildServer>false</UseRazorBuildServer>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Hyprsoft IoT App Updates Web</Description>
@@ -66,17 +66,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.4" />
   </ItemGroup> 
-
-  <ItemGroup>
-    <Content Update="Areas\AppUpdates\Views\Apps\List.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-  </ItemGroup> 
-
-  <ItemGroup>
-    <Folder Include="Areas\AppUpdates\Views\Account\" />
-  </ItemGroup> 
-
+  
   <ItemGroup>
     <ProjectReference Include="..\Hyprsoft.IoT.AppUpdates\Hyprsoft.IoT.AppUpdates.csproj" />
   </ItemGroup>
