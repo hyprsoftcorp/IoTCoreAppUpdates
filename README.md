@@ -7,7 +7,7 @@ We needed a way to remotely update .NET Core 2.1 apps (not UWP apps) installed o
 3. The service can update multiple apps.
 4. Package integrity is validated using a MD5 hash.
 5. The update manager will automatically "kill" processes being updated and restart them after they've been updated.
-6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.1 project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the startup class configuration changes noted below.
+6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.1 project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the code and configuration changes noted below.
 7. If the Hyprsoft.IoT.AppUpdates.Web NuGet package is utilized, update package endpoints are automatically protected using simple bearer token authentication.  This prevents unauthorized downloads of your app packages.
 8. Credentials for accessing the administrative website can be supplied using Azure App Service settings or Azure Key Vault.
 
@@ -141,7 +141,7 @@ If you have incorporated the app updates administrative website functionality in
 ![File Properties](https://github.com/hyprsoftcorp/IoTCoreAppUpdates/blob/master/Media/file-properties.jpg)
 
 2. When the update manager searches for the latest package to install, the package's ReleasedDateUtc is used instead of the assembly file version.  So the package with the most recent ReleasedDateUtc will be chosen regardless of the assembly file version.
-3. File checksums can be manually calculated using the [Microsoft File Checksum Integrity Verifier](https://www.microsoft.com/en-us/download/details.aspx?id=11533) utility.  Ex: fciv.exe -MD5 hyprsoft.my.awesome.app-1010.zip
+3. File checksums can be manually calculated using the built in Windows 10 certutil.exe utility.  Ex: certutil.exe -hashfile hyprsoft.my.awesome.app-1010.zip MD5.
 
 ### Security Concerns
 By default the app update service runs on the IoT device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file systems.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!  Use at your own risk!**
