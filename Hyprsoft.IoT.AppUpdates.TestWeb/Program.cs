@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Hyprsoft.IoT.AppUpdates.Web;
 
 namespace Hyprsoft.IoT.AppUpdates.TestWeb
 {
@@ -12,6 +13,7 @@ namespace Hyprsoft.IoT.AppUpdates.TestWeb
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .UseAppUpdates();
     }
 }

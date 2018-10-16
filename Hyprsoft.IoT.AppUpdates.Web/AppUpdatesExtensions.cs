@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
@@ -15,10 +17,23 @@ namespace Hyprsoft.IoT.AppUpdates.Web
     {
         #region Methods
 
-        public static IServiceCollection AddAppUpdates(this IServiceCollection services, Action<AppUpdatesOptions> appUpdateOptions)
+        public static IWebHostBuilder UseAppUpdates(this IWebHostBuilder hostBuilder)
+        {
+            return UseAppUpdates(hostBuilder, options => new AppUpdatesOptions());
+        }
+
+        public static IWebHostBuilder UseAppUpdates(this IWebHostBuilder hostBuilder, Action<AppUpdatesOptions> appUpdatesOptions)
         {
             var o = new AppUpdatesOptions();
-            appUpdateOptions.Invoke(o);
+            appUpdatesOptions.Invoke(o);
+            hostBuilder.UseKestrel(options => options.Limits.MaxRequestBodySize = o.MaxFileUploadSizeBytes);
+            return hostBuilder;
+        }
+
+        public static IServiceCollection AddAppUpdates(this IServiceCollection services, Action<AppUpdatesOptions> appUpdatesOptions)
+        {
+            var o = new AppUpdatesOptions();
+            appUpdatesOptions.Invoke(o);
 
             services.AddLogging(options => options.AddDebug());
             services.AddAuthentication(AuthenticationSettings.CookieAuthenticationScheme).AddCookie(AuthenticationSettings.CookieAuthenticationScheme, options =>
@@ -40,6 +55,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthenticationSettings.DefaultBearerSecurityKey))
                 };
             });
+            services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = o.MaxFileUploadSizeBytes);
             services.AddSingleton<UpdateManager>(s => new UpdateManager(o.ManifestUri, new LoggerFactory()));
             return services;
         }

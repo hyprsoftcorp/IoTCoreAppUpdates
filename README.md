@@ -1,5 +1,5 @@
 # Windows 10 IoT Core App Updates Service
-We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed on IoT devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a remote host and updates locally installed apps on the device as needed.  Please note that this service was designed for and has only been tested with .NET Core 2.x binaries.
+We needed a way to remotely update .NET Core 2.1 apps (not UWP apps) installed on IoT devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a remote host and updates locally installed apps on the device as needed.  Please note that this service was designed for and has only been tested with .NET Core 2.1 binaries.
 
 ### Current Features
 1. The app update manifest and associated app update packages can be hosted on any website, Azure storage, Dropbox, One Drive, Google Drive, etc.
@@ -7,13 +7,13 @@ We needed a way to remotely update .NET Core 2.x apps (not UWP apps) installed o
 3. The service can update multiple apps.
 4. Package integrity is validated using a MD5 hash.
 5. The update manager will automatically "kill" processes being updated and restart them after they've been updated.
-6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.x project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the startup class configuration changes noted below.
+6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.1 project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the startup class configuration changes noted below.
 7. If the Hyprsoft.IoT.AppUpdates.Web NuGet package is utilized, update package endpoints are automatically protected using simple bearer token authentication.  This prevents unauthorized downloads of your app packages.
 8. Credentials for accessing the administrative website can be supplied using Azure App Service settings or Azure Key Vault.
 
 ### Process to Update an App
 #### Automatically
-1. Integrate the administrative website NuGet package into your existing ASP.NET Core 2.x website and manage updates and packages via your browser.  See the sample startup.cs code and administrative website screenshots below.
+1. Integrate the administrative website NuGet package into your existing ASP.NET Core 2.1 website and manage updates and packages via your browser.  See the sample startup.cs code and administrative website screenshots below.
 
 #### Manually
 1. Add a new package definition to the app update manifest with an incremented file version, new release date, new source URI, and new checksum.
@@ -67,8 +67,24 @@ The app update manifest Json file and app packages can reside on a website or an
   }
 ]
 ```
-### Sample Startup.cs (optional)
-If you would like to incorporate the app updates administrative website functionality into your own website, you just need to install the Hyprsoft.Iot.AppUpdates.Web NuGet package and configure your startup.cs like below.  Once integrated and deployed, the administrative website can be accessed using http[s]://[www.your-domain.com]/appupdates.
+### Sample Program.cs
+If you would like to incorporate the app updates administrative website functionality into your own website, you need to install the Hyprsoft.Iot.AppUpdates.Web NuGet package and configure your program.cs like below.  Once integrated and deployed, the administrative website can be accessed using http[s]://[www.your-domain.com]/appupdates.
+```csharp
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        CreateWebHostBuilder(args).Build().Run();
+    }
+
+    public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+        WebHost.CreateDefaultBuilder(args)
+            .UseStartup<Startup>()
+            .UseAppUpdates();
+}
+```
+### Sample Startup.cs
+If you have incorporated the app updates administrative website functionality into your own website, you need to make the following code changes.
 ```csharp
 public class Startup
 {
@@ -99,6 +115,25 @@ public class Startup
         app.UseMvc(routes => routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}"));
     }
 }
+```
+### Sample Web.config for Hosting in IIS/Azure App Service
+If you have incorporated the app updates administrative website functionality into your own website, you need to make the following code changes.
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <system.web>
+    <!-- in kilobytes-->
+    <httpRuntime maxRequestLength="51200" />
+  </system.web>
+  <system.webServer>
+    <security>
+      <requestFiltering>
+        <!--in bytes-->
+        <requestLimits maxAllowedContentLength="52428800" />
+      </requestFiltering>
+    </security>
+  </system.webServer>
+</configuration>
 ```
 ### General Usage Notes
 1. When dealing with versions of EXE and DLL files it is important to note that the "File Version" is used as opposed to the "Product Version". 

@@ -2,9 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <RuntimeFrameworkVersion>2.1.4</RuntimeFrameworkVersion>
     <UseRazorBuildServer>false</UseRazorBuildServer>
-    <UserSecretsId>be0ce751-cd6a-4fa7-bfb3-7a8a0fa61b24</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
