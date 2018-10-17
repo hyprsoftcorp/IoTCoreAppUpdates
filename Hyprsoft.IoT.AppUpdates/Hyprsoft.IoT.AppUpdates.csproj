@@ -7,9 +7,9 @@
     <Product>Hyprsoft IoT App Updates</Product>
     <Description>Hyprsoft IoT App Updates</Description>
     <Copyright>Copyright © 2018 by Hyprsoft Corporation</Copyright>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
