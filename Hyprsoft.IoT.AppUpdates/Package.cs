@@ -20,7 +20,7 @@ namespace Hyprsoft.IoT.AppUpdates
         [Required, JsonProperty, Display(Name = "Version")]
         public string FileVersion { get; set; }
 
-        [Required, JsonProperty, Display(Name = "Released"), DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:g}")]
+        [Required, JsonProperty, Display(Name = "Released"), DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:d}")]
         public DateTime ReleaseDateUtc { get; set; }
 
         [Required, JsonProperty, Display(Name = "Source")]

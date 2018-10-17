@@ -4,16 +4,16 @@ We needed a way to remotely update .NET Core 2.1 apps (not UWP apps) installed o
 ### Current Features
 1. The app update manifest and associated app update packages can be hosted on any website, Azure storage, Dropbox, One Drive, Google Drive, etc.
 2. Configurable daily check time (defaults to 3am). 
-3. The service can update multiple apps.
+3. The service can update multiple apps and has "rollback" or "downgrade" capabilities.
 4. Package integrity is validated using a MD5 hash.
-5. The update manager will automatically "kill" processes being updated and restart them after they've been updated.
+5. The update manager will automatically "kill" processes being updated and restart them after they've been updated.  Please see the section below regarding security.
 6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.1 project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the code and configuration changes noted below.
-7. If the Hyprsoft.IoT.AppUpdates.Web NuGet package is utilized, update package endpoints are automatically protected using simple bearer token authentication.  This prevents unauthorized downloads of your app packages.
+7. If the Hyprsoft.IoT.AppUpdates.Web NuGet package is utilized, update package endpoints are automatically protected using built-in bearer token authentication.  This prevents unauthorized downloads of your app packages.
 8. Credentials for accessing the administrative website can be supplied using Azure App Service settings or Azure Key Vault.
 
 ### Process to Update an App
 #### Automatically
-1. Integrate the administrative website NuGet package into your existing ASP.NET Core 2.1 website and manage updates and packages via your browser.  See the sample startup.cs code and administrative website screenshots below.
+1. Integrate the administrative website NuGet package into your existing ASP.NET Core 2.1 website and manage updates and packages via your browser.  See the sample configuration, code, and administrative website screenshots below.
 
 #### Manually
 1. Add a new package definition to the app update manifest with an incremented file version, new release date, new source URI, and new checksum.
@@ -25,7 +25,7 @@ The service configuration Json file resides on each device.
 {
   "IsAuthenticationRequired": true,
   "CheckTime": "03:00:00",
-  "NextCheckDate": "2018-09-18T03:00:00",
+  "NextCheckDate": "2018-10-17T03:00:00",
   "ManifestUri": "http://www.yourdomain.com/app-update-manifest.json",
   "InstalledApps": [
     {
@@ -147,7 +147,7 @@ If you have incorporated the app updates administrative website functionality in
 By default the app update service runs on the IoT device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file systems.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!  Use at your own risk!**
 
 ### Administrative Website Credentials
-Credentials can be provided in two ways.  Both require adding Azure App Service settings.
+Credentials to log into the administrative website can be provided in two ways.  Both require adding Azure App Service settings.
 #### Azure App Service
 Setting Name | Example Value
 --- | ---
