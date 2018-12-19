@@ -1,5 +1,5 @@
 # Windows 10 IoT Core App Updates Service
-We needed a way to remotely update .NET Core 2.1 apps (not UWP apps) installed on IoT devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a remote host and updates locally installed apps on the device as needed.  Please note that this service was designed for and has only been tested with .NET Core 2.1 binaries.
+We needed a way to remotely update .NET Core 2.2 apps (not UWP apps) installed on IoT devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a remote host and updates locally installed apps on the device as needed.  Please note that this service was designed for and has only been tested with .NET Core 2.2 binaries.
 
 ### Current Features
 1. The app update manifest and associated app update packages can be hosted on any website, Azure storage, Dropbox, One Drive, Google Drive, etc.
@@ -7,13 +7,13 @@ We needed a way to remotely update .NET Core 2.1 apps (not UWP apps) installed o
 3. The service can update multiple apps and has "rollback" or "downgrade" capabilities.
 4. Package integrity is validated using a MD5 hash.
 5. The update manager will automatically "kill" processes being updated and restart them after they've been updated.  Please see the section below regarding security.
-6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.1 project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the code and configuration changes noted below.
+6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.2 project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the code and configuration changes noted below.
 7. If the Hyprsoft.IoT.AppUpdates.Web NuGet package is utilized, update package endpoints are automatically protected using built-in bearer token authentication.  This prevents unauthorized downloads of your app packages.
 8. Credentials for accessing the administrative website can be supplied using Azure App Service settings or Azure Key Vault.
 
 ### Process to Update an App
 #### Automatically
-1. Integrate the administrative website NuGet package into your existing ASP.NET Core 2.1 website and manage updates and packages via your browser.  See the sample configuration, code, and administrative website screenshots below.
+1. Integrate the administrative website NuGet package into your existing ASP.NET Core 2.2 website and manage updates and packages via your browser.  See the sample configuration, code, and administrative website screenshots below.
 
 #### Manually
 1. Add a new package definition to the app update manifest with an incremented file version, new release date, new source URI, and new checksum.
