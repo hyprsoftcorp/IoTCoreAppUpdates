@@ -40,6 +40,8 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                 await builder.RunAsServiceAsync();
             else
                 await builder.RunConsoleAsync();
+
+            NLog.LogManager.Shutdown();
         }
     }
 }
