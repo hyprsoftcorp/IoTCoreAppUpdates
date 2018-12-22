@@ -26,14 +26,5 @@
     },
     "sourceMap": false,
     "includeInProject": true
-  },
-  {
-    "outputFileName": "wwwroot/js/validation-bundle.min.js",
-    "inputFiles": [
-      "node_modules/jquery-validation/dist/jquery.validate.min.js",
-      "node_modules/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"
-    ],
-    "minify": { "enabled": false },
-    "includeInProject": true
   }
 ]
