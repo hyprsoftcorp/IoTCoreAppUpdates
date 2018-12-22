@@ -3,6 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <UseRazorBuildServer>false</UseRazorBuildServer>
+    <Authors>Hyprsoft Corporation</Authors>
+    <Product>Hyprsoft IoT App Updates Test Web</Product>
+    <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
+    <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

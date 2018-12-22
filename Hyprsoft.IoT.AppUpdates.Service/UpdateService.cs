@@ -51,8 +51,10 @@ namespace Hyprsoft.IoT.AppUpdates.Service
 
         #region Properties
 
+        public const string DefaultAppUpdatesConfigFilename = "app-updates-config.json";
+
         [JsonIgnore]
-        public string ConfigurationFilename => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "app-update-config.json").ToLower();
+        public string ConfigurationFilename => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), DefaultAppUpdatesConfigFilename).ToLower();
 
         [JsonProperty]
         public bool IsAuthenticationRequired { get; set; } = false;
@@ -64,7 +66,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         public DateTime NextCheckDate { get; set; }
 
         [JsonProperty]
-        public Uri ManifestUri { get; set; } = new Uri("http://www.hyprsoft.com/app-update-manifest.json");
+        public Uri ManifestUri { get; set; } = new Uri($"http://www.hyprsoft.com/{DefaultAppUpdatesConfigFilename}");
 
         [JsonProperty]
         public List<InstalledApp> InstalledApps { get; set; } = new List<InstalledApp>();

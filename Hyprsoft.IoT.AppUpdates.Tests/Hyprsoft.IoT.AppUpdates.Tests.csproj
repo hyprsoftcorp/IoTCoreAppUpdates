@@ -5,8 +5,9 @@
     <IsPackable>false</IsPackable>
     <Authors>Hyprsoft Corporation</Authors>
     <Product>Hyprsoft IoT App Updates Unit Tests</Product>
-    <Description>Hyprsoft IoT App Updates Unit Tests</Description>
-    <Copyright>Copyright © 2018 by Hyprsoft Corporation</Copyright>
+    <Description></Description>
+    <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
+    <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

@@ -23,7 +23,7 @@ namespace Hyprsoft.IoT.AppUpdates.TestWeb
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAppUpdates(options => options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultAppUpdateManifestFilename)));
+            services.AddAppUpdates(options => options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultAppUpdatesManifestFilename)));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

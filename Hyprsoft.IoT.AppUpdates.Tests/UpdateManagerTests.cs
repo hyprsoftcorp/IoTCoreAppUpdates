@@ -31,7 +31,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
         {
             _testDataFolder = Path.Combine(Path.GetDirectoryName(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName), "..\\Testing\\Data");
             _testInstallFolder = Path.Combine(Path.GetDirectoryName(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName), "..\\Testing\\Install");
-            _manifestUri = new Uri(Path.Combine(_testDataFolder, UpdateManager.DefaultAppUpdateManifestFilename));
+            _manifestUri = new Uri(Path.Combine(_testDataFolder, UpdateManager.DefaultAppUpdatesManifestFilename));
             _manager = CreateManager(_manifestUri);
             await CreateUnitTestAppUpdateManifest();
         }
@@ -51,7 +51,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
         [TestMethod]
         public async Task BadManifest()
         {
-            var manager = CreateManager(new Uri("https://www.google.com/" + UpdateManager.DefaultAppUpdateManifestFilename));
+            var manager = CreateManager(new Uri("https://www.google.com/" + UpdateManager.DefaultAppUpdatesManifestFilename));
             await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manager.Load());
         }
 

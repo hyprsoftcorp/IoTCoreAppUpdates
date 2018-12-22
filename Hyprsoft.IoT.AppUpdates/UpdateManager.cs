@@ -39,7 +39,7 @@ namespace Hyprsoft.IoT.AppUpdates
 
         #region Properties
 
-        public const string DefaultAppUpdateManifestFilename = "app-update-manifest.json";
+        public const string DefaultAppUpdatesManifestFilename = "app-updates-manifest.json";
 
         /// <summary>
         /// Returns true if the app update manifest has been loaded; otherwise false.

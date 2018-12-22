@@ -4,12 +4,12 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.1</LangVersion>
     <Authors>Hyprsoft Corporation</Authors>
-    <Product>Hyprsoft IoT App Updates</Product>
-    <Description>Hyprsoft IoT App Updates</Description>
-    <Copyright>Copyright © 2018 by Hyprsoft Corporation</Copyright>
+    <Product>Hyprsoft IoT App Updates Shared</Product>
+    <Description></Description>
+    <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>

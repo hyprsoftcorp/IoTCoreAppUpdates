@@ -26,7 +26,7 @@ The service configuration Json file resides on each device.
   "IsAuthenticationRequired": true,
   "CheckTime": "03:00:00",
   "NextCheckDate": "2018-10-17T03:00:00",
-  "ManifestUri": "http://www.yourdomain.com/app-update-manifest.json",
+  "ManifestUri": "http://www.yourdomain.com/app-updates-manifest.json",
   "InstalledApps": [
     {
       "ApplicationId": "04fc007e-db18-430f-b4fa-f5b54de1e142",

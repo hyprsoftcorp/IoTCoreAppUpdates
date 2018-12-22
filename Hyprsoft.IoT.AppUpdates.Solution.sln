@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{8E81
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{2CE88A93-6A54-45FF-8911-5FE508C8C96F}"
 	ProjectSection(SolutionItems) = preProject
-		Testing\Data\app-update-manifest.json = Testing\Data\app-update-manifest.json
+		Testing\Data\app-updates-manifest.json = Testing\Data\app-updates-manifest.json
 		Testing\Data\testapp01_1000.zip = Testing\Data\testapp01_1000.zip
 		Testing\Data\testapp01_1010.zip = Testing\Data\testapp01_1010.zip
 		Testing\Data\testapp02_1000.zip = Testing\Data\testapp02_1000.zip

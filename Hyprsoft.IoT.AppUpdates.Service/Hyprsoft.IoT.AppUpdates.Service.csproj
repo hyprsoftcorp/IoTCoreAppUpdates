@@ -6,16 +6,18 @@
     <LangVersion>7.1</LangVersion>
     <Authors>Hyprsoft Corporation</Authors>
     <Product>Hyprsoft IoT App Updates Service</Product>
-    <Description>Hyprsoft IoT App Updates Service</Description>
-    <Copyright>Copyright © 2018 by Hyprsoft Corporation</Copyright>
+    <Description></Description>
+    <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
+    <Version>1.0.1</Version>
+    <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Karambolo.Extensions.Logging.File" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="2.2.0" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.3.0" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.5.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.2.0" />
   </ItemGroup>

@@ -44,12 +44,12 @@
     <UseRazorBuildServer>false</UseRazorBuildServer>
     <Authors>Hyprsoft Corporation</Authors>
     <Product>Hyprsoft IoT App Updates Web</Product>
-    <Copyright>Copyright © 2018 by Hyprsoft Corporation</Copyright>
+    <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
-    <Version>1.0.10</Version>
+    <Version>1.0.11</Version>
     <UseRazorBuildServer>false</UseRazorBuildServer>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>Hyprsoft IoT App Updates Web</Description>
+    <Description></Description>
   </PropertyGroup>
   
   <ItemGroup>
