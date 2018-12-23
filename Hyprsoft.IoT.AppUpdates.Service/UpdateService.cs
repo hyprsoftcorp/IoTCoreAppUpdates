@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+﻿using Hyprsoft.Logging.Core;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -34,17 +34,15 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         private Task _updateCheckTask;
         private readonly object _lockObject = new object();
         private UpdateManager _manager;
-        private readonly ILoggerFactory _loggerFactory;
-        private readonly ILogger _logger;
+        private readonly SimpleLogManager _logger;
 
         #endregion
 
         #region Constructors
 
-        public UpdateService(ILoggerFactory loggerFactory)
+        public UpdateService(SimpleLogManager logger)
         {
-            _loggerFactory = loggerFactory;
-            _logger = _loggerFactory?.CreateLogger<UpdateService>();
+            _logger = logger;
         }
 
         #endregion
@@ -75,20 +73,20 @@ namespace Hyprsoft.IoT.AppUpdates.Service
 
         #region Methods
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Starting service.");
-            LoadConfiguration();
+            await _logger.LogAsync<UpdateService>(LogLevel.Info, "Starting service.");
+            await LoadConfiguration();
 
             if (ManifestUri == null)
-                _logger.LogWarning($"The configuration is missing the required manifest URI.  Please update the '{ConfigurationFilename}' configuration file and restart the service.");
+                await _logger.LogAsync<UpdateService>(LogLevel.Warn, $"The configuration is missing the required manifest URI.  Please update the '{ConfigurationFilename}' configuration file and restart the service.");
             if (InstalledApps.Count <= 0)
-                _logger.LogWarning($"The configuration does not have any apps listed to update.  Please update the '{ConfigurationFilename}' configuration file and restart the service.");
+                await _logger.LogAsync<UpdateService>(LogLevel.Warn, $"The configuration does not have any apps listed to update.  Please update the '{ConfigurationFilename}' configuration file and restart the service.");
 
             if (ManifestUri != null && InstalledApps.Count > 0)
             {
-                _logger.LogInformation($"Using manifest '{ManifestUri.ToString().ToLower()}' to check '{InstalledApps.Count}' app(s) for updates.");
-                _manager = new UpdateManager(ManifestUri, _loggerFactory);
+                await _logger.LogAsync<UpdateService>(LogLevel.Info, $"Using manifest '{ManifestUri.ToString().ToLower()}' to check '{InstalledApps.Count}' app(s) for updates.");
+                _manager = new UpdateManager(ManifestUri, _logger);
                 if (IsAuthenticationRequired)
                 {
                     _manager.Username = BearerTokenAuthSettings.DefaultUsername;
@@ -96,13 +94,11 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                 }   // authentication required.
                 _updateCheckTask = Update(cancellationToken);
             }   // manifest URI valid and installed app count > 0?
-
-            return Task.CompletedTask;
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Stopping service.");
+            await _logger.LogAsync<UpdateService>(LogLevel.Info, "Stopping service.");
             if (_updateCheckTask != null)
                 await _updateCheckTask;
         }
@@ -116,7 +112,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                     try
                     {
                         _isFirstCheck = false;
-                        _logger.LogInformation("Checking for updates.");
+                        await _logger.LogAsync<UpdateService>(LogLevel.Info, "Checking for updates.");
                         // Always re-load our manifest in case it has been altered since our last check.
                         await _manager.Load();
                         foreach (var install in InstalledApps)
@@ -132,19 +128,19 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                                     }
                                     catch (Exception ex)
                                     {
-                                        _logger.LogCritical(ex, $"Unable to update application '{package.Application.Name}'.");
+                                        await _logger.LogAsync<UpdateService>(ex, $"Unable to update application '{package.Application.Name}'.");
                                     }
                                 else
-                                    _logger.LogWarning($"Unable to get the latest package for app '{app.Name}'.  No update will be applied.");
+                                    await _logger.LogAsync<UpdateService>(LogLevel.Warn, $"Unable to get the latest package for app '{app.Name}'.  No update will be applied.");
                             }
                             else
-                                _logger.LogWarning($"The app with id '{install.ApplicationId}' doesn't exist in the manifest.  No update will be applied.");
+                                await _logger.LogAsync<UpdateService>(LogLevel.Warn, $"The app with id '{install.ApplicationId}' doesn't exist in the manifest.  No update will be applied.");
                         }
-                        UpdateNextCheckDate();
+                        await UpdateNextCheckDate();
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogCritical(ex, "Update check failed.");
+                        await _logger.LogAsync<UpdateService>(ex, "Update check failed.");
                     }
                 }   // time to run check?
 
@@ -152,20 +148,20 @@ namespace Hyprsoft.IoT.AppUpdates.Service
             }   // cancellation requested?
         }
 
-        private void UpdateNextCheckDate()
+        private async Task UpdateNextCheckDate()
         {
             var now = DateTime.Now;
             NextCheckDate = new DateTime(now.Year, now.Month, now.Day, CheckTime.Hours, CheckTime.Minutes, CheckTime.Seconds).Add(TimeSpan.FromDays(1));
-            SaveConfiguration();
+            await SaveConfiguration();
         }
 
-        private void LoadConfiguration()
+        private async Task LoadConfiguration()
         {
             if (File.Exists(ConfigurationFilename))
             {
                 try
                 {
-                    _logger.LogInformation($"Loading service configuration from '{ConfigurationFilename}'.");
+                    await _logger.LogAsync<UpdateService>(LogLevel.Info, $"Loading service configuration from '{ConfigurationFilename}'.");
                     var instance = JsonConvert.DeserializeObject<UpdateService>(File.ReadAllText(ConfigurationFilename));
                     var bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic;
                     foreach (var prop in instance.GetType().GetProperties(bindingFlags))
@@ -182,17 +178,17 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                 catch (Exception ex)
                 {
                     // Ignore any errors reading our configuration file.  Just use the defaults.
-                    _logger.LogCritical(ex, "Unable to load the configuration file.");
+                    await _logger.LogAsync<UpdateService>(ex, "Unable to load the configuration file.");
                 }
             }   // file exists?
 
-            _logger.LogInformation("Using default service configuration.");
-            UpdateNextCheckDate();
+            await _logger.LogAsync<UpdateService>(LogLevel.Info, "Using default service configuration.");
+            await UpdateNextCheckDate();
         }
 
-        private void SaveConfiguration()
+        private async Task SaveConfiguration()
         {
-            _logger.LogInformation($"Saving service configuration to '{ConfigurationFilename}'.");
+            await _logger.LogAsync<UpdateService>(LogLevel.Info, $"Saving service configuration to '{ConfigurationFilename}'.");
             lock (_lockObject)
                 File.WriteAllText(ConfigurationFilename, JsonConvert.SerializeObject(this, Formatting.Indented));
         }

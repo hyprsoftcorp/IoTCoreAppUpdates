@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+using Hyprsoft.Logging.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -45,7 +45,6 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
             Assert.AreEqual(0, manager.Applications.Count);
             Assert.IsNull(manager.Username);
             Assert.IsNull(manager.Password);
-            Assert.IsNotNull(manager.Logger);
         }
 
         [TestMethod]
@@ -83,7 +82,6 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
             Assert.AreEqual(0, manager.Applications.Count);
             Assert.IsNull(manager.Username);
             Assert.IsNull(manager.Password);
-            Assert.IsNotNull(manager.Logger);
         }
 
         [TestMethod]
@@ -127,9 +125,8 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
 
         private UpdateManager CreateManager(Uri manifestUri)
         {
-            return new UpdateManager(manifestUri, new LoggerFactory()
-                .AddConsole()
-                .AddDebug());
+            var logger = new SimpleLogManager();
+            return new UpdateManager(manifestUri, logger);
         }
 
         private async Task ValidateUpdate(UpdateManager manager, Guid packageId, Uri installUri)

@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Hyprsoft.Logging.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
-using NLog.Targets;
 
 namespace Hyprsoft.IoT.AppUpdates.Service
 {
@@ -15,15 +16,14 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         {
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
 
-            var target = new FileTarget("FileLoggingTarget")
+            var logger = new SimpleLogManager();
+#if DEBUG
+            logger.AddLogger(new SimpleConsoleLogger());
+#endif
+            logger.AddLogger(new SimpleFileLogger(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), SimpleFileLogger.DefaultLogFilename))
             {
-                FileName = $"app-updates-log.log",
-                Layout = "${level:uppercase=true}\t${logger} @ ${longdate}\n\t${message}",
-                ArchiveAboveSize = 1048576, // 1MB
-                MaxArchiveFiles = 5
-            };
-            NLog.Config.SimpleConfigurator.ConfigureForTargetLogging(target, NLog.LogLevel.Trace);
-
+                MaxFileSizeBytes = 524288
+            });
             var builder = new HostBuilder()
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -31,8 +31,8 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                     {
                         options.AddConsole();
                         options.AddDebug();
-                        options.AddNLog();
                     });
+                    services.AddSingleton(logger);
                     services.AddHostedService<UpdateService>();
                 });
 
@@ -40,8 +40,6 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                 await builder.RunAsServiceAsync();
             else
                 await builder.RunConsoleAsync();
-
-            NLog.LogManager.Shutdown();
         }
     }
 }
