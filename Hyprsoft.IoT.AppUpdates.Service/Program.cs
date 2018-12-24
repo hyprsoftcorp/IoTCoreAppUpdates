@@ -20,7 +20,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
 #if DEBUG
             logger.AddLogger(new SimpleConsoleLogger());
 #endif
-            logger.AddLogger(new SimpleFileLogger(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), SimpleFileLogger.DefaultLogFilename))
+            logger.AddLogger(new SimpleFileLogger(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "app-updates-log.log"))
             {
                 MaxFileSizeBytes = 524288
             });
