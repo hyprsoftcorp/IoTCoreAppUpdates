@@ -122,8 +122,8 @@ else
                                             </td>
                                             <td scope="row" nowrap>
                                                 <div class="custom-control custom-switch">
-                                                    <input id="@package.Id.ToString("N")" type="checkbox" class="custom-control-input" @(package.IsAvailable ? "checked=checked" : String.Empty) disabled>
-                                                    <label class="custom-control-label" for="@package.Id.ToString("N")"></label>
+                                                    <input id="available-@package.Id" type="checkbox" class="custom-control-input" @(package.IsAvailable ? "checked=checked" : String.Empty) disabled>
+                                                    <label class="custom-control-label" for="available-@package.Id"></label>
                                                 </div>
                                             </td>
                                             <td scope="row" nowrap>
