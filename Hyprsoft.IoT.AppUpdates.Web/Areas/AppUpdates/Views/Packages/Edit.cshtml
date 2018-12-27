@@ -40,9 +40,9 @@
                 <input asp-for="SourceUri" class="form-control" readonly />
                 <span asp-validation-for="SourceUri" class="text-danger"></span>
             </div>
-            <div class="form-check">
-                <input asp-for="IsAvailable" class="form-check-input">
-                <label asp-for="IsAvailable" class="form-check-label"></label>
+            <div class="custom-control custom-switch">
+                <input asp-for="IsAvailable" type="checkbox" class="custom-control-input">
+                <label asp-for="IsAvailable" class="custom-control-label"></label>
             </div>
             <br />
             <button type="submit" class="btn btn-primary">Save</button>

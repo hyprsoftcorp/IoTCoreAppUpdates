@@ -121,7 +121,10 @@ else
                                                 </div>
                                             </td>
                                             <td scope="row" nowrap>
-                                                <i class="fas @(package.IsAvailable ? "fa-check-square text-success" : "fa-square text-muted")"></i>
+                                                <div class="custom-control custom-switch">
+                                                    <input id="@package.Id.ToString("N")" type="checkbox" class="custom-control-input" @(package.IsAvailable ? "checked=checked" : String.Empty) disabled>
+                                                    <label class="custom-control-label" for="@package.Id.ToString("N")"></label>
+                                                </div>
                                             </td>
                                             <td scope="row" nowrap>
                                                 <a href="@Url.Action("Edit", "Packages", new { applicationId = item.Id, id = package.Id })" title="Edit Package">@Html.DisplayFor(modelItem => package.Id)</a>

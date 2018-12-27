@@ -48,9 +48,9 @@
                     <span class="text-danger field-validation-valid" data-valmsg-for="zipfile" data-valmsg-replace="true"></span>
                 </div>
             </div>
-            <div class="form-check">
-                <input asp-for="IsAvailable" class="form-check-input">
-                <label asp-for="IsAvailable" class="form-check-label"></label>
+            <div class="custom-control custom-switch">
+                <input asp-for="IsAvailable" type="checkbox" class="custom-control-input">
+                <label asp-for="IsAvailable" class="custom-control-label"></label>
             </div>
             <br />
             <button type="submit" class="btn btn-primary">Add</button>
