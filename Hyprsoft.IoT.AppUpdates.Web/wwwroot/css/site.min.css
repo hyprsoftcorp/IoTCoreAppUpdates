@@ -1,1 +1,1 @@
-body{padding-top:4.5rem}#snackbar{visibility:hidden}#snackbar.show{visibility:visible;-webkit-animation:fadein .5s,fadeout .5s 5s;animation:fadein .5s,fadeout .5s 5s}@-webkit-keyframes fadein{from{opacity:0}to{opacity:1}}@keyframes fadein{from{opacity:0}to{opacity:1}}@-webkit-keyframes fadeout{from{opacity:1}to{opacity:0}}@keyframes fadeout{from{opacity:1}to{opacity:0}}
+body{padding-top:4.5rem}
