@@ -68,32 +68,41 @@
         </div>
     </div>
 
-    <div id="feedback" aria-live="polite" aria-atomic="true" style="position: absolute; bottom: 1em; right: 1em;">
+    <div id="feedback" aria-live="polite" aria-atomic="true" style="position: fixed; bottom: 0; right: 0;">
         <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
+            <div class="toast-header text-white">
                 <i class="fas fa-comment"></i>&nbsp;
                 <strong class="mr-auto"></strong>
-                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="toast-body"></div>
+            <div class="toast-body text-white"></div>
         </div>
     </div>
 
     <script src="~/appupdates/js/bootstrap-bundle.min.js"></script>
     <script src="~/appupdates/js/validation-bundle.min.js"></script>
     <script>
-    var page = {
-        deleteConfirmationDialog: document.getElementById('deleteConfirmationDialog'),
-        deleteConfirmationDialogAction: () => { },
-        getToken: () => {
-            var token = '@Html.AntiForgeryToken()';
-            token = $(token).val();
-            return token;
-        },
-        showFeedback: (message, isError) => {
+        var page = {
+            deleteConfirmationDialog: document.getElementById('deleteConfirmationDialog'),
+            deleteConfirmationDialogAction: () => { },
+            getToken: () => {
+                var token = '@Html.AntiForgeryToken()';
+                token = $(token).val();
+                return token;
+            },
+            showFeedback: (message, isError) => {
                 let feedback = document.getElementById("feedback");
+
+                let header = feedback.querySelector('.toast-header');
+                header.classList.remove('bg-danger', 'bg-success');
+                header.classList.add(isError ? 'bg-danger' : 'bg-success');
+
+                let toast = feedback.querySelector('.toast');
+                toast.classList.remove('bg-danger', 'bg-success');
+                toast.classList.add(isError ? 'bg-danger' : 'bg-success');
+
                 feedback.querySelector('.toast-header strong').innerText = isError ? "Well that didn't go so well..." : 'Fantastic work!';
                 feedback.querySelector('.toast-body').innerText = message;
                 $('.toast').toast('show');
