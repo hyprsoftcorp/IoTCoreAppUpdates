@@ -54,16 +54,10 @@ namespace Hyprsoft.IoT.AppUpdates
         public Uri ManifestUri { get; private set; }
 
         /// <summary>
-        /// Gets or sets the username used to authenticate package downloads.
+        /// Gets or sets the client credentials used to authenticate package downloads.
         /// </summary>
-        /// <remarks>If left blank no authentication will occur.</remarks>
-        public string Username { get; set; }
-
-        /// <summary>
-        /// Gets or sets the password used to authenticate package downloads.
-        /// </summary>
-        /// <remarks>If left blank no authentication will occur.</remarks>
-        public string Password { get; set; }
+        /// <remarks>If null, no authentication will occur.</remarks>
+        public ClientCredentials ClientCredentials { get; set; }
 
         /// <summary>
         /// Gets the applications the update manager can update.
@@ -175,10 +169,10 @@ namespace Hyprsoft.IoT.AppUpdates
                     await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Downloading package to '{packageFilename}'.");
                     using (var client = new HttpClient())
                     {
-                        if (!String.IsNullOrWhiteSpace(Username) && !String.IsNullOrWhiteSpace(Password))
+                        if (ClientCredentials != null)
                         {
                             var response = await client.PostAsync($"{ManifestUri.Scheme}://{ManifestUri.Host}/appupdates/account/token",
-                                new StringContent(JsonConvert.SerializeObject(new { username = Username, password = Password }), Encoding.UTF8, "application/json"));
+                                new StringContent(JsonConvert.SerializeObject(ClientCredentials), Encoding.UTF8, "application/json"));
                             if (response.IsSuccessStatusCode)
                             {
                                 var payload = JsonConvert.DeserializeAnonymousType(await response.Content.ReadAsStringAsync(), new { Token = String.Empty });

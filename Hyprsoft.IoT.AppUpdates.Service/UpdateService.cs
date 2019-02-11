@@ -64,7 +64,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         public DateTime NextCheckDate { get; set; }
 
         [JsonProperty]
-        public Uri ManifestUri { get; set; } = new Uri($"http://www.hyprsoft.com/{DefaultAppUpdatesConfigFilename}");
+        public Uri ManifestUri { get; set; } = new Uri($"https://hyprsoftweb.azurewebsites.net/{UpdateManager.DefaultAppUpdatesManifestFilename}");
 
         [JsonProperty]
         public List<InstalledApp> InstalledApps { get; set; } = new List<InstalledApp>();
@@ -87,11 +87,9 @@ namespace Hyprsoft.IoT.AppUpdates.Service
             {
                 await _logger.LogAsync<UpdateService>(LogLevel.Info, $"Using manifest '{ManifestUri.ToString().ToLower()}' to check '{InstalledApps.Count}' app(s) for updates.");
                 _manager = new UpdateManager(ManifestUri, _logger);
+                // If our packages are hosted using the Hyprsoft.IoT.Updates.Web NuGet then authentication is required; otherwise it depends on where the sources in the manifest reside.
                 if (IsAuthenticationRequired)
-                {
-                    _manager.Username = BearerTokenAuthSettings.DefaultUsername;
-                    _manager.Password = BearerTokenAuthSettings.DefaultPassword;
-                }   // authentication required.
+                    _manager.ClientCredentials = new ClientCredentials();
                 _updateCheckTask = Update(cancellationToken);
             }   // manifest URI valid and installed app count > 0?
         }

@@ -43,8 +43,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
             Assert.IsFalse(manager.IsLoaded);
             Assert.AreEqual(_manifestUri, manager.ManifestUri);
             Assert.AreEqual(0, manager.Applications.Count);
-            Assert.IsNull(manager.Username);
-            Assert.IsNull(manager.Password);
+            Assert.IsNull(manager.ClientCredentials);
         }
 
         [TestMethod]
@@ -80,8 +79,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
             Assert.IsTrue(manager.IsLoaded);
             Assert.AreEqual(_manifestUri, manager.ManifestUri);
             Assert.AreEqual(0, manager.Applications.Count);
-            Assert.IsNull(manager.Username);
-            Assert.IsNull(manager.Password);
+            Assert.IsNull(manager.ClientCredentials);
         }
 
         [TestMethod]

@@ -82,12 +82,12 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
         }
 
         [HttpPost]
-        public IActionResult Token([FromBody] Login model)
+        public IActionResult Token([FromBody] ClientCredentials model)
         {
-            if (String.Compare(BearerTokenAuthSettings.DefaultUsername, model.Username, true) != 0 || model.Password != BearerTokenAuthSettings.DefaultPassword)
+            if (String.Compare(ClientCredentials.DefaultClientId, model.ClientId, true) != 0 || model.ClientSecret != ClientCredentials.DefaultClientSecret)
                 return Unauthorized();
 
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, model.Username) };
+            var claims = new List<Claim> { new Claim(ClaimTypes.Name, model.ClientId) };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthenticationSettings.DefaultBearerSecurityKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(

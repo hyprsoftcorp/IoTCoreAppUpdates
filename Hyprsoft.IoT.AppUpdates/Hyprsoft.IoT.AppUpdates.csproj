@@ -4,16 +4,16 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.1</LangVersion>
     <Authors>Hyprsoft Corporation</Authors>
-    <Product>Hyprsoft IoT App Updates Shared</Product>
-    <Description></Description>
+    <Product>Hyprsoft IoT App Updates Shared Library</Product>
+    <Description>Hyprsoft IoT App Updates Shared Library</Description>
     <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Hyprsoft.Logging.Core" Version="1.0.5" />
+    <PackageReference Include="Hyprsoft.Logging.Core" Version="1.0.6" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />

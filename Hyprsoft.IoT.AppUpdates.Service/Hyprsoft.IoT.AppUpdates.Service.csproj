@@ -6,14 +6,14 @@
     <LangVersion>7.1</LangVersion>
     <Authors>Hyprsoft Corporation</Authors>
     <Product>Hyprsoft IoT App Updates Service</Product>
-    <Description></Description>
+    <Description>Hyprsoft IoT App Updates Service</Description>
     <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Hyprsoft.Logging.Core" Version="1.0.5" />
+    <PackageReference Include="Hyprsoft.Logging.Core" Version="1.0.6" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
