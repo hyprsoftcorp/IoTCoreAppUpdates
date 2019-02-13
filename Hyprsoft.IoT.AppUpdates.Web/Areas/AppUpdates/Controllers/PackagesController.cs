@@ -33,6 +33,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 
         #region Methods
 
+        [HttpGet]
         public IActionResult Create(Guid applicationId)
         {
             var item = UpdateManager.Applications.FirstOrDefault(a => a.Id == applicationId);
@@ -88,6 +89,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public IActionResult Edit(Guid applicationId, Guid id)
         {
             var item = UpdateManager.Applications.SelectMany(a => a.Packages).FirstOrDefault(p => p.Id == id);

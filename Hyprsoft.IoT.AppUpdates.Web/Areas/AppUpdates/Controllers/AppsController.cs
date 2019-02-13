@@ -20,11 +20,13 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 
         #region Methods
 
+        [HttpGet]
         public IActionResult List()
         {
             return View(UpdateManager.Applications);
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             return View(new Application() { Id = Guid.NewGuid() });
@@ -51,6 +53,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public IActionResult Edit(Guid id)
         {
             var item = UpdateManager.Applications.FirstOrDefault(a => a.Id == id);

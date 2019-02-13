@@ -27,6 +27,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 
         #region Methods
 
+        [HttpGet]
         public IActionResult Download(string filename)
         {
             return PhysicalFile(Path.Combine(Path.Combine(_hostingEnv.ContentRootPath, "packages"), filename), "application/zip", filename);

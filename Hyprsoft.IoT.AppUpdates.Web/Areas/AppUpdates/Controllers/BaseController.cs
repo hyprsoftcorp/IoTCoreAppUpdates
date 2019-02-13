@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 {
-    [Area("AppUpdates")]
+    [Area("AppUpdates"), ApiExplorerSettings(IgnoreApi = true)]
     public abstract class BaseController : Controller
     {
         #region Constructors
