@@ -86,7 +86,6 @@ public class Program
 ```
 ### Sample Startup.cs
 If you have incorporated the app updates administrative website functionality into your own website, you need to make the following code changes.
-<b>Note: If the administrative website NuGet package is used then options.ClientCredentials are required; otherwise it depends on your source URIs in your manifest</b>.
 ```csharp
 public class Startup
 {
@@ -105,7 +104,7 @@ public class Startup
         services.AddAppUpdates(options => 
         {
             options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultAppUpdateManifestFilename));
-            options.ClientCredentials = new ClientCredentials { ClientId = "<your clientid>", ClientSecret = "<your client secret>" }
+            options.ClientCredentials = new ClientCredentials { ClientId = Configuration["AppUpdates:ClientId"], ClientSecret = Configuration["AppUpdates:ClientSecret"] };
         });
         services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
     }
