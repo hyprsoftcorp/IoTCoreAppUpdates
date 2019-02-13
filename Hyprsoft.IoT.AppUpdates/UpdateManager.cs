@@ -22,18 +22,19 @@ namespace Hyprsoft.IoT.AppUpdates
 
         private readonly object _lockObject = new object();
         private SimpleLogManager _logger;
-
+        private readonly ClientCredentials _clientCredentials;
 
         #endregion
 
         #region Constructors
 
-        public UpdateManager(Uri manifestUri, SimpleLogManager logger)
+        public UpdateManager(Uri manifestUri, ClientCredentials credentials, SimpleLogManager logger)
         {
             if (logger == null)
                 throw new ArgumentNullException(nameof(logger));
 
             ManifestUri = manifestUri ?? throw new ArgumentNullException(nameof(manifestUri));
+            _clientCredentials = credentials;
             _logger = logger;
         }
 
@@ -52,12 +53,6 @@ namespace Hyprsoft.IoT.AppUpdates
         /// Gets the app update manifest URI.
         /// </summary>
         public Uri ManifestUri { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the client credentials used to authenticate package downloads.
-        /// </summary>
-        /// <remarks>If null, no authentication will occur.</remarks>
-        public ClientCredentials ClientCredentials { get; set; }
 
         /// <summary>
         /// Gets the applications the update manager can update.
@@ -169,10 +164,10 @@ namespace Hyprsoft.IoT.AppUpdates
                     await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Downloading package to '{packageFilename}'.");
                     using (var client = new HttpClient())
                     {
-                        if (ClientCredentials != null)
+                        if (_clientCredentials != null)
                         {
-                            var response = await client.PostAsync($"{ManifestUri.Scheme}://{ManifestUri.Host}/appupdates/account/token",
-                                new StringContent(JsonConvert.SerializeObject(ClientCredentials), Encoding.UTF8, "application/json"));
+                            var response = await client.PostAsync($"{ManifestUri.Scheme}://{ManifestUri.Host}:{ManifestUri.Port}/appupdates/account/token",
+                                new StringContent(JsonConvert.SerializeObject(_clientCredentials), Encoding.UTF8, "application/json"));
                             if (response.IsSuccessStatusCode)
                             {
                                 var payload = JsonConvert.DeserializeAnonymousType(await response.Content.ReadAsStringAsync(), new { Token = String.Empty });

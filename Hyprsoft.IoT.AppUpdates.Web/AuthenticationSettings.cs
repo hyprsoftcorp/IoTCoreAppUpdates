@@ -29,6 +29,8 @@ namespace Hyprsoft.IoT.AppUpdates.Web
 
         #region Bearer Authentication Related
 
+        public const string AuthenticationScheme = "BearerAppUpdates";
+
         public const string DefaultBearerIssuer = "hyprsoft.com";
 
         public const string DefaultBearerAudience = DefaultBearerIssuer;

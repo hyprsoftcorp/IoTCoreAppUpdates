@@ -38,11 +38,6 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
             return View();
         }
 
-        public IActionResult AccessDenied()
-        {
-            return View();
-        }
-
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(Login model, string returnUrl = null)
         {
@@ -50,9 +45,9 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 
             if (ModelState.IsValid)
             {
-                var credentialProvider = await new CredentialProviderHelper(_configuration).CreateProviderAsync();
-                var username = await credentialProvider.GetUsernameAsync();
-                if (String.Compare(model.Username, username, true) == 0 && model.Password == await credentialProvider.GetPasswordAsync())
+                var username = _configuration["AppUpdates:Username"] ?? AuthenticationSettings.DefaultUsername;
+                var password = _configuration["AppUpdates:Password"] ?? AuthenticationSettings.DefaultPassword;
+                if (String.Compare(model.Username, username, true) == 0 && model.Password == password)
                 {
                     var claims = new List<Claim> { new Claim(ClaimTypes.Name, username) };
                     var authenticationProperties = new AuthenticationProperties
@@ -84,20 +79,30 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
         [HttpPost]
         public IActionResult Token([FromBody] ClientCredentials model)
         {
-            if (String.Compare(ClientCredentials.DefaultClientId, model.ClientId, true) != 0 || model.ClientSecret != ClientCredentials.DefaultClientSecret)
-                return Unauthorized();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, model.ClientId) };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthenticationSettings.DefaultBearerSecurityKey));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(
-                issuer: AuthenticationSettings.DefaultBearerIssuer,
-                audience: AuthenticationSettings.DefaultBearerAudience,
-                claims: claims,
-                expires: DateTime.Now.AddDays(AuthenticationSettings.BearerTokenExpirationDays),
-                signingCredentials: credentials);
+            try
+            {
+                if (String.Compare(_configuration["AppUpdates:ClientId"], model.ClientId, true) != 0 || model.ClientSecret != _configuration["AppUpdates:ClientSecret"])
+                    return Unauthorized();
 
-            return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+                var claims = new List<Claim> { new Claim(ClaimTypes.Name, model.ClientId) };
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthenticationSettings.DefaultBearerSecurityKey));
+                var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                var token = new JwtSecurityToken(
+                    issuer: AuthenticationSettings.DefaultBearerIssuer,
+                    audience: AuthenticationSettings.DefaultBearerAudience,
+                    claims: claims,
+                    expires: DateTime.Now.AddDays(AuthenticationSettings.BearerTokenExpirationDays),
+                    signingCredentials: credentials);
+
+                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
         }
 
         #endregion

@@ -43,13 +43,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <UseRazorBuildServer>false</UseRazorBuildServer>
     <Authors>Hyprsoft Corporation</Authors>
-    <Product>Hyprsoft IoT App Updates Web</Product>
+    <Product>Hyprsoft IoT App Updates Administrative Web</Product>
     <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
-    <Version>1.0.18</Version>
+    <Version>1.0.19</Version>
     <UseRazorBuildServer>false</UseRazorBuildServer>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>Hyprsoft IoT App Updates Web</Description>
+    <Description>Hyprsoft IoT App Updates Administrative Web</Description>
   </PropertyGroup>
   
   <ItemGroup>
@@ -61,11 +61,8 @@
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.3" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.5.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
   </ItemGroup> 
   
   <ItemGroup>

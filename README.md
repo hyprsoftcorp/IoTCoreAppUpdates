@@ -20,10 +20,11 @@ We needed a way to remotely update .NET Core 2.2 apps (not UWP apps) installed o
 2. Upload the app update package (i.e. zip file) containing the updated application files (EXEs, DLLs, etc.) to your desired "host" (i.e  website or file sharing service).
 
 ### Sample Service Configuration
-The service configuration Json file resides on each device.
+The service configuration Json file resides on each device.  <b>Note: If the administrative website NuGet package is used then ClientId and ClientSecret are required; otherwise it depends on your source URIs in your manifest</b>.
 ```json
 {
-  "IsAuthenticationRequired": true,
+  "ClientId": "<optional clientid>",
+  "ClientSecret": "<optional client secret>",
   "CheckTime": "03:00:00",
   "NextCheckDate": "2018-10-17T03:00:00",
   "ManifestUri": "http://www.yourdomain.com/app-updates-manifest.json",
@@ -85,6 +86,7 @@ public class Program
 ```
 ### Sample Startup.cs
 If you have incorporated the app updates administrative website functionality into your own website, you need to make the following code changes.
+<b>Note: If the administrative website NuGet package is used then options.ClientCredentials are required; otherwise it depends on your source URIs in your manifest</b>.
 ```csharp
 public class Startup
 {
@@ -100,7 +102,11 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddAppUpdates(options => options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultAppUpdateManifestFilename)));
+        services.AddAppUpdates(options => 
+        {
+            options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultAppUpdateManifestFilename));
+            options.ClientCredentials = new ClientCredentials { ClientId = "<your clientid>", ClientSecret = "<your client secret>" }
+        });
         services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
     }
 
@@ -147,26 +153,14 @@ If you have incorporated the app updates administrative website functionality in
 By default the app update service runs on the IoT device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file systems.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!  Use at your own risk!**
 
 ### Administrative Website Credentials
-Credentials to log into the administrative website can be provided in two ways.  Both require adding Azure App Service settings.
-#### Azure App Service
-Setting Name | Example Value
---- | ---
-AppUpdatesUsername | myusername
-AppUpdatesPassword | myp@ssw0rd
-
-#### Azure Key Vault
-Setting up a key vault is tedious and outside the scope of this document but here is a summary of the process:
-1. Setup an App Registration in AAD and note the Application ID.  This is the AppUpdatesKeyVaultClientId.
-2. Add a password key to the app registration and note it's value (displayed only on creation).  This is the AppUpdatesKeyVaultClientSecret.
-3. Add a secret to the key vault for the username and note the secret identifier.  This is the AppUpdatesKeyVaultUsernameSecret.
-4. Add a secret to the key vault for the password and note the secret identifier.  This is the AppUpdatesKeyVaultPasswordSecret.
-
-Setting Name | Example Value
---- | --- 
-AppUpdatesKeyVaultClientId | bce7fe0f-09a4-4ded-be30-372c0e90d9e5
-AppUpdatesKeyVaultClientSecret | aS/zHfJ118SOKwvEQ1sWzMc2fkreFG+s+qtz5oQUbks=
-AppUpdatesKeyVaultUsernameSecret | https://mykeyvault.vault.azure.net/secrets/AppUpdatesUsername/4d10318a536c13e4ae37c1571fc88d1c
-AppUpdatesKeyVaultPasswordSecret | https://mykeyvault.vault.azure.net/secrets/AppUpdatesPassword/d00a91afcc4d45b196e2c1de94b21a4b
+The administrative website credentials should be provided via standard Azure App Service settings.
+#### App Service Settings
+Setting Name | Example Value | Description
+--- | --- | ---
+AppUpdates:Username | myusername | Cookie Authentication Username
+AppUpdates:Password | myp@ssw0rd | Cookie Authentication Password
+AppUpdates:ClientId | myclientid | Bearer Token Authentication Client Id
+AppUpdates:ClientSecret | mys3cr3t | Bearer Token Authentication Client Secret
 
 ### Administrative Website Screenshots
 #### Login

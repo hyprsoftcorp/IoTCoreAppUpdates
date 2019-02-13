@@ -1,5 +1,4 @@
 ﻿using Hyprsoft.Logging.Core;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -50,7 +49,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web
                 options.LoginPath = "/appupdates/account/login";
                 options.LogoutPath = "/appupdates/account/logout";
             });
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            services.AddAuthentication(AuthenticationSettings.AuthenticationScheme).AddJwtBearer(AuthenticationSettings.AuthenticationScheme, options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -65,7 +64,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web
             });
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = o.MaxFileUploadSizeBytes);
             services.AddSingleton(logger);
-            services.AddSingleton<UpdateManager>(s => new UpdateManager(o.ManifestUri, logger));
+            services.AddSingleton<UpdateManager>(s => new UpdateManager(o.ManifestUri, o.ClientCredentials, logger));
             return services;
         }
 

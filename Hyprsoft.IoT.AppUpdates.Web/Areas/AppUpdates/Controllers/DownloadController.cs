@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = AuthenticationSettings.AuthenticationScheme)]
     [Route("[area]/apps/{applicationId}/packages/[controller]/{filename}")]
     public class DownloadController : BaseController
     {

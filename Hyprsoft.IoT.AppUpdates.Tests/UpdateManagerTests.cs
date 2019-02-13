@@ -43,7 +43,6 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
             Assert.IsFalse(manager.IsLoaded);
             Assert.AreEqual(_manifestUri, manager.ManifestUri);
             Assert.AreEqual(0, manager.Applications.Count);
-            Assert.IsNull(manager.ClientCredentials);
         }
 
         [TestMethod]
@@ -79,7 +78,6 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
             Assert.IsTrue(manager.IsLoaded);
             Assert.AreEqual(_manifestUri, manager.ManifestUri);
             Assert.AreEqual(0, manager.Applications.Count);
-            Assert.IsNull(manager.ClientCredentials);
         }
 
         [TestMethod]
@@ -124,7 +122,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
         private UpdateManager CreateManager(Uri manifestUri)
         {
             var logger = new SimpleLogManager();
-            return new UpdateManager(manifestUri, logger);
+            return new UpdateManager(manifestUri, null, logger);
         }
 
         private async Task ValidateUpdate(UpdateManager manager, Guid packageId, Uri installUri)

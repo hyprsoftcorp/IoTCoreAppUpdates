@@ -23,7 +23,11 @@ namespace Hyprsoft.IoT.AppUpdates.TestWeb
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAppUpdates(options => options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultAppUpdatesManifestFilename)));
+            services.AddAppUpdates(options =>
+            {
+                options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultAppUpdatesManifestFilename));
+                options.ClientCredentials = new ClientCredentials { ClientId = Configuration["AppUpdates:ClientId"], ClientSecret = Configuration["AppUpdates:ClientSecret"] };
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
