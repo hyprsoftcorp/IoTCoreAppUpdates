@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace Hyprsoft.IoT.AppUpdates
 {
@@ -6,11 +7,14 @@ namespace Hyprsoft.IoT.AppUpdates
     {
         #region Properties
 
-        [Required]
+        [Required, JsonProperty]
         public string ClientId { get; set; }
 
-        [Required]
+        [Required, JsonProperty]
         public string ClientSecret { get; set; }
+
+        [Required, JsonProperty]
+        public string Scope { get; set; }
 
         #endregion
     }

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -13,21 +12,6 @@ namespace Hyprsoft.IoT.AppUpdates.Service
 {
     public class UpdateService : IHostedService
     {
-        #region InstalledApp Helper Class
-
-        public class InstalledApp
-        {
-            [JsonProperty]
-            public Guid ApplicationId { get; set; }
-
-            [JsonProperty]
-            public Uri InstallUri { get; set; }
-
-            public override string ToString() => $"{ApplicationId} {InstallUri.ToString().ToLower()}";
-        }
-
-        #endregion
-
         #region Fields
 
         private bool _isFirstCheck = true;
@@ -49,28 +33,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
 
         #region Properties
 
-        public const string DefaultAppUpdatesConfigFilename = "app-updates-config.json";
-
-        [JsonIgnore]
-        public string ConfigurationFilename => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), DefaultAppUpdatesConfigFilename).ToLower();
-
-        [JsonProperty]
-        public string ClientId { get; set; }
-
-        [JsonProperty]
-        public string ClientSecret { get; set; }
-
-        [JsonProperty]
-        public TimeSpan CheckTime { get; set; } = new TimeSpan(3, 0, 0);
-
-        [JsonProperty]
-        public DateTime NextCheckDate { get; set; }
-
-        [JsonProperty]
-        public Uri ManifestUri { get; set; } = new Uri($"https://hyprsoftweb.azurewebsites.net/{UpdateManager.DefaultAppUpdatesManifestFilename}");
-
-        [JsonProperty]
-        public List<InstalledApp> InstalledApps { get; set; } = new List<InstalledApp>();
+        public UpdateServiceSettings Settings { get; private set; } = new UpdateServiceSettings();
 
         #endregion
 
@@ -78,21 +41,20 @@ namespace Hyprsoft.IoT.AppUpdates.Service
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await _logger.LogAsync<UpdateService>(LogLevel.Info, "Starting service.");
+            var version = (((AssemblyInformationalVersionAttribute)GetType().Assembly.GetCustomAttribute(typeof(AssemblyInformationalVersionAttribute))).InformationalVersion);
+            await _logger.LogAsync<UpdateService>(LogLevel.Info, $"Starting service v{version}.");
             await LoadConfiguration();
 
-            if (ManifestUri == null)
-                await _logger.LogAsync<UpdateService>(LogLevel.Warn, $"The configuration is missing the required manifest URI.  Please update the '{ConfigurationFilename}' configuration file and restart the service.");
-            if (InstalledApps.Count <= 0)
-                await _logger.LogAsync<UpdateService>(LogLevel.Warn, $"The configuration does not have any apps listed to update.  Please update the '{ConfigurationFilename}' configuration file and restart the service.");
+            if (Settings.ManifestUri == null)
+                await _logger.LogAsync<UpdateService>(LogLevel.Warn, $"The configuration is missing the required manifest URI.  Please update the '{Settings.ConfigurationFilename}' configuration file and restart the service.");
+            if (Settings.InstalledApps.Count <= 0)
+                await _logger.LogAsync<UpdateService>(LogLevel.Warn, $"The configuration does not have any apps listed to update.  Please update the '{Settings.ConfigurationFilename}' configuration file and restart the service.");
 
-            if (ManifestUri != null && InstalledApps.Count > 0)
+            if (Settings.ManifestUri != null && Settings.InstalledApps.Count > 0)
             {
-                await _logger.LogAsync<UpdateService>(LogLevel.Info, $"Using manifest '{ManifestUri.ToString().ToLower()}' to check '{InstalledApps.Count}' app(s) for updates.");
+                await _logger.LogAsync<UpdateService>(LogLevel.Info, $"Using manifest '{Settings.ManifestUri.ToString().ToLower()}' to check '{Settings.InstalledApps.Count}' app(s) for updates.");
                 // If our packages are hosted using the Hyprsoft.IoT.Updates.Web NuGet then authentication is required; otherwise it depends on where the sources in the manifest reside.
-                _manager = new UpdateManager(ManifestUri,
-                    !String.IsNullOrWhiteSpace(ClientId) && !String.IsNullOrWhiteSpace(ClientSecret) ? new ClientCredentials { ClientId = ClientId, ClientSecret = ClientSecret } : null, 
-                    _logger);
+                _manager = new UpdateManager(Settings.ManifestUri, Settings.ClientCredentials, _logger);
                 _updateCheckTask = Update(cancellationToken);
             }   // manifest URI valid and installed app count > 0?
         }
@@ -108,15 +70,15 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         {
             while (!token.IsCancellationRequested)
             {
-                if (_isFirstCheck || DateTime.Now >= NextCheckDate)
+                if (_isFirstCheck || DateTime.Now >= Settings.NextCheckDate)
                 {
                     try
                     {
                         _isFirstCheck = false;
                         await _logger.LogAsync<UpdateService>(LogLevel.Info, "Checking for updates.");
-                        // Always re-load our manifest in case it has been altered since our last check.
+                        // Always reload our manifest in case it has been altered since our last check.
                         await _manager.Load();
-                        foreach (var install in InstalledApps)
+                        foreach (var install in Settings.InstalledApps)
                         {
                             var app = _manager.Applications.FirstOrDefault(a => a.Id == install.ApplicationId);
                             if (app != null)
@@ -149,31 +111,14 @@ namespace Hyprsoft.IoT.AppUpdates.Service
             }   // cancellation requested?
         }
 
-        private async Task UpdateNextCheckDate()
-        {
-            var now = DateTime.Now;
-            NextCheckDate = new DateTime(now.Year, now.Month, now.Day, CheckTime.Hours, CheckTime.Minutes, CheckTime.Seconds).Add(TimeSpan.FromDays(1));
-            await SaveConfiguration();
-        }
-
         private async Task LoadConfiguration()
         {
-            if (File.Exists(ConfigurationFilename))
+            if (File.Exists(Settings.ConfigurationFilename))
             {
                 try
                 {
-                    await _logger.LogAsync<UpdateService>(LogLevel.Info, $"Loading service configuration from '{ConfigurationFilename}'.");
-                    var instance = JsonConvert.DeserializeObject<UpdateService>(File.ReadAllText(ConfigurationFilename));
-                    var bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic;
-                    foreach (var prop in instance.GetType().GetProperties(bindingFlags))
-                    {
-                        if (Attribute.IsDefined(prop, typeof(JsonIgnoreAttribute)))
-                            continue;
-
-                        var setter = GetType().GetProperty(prop.Name, bindingFlags);
-                        if (setter.CanWrite)
-                            setter.SetValue(this, prop.GetValue(instance));
-                    }
+                    await _logger.LogAsync<UpdateService>(LogLevel.Info, $"Loading service configuration from '{Settings.ConfigurationFilename}'.");
+                    Settings = JsonConvert.DeserializeObject<UpdateServiceSettings>(File.ReadAllText(Settings.ConfigurationFilename));
                     return;
                 }
                 catch (Exception ex)
@@ -189,9 +134,16 @@ namespace Hyprsoft.IoT.AppUpdates.Service
 
         private async Task SaveConfiguration()
         {
-            await _logger.LogAsync<UpdateService>(LogLevel.Info, $"Saving service configuration to '{ConfigurationFilename}'.");
+            await _logger.LogAsync<UpdateService>(LogLevel.Info, $"Saving service configuration to '{Settings.ConfigurationFilename}'.");
             lock (_lockObject)
-                File.WriteAllText(ConfigurationFilename, JsonConvert.SerializeObject(this, Formatting.Indented));
+                File.WriteAllText(Settings.ConfigurationFilename, JsonConvert.SerializeObject(Settings, Formatting.Indented));
+        }
+
+        private async Task UpdateNextCheckDate()
+        {
+            var now = DateTime.Now;
+            Settings.NextCheckDate = new DateTime(now.Year, now.Month, now.Day, Settings.CheckTime.Hours, Settings.CheckTime.Minutes, Settings.CheckTime.Seconds).Add(TimeSpan.FromDays(1));
+            await SaveConfiguration();
         }
 
         #endregion

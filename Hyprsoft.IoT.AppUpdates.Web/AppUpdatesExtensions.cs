@@ -57,13 +57,14 @@ namespace Hyprsoft.IoT.AppUpdates.Web
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = AuthenticationSettings.DefaultBearerIssuer,
-                    ValidAudience = AuthenticationSettings.DefaultBearerAudience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthenticationSettings.DefaultBearerSecurityKey))
+                    ValidIssuer = o.TokenOptions.Issuer,
+                    ValidAudience = o.TokenOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(o.TokenOptions.SecurityKey))
                 };
             });
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = o.MaxFileUploadSizeBytes);
             services.AddSingleton(logger);
+            services.AddSingleton(o.TokenOptions);
             services.AddSingleton<UpdateManager>(s => new UpdateManager(o.ManifestUri, o.ClientCredentials, logger));
             return services;
         }

@@ -25,8 +25,11 @@ namespace Hyprsoft.IoT.AppUpdates.TestWeb
         {
             services.AddAppUpdates(options =>
             {
-                options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultAppUpdatesManifestFilename));
-                options.ClientCredentials = new ClientCredentials { ClientId = Configuration["AppUpdates:ClientId"], ClientSecret = Configuration["AppUpdates:ClientSecret"] };
+                options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultManifestFilename));
+                options.ClientCredentials.ClientId = Configuration["AppUpdates:ClientId"];
+                options.ClientCredentials.ClientSecret = Configuration["AppUpdates:ClientSecret"];
+                options.ClientCredentials.Scope = options.TokenOptions.Audience;
+                options.TokenOptions.SecurityKey = Configuration["AppUpdates:SecurityKey"];
             });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

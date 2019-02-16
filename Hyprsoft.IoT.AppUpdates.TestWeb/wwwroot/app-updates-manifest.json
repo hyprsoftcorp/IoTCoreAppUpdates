@@ -1,0 +1,20 @@
+[
+  {
+    "Id": "40eee2a1-e633-447d-932c-810c22a12e37",
+    "Name": "Test App",
+    "Description": "Test App",
+    "ExeFilename": "Hyprsoft.IoT.AppUpdates.TestApp.exe",
+    "VersionFilename": "Hyprsoft.IoT.AppUpdates.TestApp.dll",
+    "CommandLine": null,
+    "Packages": [
+      {
+        "Id": "3cd70683-0d74-4fb2-b612-29925588eb1c",
+        "IsAvailable": true,
+        "FileVersion": "1.0.0.0",
+        "ReleaseDateUtc": "2019-02-16T00:00:00",
+        "SourceUri": "http://localhost:50744/appupdates/apps/40eee2a1-e633-447d-932c-810c22a12e37/packages/download/testapp01_1000.zip",
+        "Checksum": "f186cbd924b3dea18a02e2fb3f49cc67"
+      }
+    ]
+  }
+]

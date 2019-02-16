@@ -12,6 +12,8 @@ using System.IO.Compression;
 using System.Net.Http.Headers;
 using System.Text;
 using Hyprsoft.Logging.Core;
+using System.Runtime.InteropServices;
+using System.Reflection;
 
 [assembly: InternalsVisibleTo("Hyprsoft.IoT.AppUpdates.Tests")]
 namespace Hyprsoft.IoT.AppUpdates
@@ -21,7 +23,7 @@ namespace Hyprsoft.IoT.AppUpdates
         #region Fields
 
         private readonly object _lockObject = new object();
-        private SimpleLogManager _logger;
+        private readonly SimpleLogManager _logger;
         private readonly ClientCredentials _clientCredentials;
 
         #endregion
@@ -42,7 +44,7 @@ namespace Hyprsoft.IoT.AppUpdates
 
         #region Properties
 
-        public const string DefaultAppUpdatesManifestFilename = "app-updates-manifest.json";
+        public const string DefaultManifestFilename = "app-updates-manifest.json";
 
         /// <summary>
         /// Returns true if the app update manifest has been loaded; otherwise false.
@@ -74,7 +76,8 @@ namespace Hyprsoft.IoT.AppUpdates
             if (ManifestUri == null)
                 throw new NullReferenceException($"The '{nameof(ManifestUri)}' cannot be null.");
 
-            await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Loading manifest from '{ManifestUri.ToString().ToLower()}'.");
+            var version = (((AssemblyInformationalVersionAttribute)GetType().Assembly.GetCustomAttribute(typeof(AssemblyInformationalVersionAttribute))).InformationalVersion);
+            await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Update Manager v{version} loading manifest from '{ManifestUri.ToString().ToLower()}'.");
             if (ManifestUri.IsFile)
             {
                 if (File.Exists(ManifestUri.LocalPath))
@@ -164,7 +167,8 @@ namespace Hyprsoft.IoT.AppUpdates
                     await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Downloading package to '{packageFilename}'.");
                     using (var client = new HttpClient())
                     {
-                        if (_clientCredentials != null)
+                        if (_clientCredentials != null && !String.IsNullOrWhiteSpace(_clientCredentials.ClientId) && !String.IsNullOrWhiteSpace(_clientCredentials.ClientSecret) && 
+                            !String.IsNullOrWhiteSpace(_clientCredentials.Scope))
                         {
                             var response = await client.PostAsync($"{ManifestUri.Scheme}://{ManifestUri.Host}:{ManifestUri.Port}/appupdates/account/token",
                                 new StringContent(JsonConvert.SerializeObject(_clientCredentials), Encoding.UTF8, "application/json"));
@@ -212,6 +216,17 @@ namespace Hyprsoft.IoT.AppUpdates
                 // STEP 7 - Restart our process.
                 var installFolder = installUri.LocalPath.EndsWith(Path.DirectorySeparatorChar.ToString()) ? installUri.LocalPath : installUri.LocalPath + Path.DirectorySeparatorChar;
                 var processFilename = Path.Combine(installFolder, package.Application.ExeFilename);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Running chmod 744 on '{processFilename}'.");
+                    var process = Process.Start(new ProcessStartInfo
+                    {
+                        Arguments = $"744 {package.Application.ExeFilename}",
+                        FileName = "chmod",
+                        WorkingDirectory = installFolder
+                    });
+                    process.WaitForExit();
+                }   // Linux?
                 await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Starting process '{processFilename}'.");
                 Process.Start(new ProcessStartInfo
                 {

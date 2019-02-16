@@ -18,14 +18,16 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
         #region Fields
 
         private readonly IConfiguration _configuration;
+        private readonly BearerTokenOptions _tokenOptions;
 
         #endregion
 
         #region Constructors
 
-        public AccountController(UpdateManager manager, IConfiguration configuration) : base(manager)
+        public AccountController(UpdateManager manager, IConfiguration configuration, BearerTokenOptions tokenOptions) : base(manager)
         {
             _configuration = configuration;
+            _tokenOptions = tokenOptions;
         }
 
         #endregion
@@ -85,18 +87,17 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 
             try
             {
-                if (String.Compare(_configuration["AppUpdates:ClientId"], model.ClientId, true) != 0 || model.ClientSecret != _configuration["AppUpdates:ClientSecret"])
+                if (String.Compare(model.ClientId, _configuration["AppUpdates:ClientId"], true) != 0 || model.ClientSecret != _configuration["AppUpdates:ClientSecret"] ||
+                    String.Compare(model.Scope, _tokenOptions.Audience, true) != 0)
                     return Unauthorized();
 
                 var claims = new List<Claim> { new Claim(ClaimTypes.Name, model.ClientId) };
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthenticationSettings.DefaultBearerSecurityKey));
-                var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
                 var token = new JwtSecurityToken(
-                    issuer: AuthenticationSettings.DefaultBearerIssuer,
-                    audience: AuthenticationSettings.DefaultBearerAudience,
+                    issuer: _tokenOptions.Issuer,
+                    audience: _tokenOptions.Audience,
                     claims: claims,
-                    expires: DateTime.Now.AddDays(AuthenticationSettings.BearerTokenExpirationDays),
-                    signingCredentials: credentials);
+                    expires: DateTime.UtcNow.Add(_tokenOptions.Lifespan),
+                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenOptions.SecurityKey)), SecurityAlgorithms.HmacSha256));
 
                 return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
             }

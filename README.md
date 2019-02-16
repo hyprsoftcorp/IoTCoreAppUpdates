@@ -23,8 +23,11 @@ We needed a way to remotely update .NET Core 2.2 apps (not UWP apps) installed o
 The service configuration Json file resides on each device.  <b>Note: If the administrative website NuGet package is used then ClientId and ClientSecret are required; otherwise it depends on your source URIs in your manifest</b>.
 ```json
 {
-  "ClientId": "<optional clientid>",
-  "ClientSecret": "<optional client secret>",
+  "ClientCredentials": {
+    "ClientId": "<optional clientid>",
+    "ClientSecret": "<optional client secret>",
+    "Scope": "appupdates"
+  },
   "CheckTime": "03:00:00",
   "NextCheckDate": "2018-10-17T03:00:00",
   "ManifestUri": "http://www.yourdomain.com/app-updates-manifest.json",
@@ -101,10 +104,13 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddAppUpdates(options => 
+        services.AddAppUpdates(options =>
         {
-            options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultAppUpdateManifestFilename));
-            options.ClientCredentials = new ClientCredentials { ClientId = Configuration["AppUpdates:ClientId"], ClientSecret = Configuration["AppUpdates:ClientSecret"] };
+            options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultManifestFilename));
+            options.ClientCredentials.ClientId = Configuration["AppUpdates:ClientId"];
+            options.ClientCredentials.ClientSecret = Configuration["AppUpdates:ClientSecret"];
+            options.ClientCredentials.Scope = options.TokenOptions.Audience;
+            options.TokenOptions.SecurityKey = Configuration["AppUpdates:SecurityKey"];
         });
         services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
     }

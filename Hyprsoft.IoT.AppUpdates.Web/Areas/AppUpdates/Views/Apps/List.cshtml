@@ -1,24 +1,23 @@
-﻿@model List<Application>
+﻿@model UpdateManager
 
 @{
     ViewData["Title"] = "Apps";
-    var manifestUri = $"{Context.Request.Scheme}://{Context.Request.Host}/{UpdateManager.DefaultAppUpdatesManifestFilename}";
 }
 
 <h3>@ViewData["Title"]</h3>
-<p>Your app manifest URI is: <a href="@manifestUri" title="Manifest URI">@manifestUri</a></p>
+<p>Your app manifest URI is: <a href="@Model.ManifestUri.ToString().ToLower()" title="Manifest URI">@Model.ManifestUri.ToString().ToLower()</a></p>
 
 <p>
     <a asp-action="Create">Add App &raquo;</a>
 </p>
 
-@if (Model.Count <= 0)
+@if (Model.Applications.Count <= 0)
 {
     <p class="text-danger">The are no apps configured.  <a asp-action="Create">Add</a> an app.</p>
 }
 else
 {
-    @foreach (var item in Model.OrderBy(e => e.Name))
+    @foreach (var item in Model.Applications.OrderBy(e => e.Name))
     {
         <section id="item-@item.Id">
             <div class="card bg-light">
@@ -36,25 +35,25 @@ else
                     <p>@item.Description</p>
                     <dl class="row">
                         <dt class="col-md-2 font-weight-normal">
-                            @Html.DisplayNameFor(model => model[0].Id)
+                            @Html.DisplayNameFor(model => model.Applications[0].Id)
                         </dt>
                         <dd class="col-md-10">
                             <a href="@Url.Action("Edit", new { id = item.Id })">@Html.DisplayFor(modelItem => item.Id)</a>
                         </dd>
                         <dt class="col-md-2 font-weight-normal">
-                            @Html.DisplayNameFor(model => model[0].ExeFilename)
+                            @Html.DisplayNameFor(model => model.Applications[0].ExeFilename)
                         </dt>
                         <dd class="col-md-10">
                             @Html.DisplayFor(modelItem => item.ExeFilename)
                         </dd>
                         <dt class="col-md-2 font-weight-normal">
-                            @Html.DisplayNameFor(model => model[0].VersionFilename)
+                            @Html.DisplayNameFor(model => model.Applications[0].VersionFilename)
                         </dt>
                         <dd class="col-md-10">
                             @Html.DisplayFor(modelItem => item.VersionFilename)
                         </dd>
                         <dt class="col-md-2 font-weight-normal">
-                            @Html.DisplayNameFor(model => model[0].CommandLine)
+                            @Html.DisplayNameFor(model => model.Applications[0].CommandLine)
                         </dt>
                         <dd class="col-md-10">
                             @if (String.IsNullOrWhiteSpace(item.CommandLine))
@@ -68,7 +67,7 @@ else
                         </dd>
                     </dl>
                     <hr />
-                    <h5>@Html.DisplayNameFor(model => model[0].Packages)</h5>
+                    <h5>@Html.DisplayNameFor(model => model.Applications[0].Packages)</h5>
                     <p>
                         <a href="@Url.Action("Create", "Packages", new { applicationId = item.Id })">Add Package &raquo;</a>
                     </p>
@@ -79,19 +78,19 @@ else
                                     <th scope="col">
                                     </th>
                                     <th scope="col">
-                                        @Html.DisplayNameFor(model => model[0].Packages[0].IsAvailable)
+                                        @Html.DisplayNameFor(model => model.Applications[0].Packages[0].IsAvailable)
                                     </th>
                                     <th scope="col">
-                                        @Html.DisplayNameFor(model => model[0].Packages[0].Id)
+                                        @Html.DisplayNameFor(model => model.Applications[0].Packages[0].Id)
                                     </th>
                                     <th scope="col">
-                                        @Html.DisplayNameFor(model => model[0].Packages[0].FileVersion)
+                                        @Html.DisplayNameFor(model => model.Applications[0].Packages[0].FileVersion)
                                     </th>
                                     <th scope="col">
-                                        @Html.DisplayNameFor(model => model[0].Packages[0].ReleaseDateUtc)
+                                        @Html.DisplayNameFor(model => model.Applications[0].Packages[0].ReleaseDateUtc)
                                     </th>
                                     <th scope="col">
-                                        @Html.DisplayNameFor(model => model[0].Packages[0].Checksum)
+                                        @Html.DisplayNameFor(model => model.Applications[0].Packages[0].Checksum)
                                     </th>
                                 </tr>
                             </thead>

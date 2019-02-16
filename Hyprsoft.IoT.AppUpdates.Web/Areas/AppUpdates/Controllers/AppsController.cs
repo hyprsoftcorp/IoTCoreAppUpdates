@@ -23,7 +23,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
         [HttpGet]
         public IActionResult List()
         {
-            return View(UpdateManager.Applications);
+            return View(UpdateManager);
         }
 
         [HttpGet]
