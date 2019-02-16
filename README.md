@@ -166,6 +166,7 @@ AppUpdates:Username | myusername | Cookie Authentication Username
 AppUpdates:Password | myp@ssw0rd | Cookie Authentication Password
 AppUpdates:ClientId | myclientid | Bearer Token Authentication Client Id
 AppUpdates:ClientSecret | mys3cr3t | Bearer Token Authentication Client Secret
+AppUpdates:SecurityKey | C2225C6A-3B98-4002-B1F1-DBD1B92B33D1 | Bearer Token Authentication Symmetric Signing Key
 
 ### Administrative Website Screenshots
 #### Login
