@@ -1,11 +1,13 @@
-﻿@model UpdateManager
+﻿@inject Microsoft.AspNetCore.Hosting.IHostingEnvironment HostingEnvironment
+@model UpdateManager
 
 @{
     ViewData["Title"] = "Apps";
+    var manifestUri = Model.ManifestUri.ToString().Replace(new Uri(HostingEnvironment.WebRootPath).ToString(), $"{Context.Request.Scheme}://{Context.Request.Host}").ToLower();
 }
 
 <h3>@ViewData["Title"]</h3>
-<p>Your app manifest URI is: <a href="@Model.ManifestUri.ToString().ToLower()" title="Manifest URI">@Model.ManifestUri.ToString().ToLower()</a></p>
+<h5>Manifest: <a href="@manifestUri" title="Manifest URI">@manifestUri</a></h5>
 
 <p>
     <a asp-action="Create">Add App &raquo;</a>
