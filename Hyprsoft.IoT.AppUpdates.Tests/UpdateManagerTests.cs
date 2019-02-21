@@ -1,4 +1,4 @@
-using Hyprsoft.Logging.Core;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -27,13 +27,13 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
         #region Methods
 
         [TestInitialize]
-        public async Task Initialize()
+        public void Initialize()
         {
             _testDataFolder = Path.Combine(Path.GetDirectoryName(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName), "..\\Testing\\Data");
             _testInstallFolder = Path.Combine(Path.GetDirectoryName(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName), "..\\Testing\\Install");
             _manifestUri = new Uri(Path.Combine(_testDataFolder, UpdateManager.DefaultManifestFilename));
             _manager = CreateManager(_manifestUri);
-            await CreateUnitTestAppUpdateManifest();
+            CreateUnitTestAppUpdateManifest();
         }
 
         [TestMethod]
@@ -69,7 +69,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
         {
             await _manager.Load();
             _manager.Applications.Clear();
-            await _manager.Save();
+            _manager.Save();
 
             var manager = CreateManager(_manifestUri);
             Assert.IsFalse(manager.IsLoaded);
@@ -121,8 +121,8 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
 
         private UpdateManager CreateManager(Uri manifestUri)
         {
-            var logger = new SimpleLogManager();
-            return new UpdateManager(manifestUri, null, logger);
+            var loggerFactory = new LoggerFactory();
+            return new UpdateManager(manifestUri, null, loggerFactory.CreateLogger<UpdateManager>());
         }
 
         private async Task ValidateUpdate(UpdateManager manager, Guid packageId, Uri installUri)
@@ -142,7 +142,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
             return count;
         }
 
-        private async Task CreateUnitTestAppUpdateManifest()
+        private void CreateUnitTestAppUpdateManifest()
         {
             _manager.Applications.Add(new Application
             {
@@ -208,7 +208,7 @@ namespace Hyprsoft.IoT.AppUpdates.Tests
                     }
                 }
             });
-            await _manager.Save();
+            _manager.Save();
         }
 
         #endregion

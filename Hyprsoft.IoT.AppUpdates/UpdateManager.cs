@@ -11,9 +11,9 @@ using System.Diagnostics;
 using System.IO.Compression;
 using System.Net.Http.Headers;
 using System.Text;
-using Hyprsoft.Logging.Core;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 [assembly: InternalsVisibleTo("Hyprsoft.IoT.AppUpdates.Tests")]
 namespace Hyprsoft.IoT.AppUpdates
@@ -23,14 +23,14 @@ namespace Hyprsoft.IoT.AppUpdates
         #region Fields
 
         private readonly object _lockObject = new object();
-        private readonly SimpleLogManager _logger;
+        private readonly ILogger<UpdateManager> _logger;
         private readonly ClientCredentials _clientCredentials;
 
         #endregion
 
         #region Constructors
 
-        public UpdateManager(Uri manifestUri, ClientCredentials credentials, SimpleLogManager logger)
+        public UpdateManager(Uri manifestUri, ClientCredentials credentials, ILogger<UpdateManager> logger)
         {
             if (logger == null)
                 throw new ArgumentNullException(nameof(logger));
@@ -77,7 +77,7 @@ namespace Hyprsoft.IoT.AppUpdates
                 throw new NullReferenceException($"The '{nameof(ManifestUri)}' cannot be null.");
 
             var version = (((AssemblyInformationalVersionAttribute)GetType().Assembly.GetCustomAttribute(typeof(AssemblyInformationalVersionAttribute))).InformationalVersion);
-            await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Update Manager v{version} loading manifest from '{ManifestUri.ToString().ToLower()}'.");
+            _logger.LogInformation($"Update Manager v{version} loading manifest from '{ManifestUri.ToString().ToLower()}'.");
             if (ManifestUri.IsFile)
             {
                 if (File.Exists(ManifestUri.LocalPath))
@@ -105,7 +105,7 @@ namespace Hyprsoft.IoT.AppUpdates
         /// </summary>
         /// <exception cref="NullReferenceException">Thrown when the <see cref="ManifestUri" is null./></exception>
         /// <exception cref="InvalidOperationException">Thrown when the <see cref="ManifestUri" is not a file URI/></exception>
-        public async Task Save()
+        public void Save()
         {
             if (ManifestUri == null)
                 throw new NullReferenceException($"The '{nameof(ManifestUri)}' cannot be null.");
@@ -113,7 +113,7 @@ namespace Hyprsoft.IoT.AppUpdates
             if (!ManifestUri.IsFile)
                 throw new InvalidOperationException("The update manifest cannot be saved because it's not a file URI.");
 
-            await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Saving manifest to '{ManifestUri.ToString().ToLower()}'.");
+            _logger.LogInformation($"Saving manifest to '{ManifestUri.ToString().ToLower()}'.");
             lock (_lockObject)
                 File.WriteAllText(ManifestUri.LocalPath, JsonConvert.SerializeObject(Applications, Formatting.Indented));
         }
@@ -142,32 +142,32 @@ namespace Hyprsoft.IoT.AppUpdates
 
             // STEP 2 - Check to see if our app needs to be updated.
             var versionFilename = Path.Combine(installUri.LocalPath, package.Application.VersionFilename).ToLower();
-            await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Checking '{package.Application.Name}' version using '{versionFilename}'.");
+            _logger.LogInformation($"Checking '{package.Application.Name}' version using '{versionFilename}'.");
             if (File.Exists(versionFilename))
             {
                 var fileVersion = FileVersionInfo.GetVersionInfo(versionFilename).FileVersion;
-                await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Version '{fileVersion}' found.");
+                _logger.LogInformation($"Version '{fileVersion}' found.");
                 if (package.FileVersion == fileVersion)
                 {
-                    await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Application is up to date.");
+                    _logger.LogInformation($"Application is up to date.");
                     return;
                 }   // file versions the same?
             }   // version file exists?
             else
-                await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"'{package.Application.Name}' does not exist and will be installed.");
+                _logger.LogInformation($"'{package.Application.Name}' does not exist and will be installed.");
 
 
             string packageFilename = (package.SourceUri.IsFile ? package.SourceUri.LocalPath : Path.GetTempFileName()).ToLower();
             try
             {
                 // STEP 3 - Download package.
-                await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Updating '{package.Application.Name}' using package '{package.SourceUri}'.");
+                _logger.LogInformation($"Updating '{package.Application.Name}' using package '{package.SourceUri}'.");
                 if (!package.SourceUri.IsFile)
                 {
-                    await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Downloading package to '{packageFilename}'.");
+                    _logger.LogInformation($"Downloading package to '{packageFilename}'.");
                     using (var client = new HttpClient())
                     {
-                        if (_clientCredentials != null && !String.IsNullOrWhiteSpace(_clientCredentials.ClientId) && !String.IsNullOrWhiteSpace(_clientCredentials.ClientSecret) && 
+                        if (_clientCredentials != null && !String.IsNullOrWhiteSpace(_clientCredentials.ClientId) && !String.IsNullOrWhiteSpace(_clientCredentials.ClientSecret) &&
                             !String.IsNullOrWhiteSpace(_clientCredentials.Scope))
                         {
                             var response = await client.PostAsync($"{ManifestUri.Scheme}://{ManifestUri.Host}:{ManifestUri.Port}/appupdates/account/token",
@@ -179,7 +179,7 @@ namespace Hyprsoft.IoT.AppUpdates
                             }
                             else
                             {
-                                await _logger.LogAsync<UpdateManager>(LogLevel.Warn, $"Package download failed.  Unable to authenticate. Status: {response.StatusCode}");
+                                _logger.LogWarning($"Package download failed.  Unable to authenticate. Status: {response.StatusCode}");
                                 return;
                             }
                         }   // username and password not null?
@@ -188,11 +188,11 @@ namespace Hyprsoft.IoT.AppUpdates
                 }   // file URI?
 
                 // STEP 4 - Check package integrity.
-                await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Checking package checksum for '{packageFilename}'.");
+                _logger.LogInformation($"Checking package checksum for '{packageFilename}'.");
                 var checksum = CalculateMD5Checksum(new Uri(packageFilename));
                 if (package.Checksum != checksum)
                 {
-                    await _logger.LogAsync<UpdateManager>(LogLevel.Warn, $"Checksum mismatch detected.  Expected '{package.Checksum}' and calculated '{checksum}'.");
+                    _logger.LogWarning($"Checksum mismatch detected.  Expected '{package.Checksum}' and calculated '{checksum}'.");
                     return;
                 }   // checksums match?
 
@@ -200,7 +200,7 @@ namespace Hyprsoft.IoT.AppUpdates
                 await KillProcessIfRunning(package.Application.ExeFilename, _logger);
 
                 // STEP 6 - Unzip our package to the install URI.
-                await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Extracting package '{packageFilename}' to '{installUri.LocalPath.ToLower()}'.");
+                _logger.LogInformation($"Extracting package '{packageFilename}' to '{installUri.LocalPath.ToLower()}'.");
                 using (var zip = ZipFile.Open(packageFilename, ZipArchiveMode.Read))
                 {
                     foreach (var entry in zip.Entries)
@@ -218,7 +218,7 @@ namespace Hyprsoft.IoT.AppUpdates
                 var processFilename = Path.Combine(installFolder, package.Application.ExeFilename);
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Running chmod 744 on '{processFilename}'.");
+                    _logger.LogInformation($"Running chmod 744 on '{processFilename}'.");
                     var process = Process.Start(new ProcessStartInfo
                     {
                         Arguments = $"744 {package.Application.ExeFilename}",
@@ -227,7 +227,7 @@ namespace Hyprsoft.IoT.AppUpdates
                     });
                     process.WaitForExit();
                 }   // Linux?
-                await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Starting process '{processFilename}'.");
+                _logger.LogInformation($"Starting process '{processFilename}'.");
                 Process.Start(new ProcessStartInfo
                 {
                     Arguments = package.Application.CommandLine,
@@ -235,14 +235,14 @@ namespace Hyprsoft.IoT.AppUpdates
                     WorkingDirectory = installFolder
                 });
 
-                await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"'{package.Application.Name}' successfully updated to version '{package.FileVersion}'.");
+                _logger.LogInformation($"'{package.Application.Name}' successfully updated to version '{package.FileVersion}'.");
             }
             finally
             {
                 // If we downloaded our source package, make sure we cleanup our temp package file.
                 if (!package.SourceUri.IsFile && File.Exists(packageFilename))
                 {
-                    await _logger.LogAsync<UpdateManager>(LogLevel.Info, $"Deleting temporary package '{packageFilename}'.");
+                    _logger.LogInformation($"Deleting temporary package '{packageFilename}'.");
                     File.Delete(packageFilename);
                 }
             }
@@ -253,11 +253,11 @@ namespace Hyprsoft.IoT.AppUpdates
         /// </summary>
         /// <param name="exeFilename">Exe filename of the process to kill.</param>
         /// <param name="logger">The application logger.  <see cref="SimpleLogManager"./></param>
-        public static async Task KillProcessIfRunning(string exeFilename, SimpleLogManager logger)
+        public static async Task KillProcessIfRunning(string exeFilename, ILogger logger)
         {
             foreach (var process in Process.GetProcessesByName(Path.GetFileNameWithoutExtension(exeFilename)))
             {
-                await logger.LogAsync<UpdateManager>(LogLevel.Info, $"Killing process '{process.ProcessName}' with id '{process.Id}'.");
+                logger.LogInformation($"Killing process '{process.ProcessName}' with id '{process.Id}'.");
                 process.Kill();
             }   // for each process
             await Task.Delay(1000);

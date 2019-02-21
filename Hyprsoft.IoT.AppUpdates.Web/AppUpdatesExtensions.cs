@@ -1,5 +1,4 @@
-﻿using Hyprsoft.Logging.Core;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.IO;
 using System.Reflection;
 using System.Text;
 
@@ -36,13 +34,6 @@ namespace Hyprsoft.IoT.AppUpdates.Web
             var o = new AppUpdatesOptions();
             appUpdatesOptions.Invoke(o);
 
-            var logger = new SimpleLogManager();
-            logger.AddLogger(new SimpleFileLogger(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "app-updates-log.log"))
-            {
-                MaxFileSizeBytes = 524288
-            });
-
-            services.AddLogging(options => options.AddDebug());
             services.AddAuthentication(AuthenticationSettings.CookieAuthenticationScheme).AddCookie(AuthenticationSettings.CookieAuthenticationScheme, options =>
             {
                 options.Cookie.Name = AuthenticationSettings.CookieName;
@@ -63,9 +54,10 @@ namespace Hyprsoft.IoT.AppUpdates.Web
                 };
             });
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = o.MaxFileUploadSizeBytes);
-            services.AddSingleton(logger);
             services.AddSingleton(o.TokenOptions);
-            services.AddSingleton<UpdateManager>(s => new UpdateManager(o.ManifestUri, o.ClientCredentials, logger));
+            services.AddSingleton<UpdateManager>(serviceProvider => new UpdateManager(o.ManifestUri, o.ClientCredentials, 
+                serviceProvider.GetService<ILoggerFactory>().CreateLogger<UpdateManager>()));
+
             return services;
         }
 

@@ -33,7 +33,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Application model)
+        public IActionResult Create(Application model)
         {
             if (ModelState.IsValid)
             {
@@ -41,7 +41,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
                 {
                     model.UpdateManager = UpdateManager;
                     UpdateManager.Applications.Add(model);
-                    await UpdateManager.Save();
+                    UpdateManager.Save();
                     TempData["Feedback"] = $"Successfully added app '{model.Name}'.";
                     return RedirectToAction(nameof(List));
                 }
@@ -64,7 +64,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Application model)
+        public IActionResult Edit(Application model)
         {
             if (ModelState.IsValid)
             {
@@ -74,7 +74,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
                     UpdateManager.Applications.Remove(item);
                     model.Packages = item.Packages;
                     UpdateManager.Applications.Add(model);
-                    await UpdateManager.Save();
+                    UpdateManager.Save();
                     TempData["Feedback"] = $"Successfully updated app '{model.Name}'.";
                     return RedirectToAction(nameof(List));
                 }
@@ -87,16 +87,15 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(Guid id)
+        public IActionResult Delete(Guid id)
         {
-
             var item = UpdateManager.Applications.FirstOrDefault(a => a.Id == id);
             if (item != null)
             {
                 try
                 {
                     UpdateManager.Applications.Remove(item);
-                    await UpdateManager.Save();
+                    UpdateManager.Save();
                     return Ok(new AjaxResponse { Message = $"App '{item.Name}' was successfully deleted." });
                 }
                 catch (Exception ex)

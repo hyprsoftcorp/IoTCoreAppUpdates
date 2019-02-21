@@ -16,28 +16,29 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         {
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
 
-            var logger = new SimpleLogManager();
-            logger.AddLogger(new SimpleConsoleLogger());
-            logger.AddLogger(new SimpleFileLogger(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "app-updates-log.log"))
-            {
-                MaxFileSizeBytes = 524288
-            });
-            var builder = new HostBuilder()
+            var hostBuilder = new HostBuilder()
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddLogging(options =>
+                    services.AddLogging(builder =>
                     {
-                        options.AddConsole();
-                        options.AddDebug();
+                        if (!isService)
+                        {
+                            builder.AddConsole();
+                            builder.AddDebug();
+                        }   // is service?
+                        builder.AddSimpleFileLogger(options =>
+                        {
+                            options.Filename = "app-updates-log.log";
+                            options.MaxFileSizeBytes = 524288;
+                        });
                     });
-                    services.AddSingleton(logger);
                     services.AddHostedService<UpdateService>();
                 });
 
             if (isService)
-                await builder.RunAsServiceAsync();
+                await hostBuilder.RunAsServiceAsync();
             else
-                await builder.RunConsoleAsync();
+                await hostBuilder.RunConsoleAsync();
         }
     }
 }

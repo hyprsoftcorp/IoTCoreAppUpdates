@@ -82,7 +82,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 
                 model.Application = item;
                 item.Packages.Add(model);
-                await UpdateManager.Save();
+                UpdateManager.Save();
                 TempData["Feedback"] = $"Package '{model.FileVersion}' successfully added to app '{model.Application.Name}'.";
                 return RedirectToAction(nameof(AppsController.List), "Apps", $"item-{item.Id}");
             }   // model state valid?
@@ -99,7 +99,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid applicationId, Package model)
+        public IActionResult Edit(Guid applicationId, Package model)
         {
             if (ModelState.IsValid)
             {
@@ -124,7 +124,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 
                         app.Packages.Remove(item);
                         app.Packages.Add(model);
-                        await UpdateManager.Save();
+                        UpdateManager.Save();
                         TempData["Feedback"] = $"Successfully updated package '{model.FileVersion}' for app '{model.Application.Name}'.";
                         return RedirectToAction(nameof(AppsController.List), "Apps", $"item-{item.Id}");
                     }   // item null?
@@ -139,7 +139,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(Guid applicationId, Guid id)
+        public IActionResult Delete(Guid applicationId, Guid id)
         {
             var item = UpdateManager.Applications.SelectMany(a => a.Packages).FirstOrDefault(p => p.Id == id);
             if (item != null)
@@ -148,7 +148,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
                 if (System.IO.File.Exists(packageFilename))
                     System.IO.File.Delete(packageFilename);
                 item.Application.Packages.Remove(item);
-                await UpdateManager.Save();
+                UpdateManager.Save();
                 return Ok(new AjaxResponse { Message = $"Package '{item.FileVersion}' was successfully deleted." });
             }
             return NotFound();
