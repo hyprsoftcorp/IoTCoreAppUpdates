@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Hyprsoft.IoT.AppUpdates.Web;
 using Hyprsoft.Logging.Core;
-using System.IO;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace Hyprsoft.IoT.AppUpdates.TestWeb
