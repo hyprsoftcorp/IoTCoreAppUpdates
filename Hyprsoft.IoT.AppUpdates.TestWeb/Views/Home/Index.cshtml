@@ -9,42 +9,42 @@
     <p>
         <code>
             <pre>
-            public class Startup
-            {
-                public Startup(IConfiguration configuration, <b>IHostingEnvironment env</b>)
-                {
-                    Configuration = configuration;
-                    <b>HostingEnvironment = env;</b>
-                }
+public class Startup
+{
+    public Startup(IConfiguration configuration, <b>IHostingEnvironment env</b>)
+    {
+        Configuration = configuration;
+        <b>HostingEnvironment = env;</b>
+    }
 
-                public IConfiguration Configuration { get; }
+    public IConfiguration Configuration { get; }
 
-            <b>public IHostingEnvironment HostingEnvironment { get; }</b>
+    <b>public IHostingEnvironment HostingEnvironment { get; }</b>
 
-            public void ConfigureServices(IServiceCollection services)
-            {
-                <b>services.AddAppUpdates(options =>
-                {
-                    options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultManifestFilename));
-                    options.ClientCredentials.ClientId = Configuration["AppUpdates:ClientId"];
-                    options.ClientCredentials.ClientSecret = Configuration["AppUpdates:ClientSecret"];
-                    options.ClientCredentials.Scope = options.TokenOptions.Audience;
-                    options.TokenOptions.SecurityKey = Configuration["AppUpdates:SecurityKey"];
-                });</b>
-                services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        <b>services.AddAppUpdates(options =>
+        {
+            options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultManifestFilename));
+            options.ClientCredentials.ClientId = Configuration["AppUpdates:ClientId"];
+            options.ClientCredentials.ClientSecret = Configuration["AppUpdates:ClientSecret"];
+            options.ClientCredentials.Scope = options.TokenOptions.Audience;
+            options.TokenOptions.SecurityKey = Configuration["AppUpdates:SecurityKey"];
+        });</b>
+        services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+    }
 
-                public void Configure(IApplicationBuilder app)
-                {
-                    if (<b>HostingEnvironment</b>.IsDevelopment())
-                        app.UseDeveloperExceptionPage();
-                    else
-                        app.UseExceptionHandler("/Home/Error");
+    public void Configure(IApplicationBuilder app)
+    {
+        if (<b>HostingEnvironment</b>.IsDevelopment())
+            app.UseDeveloperExceptionPage();
+        else
+            app.UseExceptionHandler("/Home/Error");
 
-                    <b>app.UseAppUpdates();</b>
-                    app.UseMvc(routes => routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}"));
-                }
-            }
+        <b>app.UseAppUpdates();</b>
+        app.UseMvc(routes => routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}"));
+    }
+}
             </pre>
         </code>
     </p>

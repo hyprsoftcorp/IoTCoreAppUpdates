@@ -8,7 +8,7 @@
     <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
     <UserSecretsId>e9fb4b0e-2724-4c7f-8aa2-4c524558a81d</UserSecretsId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Description>Hyprsoft IoT App Updates Test Web</Description>
   </PropertyGroup>
 
