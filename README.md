@@ -20,7 +20,7 @@ We needed a way to remotely update .NET Core 2.2 apps (not UWP apps) installed o
 2. Upload the app update package (i.e. zip file) containing the updated application files (EXEs, DLLs, etc.) to your desired "host" (i.e  website or file sharing service).
 
 ### Sample Service Configuration
-The service configuration Json file resides on each device.  <b>Note: If the administrative website NuGet package is used then ClientId and ClientSecret are required; otherwise it depends on your source URIs in your manifest</b>.
+The service configuration Json file resides on each device.  <b>Note: If the administrative website NuGet package is used then ClientId, ClientSecret, and Scope are required.</b>.
 ```json
 {
   "ClientCredentials": {
@@ -128,7 +128,7 @@ public class Startup
 }
 ```
 ### Sample Web.config for Hosting in IIS/Azure App Service
-If you have incorporated the app updates administrative website functionality into your own website, you need to make the following code changes.
+If you have incorporated the app updates administrative website functionality into your own website, you need to make the following web.config configuration changes.
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
