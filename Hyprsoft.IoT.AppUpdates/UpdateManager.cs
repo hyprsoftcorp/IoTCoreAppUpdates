@@ -32,12 +32,9 @@ namespace Hyprsoft.IoT.AppUpdates
 
         public UpdateManager(Uri manifestUri, ClientCredentials credentials, ILogger<UpdateManager> logger)
         {
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
-
             ManifestUri = manifestUri ?? throw new ArgumentNullException(nameof(manifestUri));
             _clientCredentials = credentials;
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         #endregion
@@ -170,6 +167,7 @@ namespace Hyprsoft.IoT.AppUpdates
                         if (_clientCredentials != null && !String.IsNullOrWhiteSpace(_clientCredentials.ClientId) && !String.IsNullOrWhiteSpace(_clientCredentials.ClientSecret) &&
                             !String.IsNullOrWhiteSpace(_clientCredentials.Scope))
                         {
+                            _logger.LogInformation($"Authenticating download using credentials '{_clientCredentials.ClientId}|**********|{_clientCredentials.Scope}'.");
                             var response = await client.PostAsync($"{ManifestUri.Scheme}://{ManifestUri.Host}:{ManifestUri.Port}/appupdates/account/token",
                                 new StringContent(JsonConvert.SerializeObject(_clientCredentials), Encoding.UTF8, "application/json"));
                             if (response.IsSuccessStatusCode)

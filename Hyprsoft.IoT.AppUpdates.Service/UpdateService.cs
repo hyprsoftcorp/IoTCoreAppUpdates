@@ -20,6 +20,7 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         private UpdateManager _manager;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<UpdateService> _logger;
+        private CancellationTokenSource _cts;
 
         #endregion
 
@@ -57,7 +58,10 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                 _logger.LogInformation($"Using manifest '{Settings.ManifestUri.ToString().ToLower()}' to check '{Settings.InstalledApps.Count}' app(s) for updates.");
                 // If our packages are hosted using the Hyprsoft.IoT.Updates.Web NuGet then authentication is required; otherwise it depends on where the sources in the manifest reside.
                 _manager = new UpdateManager(Settings.ManifestUri, Settings.ClientCredentials, _loggerFactory.CreateLogger<UpdateManager>());
-                _updateCheckTask = Update(cancellationToken);
+                // Let's use our own cancellation token to make sure we shutdown cleanlyfor both console and service runs.
+                _cts?.Dispose();
+                _cts = new CancellationTokenSource();
+                _updateCheckTask = Update(_cts.Token);
             }   // manifest URI valid and installed app count > 0?
 
             return Task.CompletedTask;
@@ -66,53 +70,62 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Stopping service.");
-            if (_updateCheckTask != null)
-                await _updateCheckTask;
+            if (_updateCheckTask == null)
+                return;
+
+            _cts.Cancel();
+            await _updateCheckTask;
         }
 
-        private async Task Update(CancellationToken token)
+        private async Task Update(CancellationToken cancellationToken)
         {
-            while (!token.IsCancellationRequested)
+            try
             {
-                if (_isFirstCheck || DateTime.Now >= Settings.NextCheckDate)
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    try
+                    if (_isFirstCheck || DateTime.Now >= Settings.NextCheckDate)
                     {
-                        _isFirstCheck = false;
-                        _logger.LogInformation("Checking for updates.");
-                        // Always reload our manifest in case it has been altered since our last check.
-                        await _manager.Load();
-                        foreach (var install in Settings.InstalledApps)
+                        try
                         {
-                            var app = _manager.Applications.FirstOrDefault(a => a.Id == install.ApplicationId);
-                            if (app != null)
+                            _isFirstCheck = false;
+                            _logger.LogInformation("Checking for updates.");
+                            // Always reload our manifest in case it has been altered since our last check.
+                            await _manager.Load();
+                            foreach (var install in Settings.InstalledApps)
                             {
-                                var package = app.GetLatestPackage();
-                                if (package != null)
-                                    try
-                                    {
-                                        await _manager.Update(package, install.InstallUri, token);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        _logger.LogError(ex, $"Unable to update application '{package.Application.Name}'.");
-                                    }
+                                var app = _manager.Applications.FirstOrDefault(a => a.Id == install.ApplicationId);
+                                if (app != null)
+                                {
+                                    var package = app.GetLatestPackage();
+                                    if (package != null)
+                                        try
+                                        {
+                                            await _manager.Update(package, install.InstallUri, cancellationToken);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            _logger.LogError(ex, $"Unable to update application '{package.Application.Name}'.");
+                                        }
+                                    else
+                                        _logger.LogWarning($"Unable to get the latest package for app '{app.Name}'.  No update will be applied.");
+                                }
                                 else
-                                    _logger.LogWarning($"Unable to get the latest package for app '{app.Name}'.  No update will be applied.");
+                                    _logger.LogWarning($"The app with id '{install.ApplicationId}' doesn't exist in the manifest.  No update will be applied.");
                             }
-                            else
-                                _logger.LogWarning($"The app with id '{install.ApplicationId}' doesn't exist in the manifest.  No update will be applied.");
+                            UpdateNextCheckDate();
                         }
-                        UpdateNextCheckDate();
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Update check failed.");
-                    }
-                }   // time to run check?
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Update check failed.");
+                        }
+                    }   // time to run check?
 
-                await Task.Delay(TimeSpan.FromMinutes(1), token);
-            }   // cancellation requested?
+                    await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+                }   // cancellation requested?
+            }
+            catch (TaskCanceledException)
+            {
+            }
         }
 
         private void LoadConfiguration()
