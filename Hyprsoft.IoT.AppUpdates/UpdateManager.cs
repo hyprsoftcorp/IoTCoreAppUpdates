@@ -138,7 +138,7 @@ namespace Hyprsoft.IoT.AppUpdates
                 Directory.CreateDirectory(installUri.LocalPath);
 
             // STEP 2 - Check to see if our app needs to be updated.
-            var versionFilename = Path.Combine(installUri.LocalPath, package.Application.VersionFilename).ToLower();
+            var versionFilename = Path.Combine(installUri.LocalPath, package.Application.VersionFilename);
             _logger.LogInformation($"Checking '{package.Application.Name}' version using '{versionFilename}'.");
             if (File.Exists(versionFilename))
             {
@@ -154,7 +154,7 @@ namespace Hyprsoft.IoT.AppUpdates
                 _logger.LogInformation($"'{package.Application.Name}' does not exist and will be installed.");
 
 
-            string packageFilename = (package.SourceUri.IsFile ? package.SourceUri.LocalPath : Path.GetTempFileName()).ToLower();
+            string packageFilename = (package.SourceUri.IsFile ? package.SourceUri.LocalPath : Path.GetTempFileName());
             try
             {
                 // STEP 3 - Download package.
@@ -194,10 +194,14 @@ namespace Hyprsoft.IoT.AppUpdates
                     return;
                 }   // checksums match?
 
-                // STEP 5 - Kill application process.
+                // STEP 5 - Run our "before install" command if needed.
+                var installFolder = installUri.LocalPath.EndsWith(Path.DirectorySeparatorChar.ToString()) ? installUri.LocalPath : installUri.LocalPath + Path.DirectorySeparatorChar;
+                RunCommandAndWaitForExit(package.Application.BeforeInstallCommand, installFolder);
+
+                // STEP 6 - Kill application process.
                 await KillProcessIfRunning(package.Application.ExeFilename, _logger);
 
-                // STEP 6 - Unzip our package to the install URI.
+                // STEP 7 - Unzip our package to the install URI.
                 _logger.LogInformation($"Extracting package '{packageFilename}' to '{installUri.LocalPath.ToLower()}'.");
                 using (var zip = ZipFile.Open(packageFilename, ZipArchiveMode.Read))
                 {
@@ -211,27 +215,25 @@ namespace Hyprsoft.IoT.AppUpdates
                     }   // for each zip entry
                 }   // using zip file.
 
-                // STEP 7 - Restart our process.
-                var installFolder = installUri.LocalPath.EndsWith(Path.DirectorySeparatorChar.ToString()) ? installUri.LocalPath : installUri.LocalPath + Path.DirectorySeparatorChar;
-                var processFilename = Path.Combine(installFolder, package.Application.ExeFilename);
+                // STEP 8 - Run our "after install" command if needed.
+                RunCommandAndWaitForExit(package.Application.AfterInstallCommand, installFolder);
+
+                // STEP 9 - Restart our process if needed.
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    RunCommandAndWaitForExit($"chmod 744 {package.Application.ExeFilename}", installFolder);
+
+                // It's possible that our "after install" command started our process so let's check.
+                if (String.IsNullOrWhiteSpace(package.Application.AfterInstallCommand) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(package.Application.ExeFilename)).Length <= 0)
                 {
-                    _logger.LogInformation($"Running chmod 744 on '{processFilename}'.");
-                    var process = Process.Start(new ProcessStartInfo
+                    var processFilename = Path.Combine(installFolder, package.Application.ExeFilename);
+                    _logger.LogInformation($"Starting process '{processFilename} {package.Application.CommandLine}'.");
+                    Process.Start(new ProcessStartInfo
                     {
-                        Arguments = $"744 {package.Application.ExeFilename}",
-                        FileName = "chmod",
+                        Arguments = package.Application.CommandLine,
+                        FileName = processFilename,
                         WorkingDirectory = installFolder
                     });
-                    process.WaitForExit();
-                }   // Linux?
-                _logger.LogInformation($"Starting process '{processFilename}'.");
-                Process.Start(new ProcessStartInfo
-                {
-                    Arguments = package.Application.CommandLine,
-                    FileName = processFilename,
-                    WorkingDirectory = installFolder
-                });
+                }
 
                 _logger.LogInformation($"'{package.Application.Name}' successfully updated to version '{package.FileVersion}'.");
             }
@@ -283,6 +285,22 @@ namespace Hyprsoft.IoT.AppUpdates
         }
 
         public override string ToString() => $"Manifest: {ManifestUri.ToString().ToLower()} Applications: {Applications.Count}";
+
+        private void RunCommandAndWaitForExit(string command, string workingFolder)
+        {
+            if (String.IsNullOrWhiteSpace(command))
+                return;
+
+            _logger.LogInformation($"Running command '{command}'.");
+            var process = Process.Start(new ProcessStartInfo
+            {
+                Arguments = command.Substring(command.IndexOf(" ") + 1),
+                FileName = command.Substring(0, command.IndexOf(" ")),
+                WorkingDirectory = workingFolder
+            });
+            process.WaitForExit();
+            _logger.LogInformation($"Command '{command}' ran successfully.");
+        }
 
         #endregion
     }

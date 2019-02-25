@@ -6,6 +6,8 @@
     "ExeFilename": "Hyprsoft.IoT.AppUpdates.TestApp.exe",
     "VersionFilename": "Hyprsoft.IoT.AppUpdates.TestApp.dll",
     "CommandLine": null,
+    "BeforeInstallCommand": "systemctrl stop dnsmonitor.service",
+    "AfterInstallCommand": "systemctrl start dnsmonitor.service",
     "Packages": [
       {
         "Id": "3cd70683-0d74-4fb2-b612-29925588eb1c",

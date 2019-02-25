@@ -6,7 +6,7 @@ We needed a way to remotely update .NET Core 2.2 apps (not UWP apps) installed o
 2. Configurable daily check time (defaults to 3am). 
 3. The service can update multiple apps and has "rollback" or "downgrade" capabilities.
 4. Package integrity is validated using a MD5 hash.
-5. The update manager will automatically "kill" processes being updated and restart them after they've been updated.  Please see the section below regarding security.
+5. The update manager will automatically attempt to gracefully shutdown and restart the app being updated by running the "before install" and "after install" optional commands.  If these commands aren't supplied the update manager will "kill" the app and restart it after being updated.  Please see the section below regarding security.
 6. The server side administrative website functionality can be integrated into any existing ASP.NET Core 2.2 project by simply adding the Hyprsoft.IoT.AppUpdates.Web NuGet package and making the code and configuration changes noted below.
 7. If the Hyprsoft.IoT.AppUpdates.Web NuGet package is utilized, update package endpoints are automatically protected using built-in bearer token authentication.  This prevents unauthorized downloads of your app packages.
 8. Credentials for accessing the administrative website can be supplied using Azure App Service settings or Azure Key Vault.
@@ -50,6 +50,8 @@ The app update manifest Json file and app packages can reside on a website or an
     "ExeFilename": "hyprsoft.my.awesome.app.exe",
     "VersionFilename": "hyprsoft.my.awesome.app.dll",
     "CommandLine": "param1",
+    "BeforeInstallCommand": "systemctl stop myapp.service",
+    "AfterInstallCommand": "systemctl start myapp.service",
     "Packages": [
       {
         "Id": "02902554-4d3d-4159-b106-41e0ac158733",

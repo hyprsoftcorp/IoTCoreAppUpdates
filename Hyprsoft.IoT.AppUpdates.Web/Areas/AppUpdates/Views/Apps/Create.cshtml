@@ -32,11 +32,13 @@
                 <div class="form-group col-md-6">
                     <label asp-for="ExeFilename"></label>*
                     <input asp-for="ExeFilename" class="form-control" placeholder="Ex: My.Awesome.App.exe" />
+                    <small>Case sensitive on Linux.</small>
                     <span asp-validation-for="ExeFilename" class="text-danger"></span>
                 </div>
                 <div class="form-group col-md-6">
                     <label asp-for="VersionFilename"></label>*
                     <input asp-for="VersionFilename" class="form-control" placeholder="Ex: My.Awesome.App.dll" />
+                    <small>Case sensitive on Linux.</small>
                     <span asp-validation-for="VersionFilename" class="text-danger"></span>
                 </div>
             </div>
@@ -44,6 +46,20 @@
                 <label asp-for="CommandLine"></label>
                 <input asp-for="CommandLine" class="form-control" placeholder="Ex: param1 param2" />
                 <span asp-validation-for="CommandLine" class="text-danger"></span>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="BeforeInstallCommand"></label>
+                    <input asp-for="BeforeInstallCommand" class="form-control" placeholder="Ex: systemctl stop myapp.service" />
+                    <small>Case sensitive on Linux.</small>
+                    <span asp-validation-for="BeforeInstallCommand" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="AfterInstallCommand"></label>
+                    <input asp-for="AfterInstallCommand" class="form-control" placeholder="Ex: systemctl start myapp.service" />
+                    <small>Case sensitive on Linux.</small>
+                    <span asp-validation-for="AfterInstallCommand" class="text-danger"></span>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
         </form>

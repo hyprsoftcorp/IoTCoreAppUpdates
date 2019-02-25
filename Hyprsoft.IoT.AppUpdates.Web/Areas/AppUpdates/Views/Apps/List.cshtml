@@ -38,28 +38,28 @@ else
                     <h4 class="card-title">@item.Name</h4>
                     <p>@item.Description</p>
                     <dl class="row">
-                        <dt class="col-md-2 font-weight-normal">
+                        <dt class="col-md-3 font-weight-normal">
                             @Html.DisplayNameFor(model => model.Applications[0].Id)
                         </dt>
-                        <dd class="col-md-10">
+                        <dd class="col-md-9">
                             <a href="@Url.Action("Edit", new { id = item.Id })">@Html.DisplayFor(modelItem => item.Id)</a>
                         </dd>
-                        <dt class="col-md-2 font-weight-normal">
+                        <dt class="col-md-3 font-weight-normal">
                             @Html.DisplayNameFor(model => model.Applications[0].ExeFilename)
                         </dt>
-                        <dd class="col-md-10">
+                        <dd class="col-md-9">
                             @Html.DisplayFor(modelItem => item.ExeFilename)
                         </dd>
-                        <dt class="col-md-2 font-weight-normal">
+                        <dt class="col-md-3 font-weight-normal">
                             @Html.DisplayNameFor(model => model.Applications[0].VersionFilename)
                         </dt>
-                        <dd class="col-md-10">
+                        <dd class="col-md-9">
                             @Html.DisplayFor(modelItem => item.VersionFilename)
                         </dd>
-                        <dt class="col-md-2 font-weight-normal">
+                        <dt class="col-md-3 font-weight-normal">
                             @Html.DisplayNameFor(model => model.Applications[0].CommandLine)
                         </dt>
-                        <dd class="col-md-10">
+                        <dd class="col-md-9">
                             @if (String.IsNullOrWhiteSpace(item.CommandLine))
                             {
                                 <span>[none]</span>
@@ -67,6 +67,32 @@ else
                             else
                             {
                                 @Html.DisplayFor(modelItem => item.CommandLine)
+                            }
+                        </dd>
+                        <dt class="col-md-3 font-weight-normal">
+                            @Html.DisplayNameFor(model => model.Applications[0].BeforeInstallCommand)
+                        </dt>
+                        <dd class="col-md-9">
+                            @if (String.IsNullOrWhiteSpace(item.BeforeInstallCommand))
+                            {
+                                <span>[none]</span>
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(modelItem => item.BeforeInstallCommand)
+                            }
+                        </dd>
+                        <dt class="col-md-3 font-weight-normal">
+                            @Html.DisplayNameFor(model => model.Applications[0].AfterInstallCommand)
+                        </dt>
+                        <dd class="col-md-9">
+                            @if (String.IsNullOrWhiteSpace(item.AfterInstallCommand))
+                            {
+                                <span>[none]</span>
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(modelItem => item.AfterInstallCommand)
                             }
                         </dd>
                     </dl>

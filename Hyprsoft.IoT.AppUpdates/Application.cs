@@ -31,6 +31,12 @@ namespace Hyprsoft.IoT.AppUpdates
         [JsonProperty, Display(Name = "Command Line")]
         public string CommandLine { get; set; }
 
+        [JsonProperty, Display(Name = "Before Install Command")]
+        public string BeforeInstallCommand { get; set; }
+
+        [JsonProperty, Display(Name = "After Install Command")]
+        public string AfterInstallCommand { get; set; }
+
         [JsonProperty]
         public List<Package> Packages { get; set; } = new List<Package>();
 
@@ -43,7 +49,7 @@ namespace Hyprsoft.IoT.AppUpdates
             return Packages.Where(p => p.IsAvailable).OrderByDescending(p => p.ReleaseDateUtc).FirstOrDefault();
         }
 
-        public override string ToString() =>$"Id: {Id} Name: {Name} Exe: {ExeFilename} Packages: {Packages.Count}";
+        public override string ToString() => $"Id: {Id} Name: {Name} Exe: {ExeFilename} Packages: {Packages.Count}";
 
         #endregion
     }

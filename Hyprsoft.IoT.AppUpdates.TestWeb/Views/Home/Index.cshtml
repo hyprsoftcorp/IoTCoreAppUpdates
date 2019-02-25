@@ -4,11 +4,24 @@
     <hr class="my-4">
     <p>
         This functionality can be added to any existing ASP.NET Core 2.2 MVC website by adding the Hyprsoft.IoT.AppUpdates.Web Nuget package
-        and the code below in <b>bold</b> to the Startup class.
+        and the code below in <b>bold</b> to the Program and Startup classes.
     </p>
     <p>
         <code>
             <pre>
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        CreateWebHostBuilder(args).Build().Run();
+    }
+
+    public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+        WebHost.CreateDefaultBuilder(args)
+        .UseStartup<Startup>()
+        <b>.UseAppUpdates();</b>
+}
+
 public class Startup
 {
     public Startup(IConfiguration configuration, <b>IHostingEnvironment env</b>)
