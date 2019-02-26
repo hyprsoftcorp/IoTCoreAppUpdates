@@ -1,7 +1,7 @@
-# Windows 10 IoT Core App Updates Service
+# IoT App Updates Service
 We needed a way to remotely update .NET Core 2.2 apps (not UWP apps) installed on IoT devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a remote host and updates locally installed apps on the device as needed.  Please note that this service was designed for and has only been tested with .NET Core 2.2 binaries.
 
-### Current Features
+## Current Features
 1. The app update manifest and associated app update packages can be hosted on any website, Azure storage, Dropbox, One Drive, Google Drive, etc.
 2. Configurable daily check time (defaults to 3am). 
 3. The service can update multiple apps and has "rollback" or "downgrade" capabilities.
@@ -11,11 +11,11 @@ We needed a way to remotely update .NET Core 2.2 apps (not UWP apps) installed o
 7. If the Hyprsoft.IoT.AppUpdates.Web NuGet package is utilized, update package endpoints are automatically protected using built-in bearer token authentication.  This prevents unauthorized downloads of your app packages.
 8. Credentials for accessing the administrative website can be supplied using Azure App Service settings or Azure Key Vault.
 
-### Process to Update an App
-#### Automatically
+## Process to Update an App
+### Automatically
 1. Integrate the administrative website NuGet package into your existing ASP.NET Core 2.2 website and manage updates and packages via your browser.  See the sample configuration, code, and administrative website screenshots below.
 
-#### Manually
+### Manually
 1. Add a new package definition to the app update manifest with an incremented file version, new release date, new source URI, and new checksum.
 2. Upload the app update package (i.e. zip file) containing the updated application files (EXEs, DLLs, etc.) to your desired "host" (i.e  website or file sharing service).
 
@@ -158,6 +158,40 @@ If you have incorporated the app updates administrative website functionality in
 
 ### Security Concerns
 By default the app update service runs on the IoT device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file systems.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!  Use at your own risk!**
+
+### Start Service on Linux Boot
+Create an appupdates.service file:
+```
+sudo nano /etc/systemd/system/appupdates.service
+```
+
+#### Sample appupdates.service
+This assumes the Linux (ARM) service binaries have been copied to the '/usr/bin/appupdates' directory.
+```
+[Unit]
+Description=Hyprsoft IoT App Updates Service
+After=network.target
+Require=network.target
+
+[Service]
+ExecStart=/usr/bin/appupdates/Hyprsoft.IoT.AppUpdates.Service --console
+WorkingDirectory=/usr/bin/appupdates/
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Start the DNS monitor service:
+```
+sudo systemctl enable appupdates.service
+sudo systemctl daemon-reload
+sudo systemctl start appupdates.service
+```
+
+Check the app log file:
+```
+sudo nano /usr/bin/appupdates/app-updates-log.log
+```
 
 ### Administrative Website Credentials
 The administrative website credentials should be provided via standard Azure App Service settings.

@@ -159,7 +159,8 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         private void UpdateNextCheckDate()
         {
             var now = DateTime.Now;
-            Settings.NextCheckDate = new DateTime(now.Year, now.Month, now.Day, Settings.CheckTime.Hours, Settings.CheckTime.Minutes, Settings.CheckTime.Seconds).Add(TimeSpan.FromDays(1));
+            Settings.NextCheckDate = new DateTime(now.Year, now.Month, now.Day, Settings.CheckTime.Hours, Settings.CheckTime.Minutes, Settings.CheckTime.Seconds).AddDays(1);
+            _logger.LogInformation($"Next check will be at '{Settings.NextCheckDate.ToString("g")}'.");
             SaveConfiguration();
         }
 
