@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 {
     [Authorize(AuthenticationSchemes = AuthenticationSettings.CookieAuthenticationScheme)]
-    [Route("[area]/apps/{applicationId}/[controller]/[action]/{id?}")]
+    [Route("[area]/apps/{applicationId:guid}/[controller]/[action]/{id:guid?}")]
     public class PackagesController : BaseController
     {
         #region Fields
@@ -62,6 +62,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
                 // We place the package outside the wwwroot folder so it's not easily accessible via the static files middleware.
                 var packagesFolder = Path.Combine(_hostingEnv.ContentRootPath, "packages");
                 var packageFilename = Path.Combine(packagesFolder, zipfile.FileName);
+
                 if (!Directory.Exists(packagesFolder))
                     Directory.CreateDirectory(packagesFolder);
                 using (var stream = new FileStream(packageFilename, FileMode.OpenOrCreate))
@@ -80,7 +81,6 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
                     return View(model);
                 }
 
-                model.Application = item;
                 item.Packages.Add(model);
                 UpdateManager.Save();
                 TempData["Feedback"] = $"Package '{model.FileVersion}' successfully added to app '{model.Application.Name}'.";
@@ -150,6 +150,19 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
                 item.Application.Packages.Remove(item);
                 UpdateManager.Save();
                 return Ok(new AjaxResponse { Message = $"Package '{item.FileVersion}' was successfully deleted." });
+            }
+            return NotFound();
+        }
+
+        [HttpGet("save")]
+        public IActionResult Download(Guid applicationId, Guid id)
+        {
+            var item = UpdateManager.Applications.SelectMany(a => a.Packages).FirstOrDefault(p => p.Id == id);
+            if (item != null)
+            {
+                var packageFilename = Path.Combine(Path.Combine(_hostingEnv.ContentRootPath, "packages"), Path.GetFileName(item.SourceUri.ToString()));
+                if (System.IO.File.Exists(packageFilename))
+                    return PhysicalFile(Path.Combine(Path.Combine(_hostingEnv.ContentRootPath, "packages"), packageFilename), "application/zip", Path.GetFileName(item.SourceUri.ToString()));
             }
             return NotFound();
         }

@@ -98,10 +98,11 @@ else
                     </dl>
                     <hr />
                     <h5>@Html.DisplayNameFor(model => model.Applications[0].Packages)</h5>
-                    <p>
-                        <a href="@Url.Action("Create", "Packages", new { applicationId = item.Id })">Add Package &raquo;</a>
-                    </p>
-                    <div class="table-responsive">
+                    <ul class="nav">
+                        <li class="nav-item"><a class="nav-link pl-0" href="#packages-@item.Id" data-toggle="collapse">Show/Hide</a></li>
+                        <li class="nav-item"><a class="nav-link" href="@Url.Action("Create", "Packages", new { applicationId = item.Id })">Add Package &raquo;</a></li>
+                    </ul>
+                    <div id="packages-@item.Id" class="table-responsive collapse">
                         <table class="table table-striped">
                             <thead class="thead-dark">
                                 <tr>
@@ -146,6 +147,7 @@ else
                                                     <div class="dropdown-menu" aria-labelledby="menu-@item.Id">
                                                         <a class="dropdown-item" href="@Url.Action("Edit", "Packages", new { applicationId = item.Id, id = package.Id })">Edit</a>
                                                         <a class="dropdown-item" href="#" onclick="page.delete('@Url.Action("Delete", "Packages", new { applicationId = item.Id, id = package.Id })', 'row-@package.Id', 'Are you sure you want to permanently delete this package?'); return false;">Delete</a>
+                                                        <a class="dropdown-item" href="@Url.Action("Download", "Packages", new { applicationId = item.Id, id = package.Id })">Download</a>
                                                     </div>
                                                 </div>
                                             </td>

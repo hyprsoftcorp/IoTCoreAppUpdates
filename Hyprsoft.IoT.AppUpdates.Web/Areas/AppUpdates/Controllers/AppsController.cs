@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
 {

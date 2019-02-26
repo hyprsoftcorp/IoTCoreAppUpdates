@@ -10,10 +10,18 @@
     "AfterInstallCommand": "systemctrl start dnsmonitor.service",
     "Packages": [
       {
+        "Id": "24373a34-92cf-4d0b-b9d1-2e7848022f18",
+        "IsAvailable": true,
+        "FileVersion": "1.0.1.0",
+        "ReleaseDateUtc": "2019-02-26T00:00:00",
+        "SourceUri": "http://localhost:50744/appupdates/apps/40eee2a1-e633-447d-932c-810c22a12e37/packages/download/testapp01_1010.zip",
+        "Checksum": "fa91dca06a74d40a495697cd3d5ad8d8"
+      },
+      {
         "Id": "3cd70683-0d74-4fb2-b612-29925588eb1c",
         "IsAvailable": true,
         "FileVersion": "1.0.0.0",
-        "ReleaseDateUtc": "2019-02-16T00:00:00",
+        "ReleaseDateUtc": "2019-02-17T00:00:00",
         "SourceUri": "http://localhost:50744/appupdates/apps/40eee2a1-e633-447d-932c-810c22a12e37/packages/download/testapp01_1000.zip",
         "Checksum": "f186cbd924b3dea18a02e2fb3f49cc67"
       }
