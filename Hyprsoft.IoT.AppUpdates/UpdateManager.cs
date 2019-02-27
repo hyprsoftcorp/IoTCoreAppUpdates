@@ -196,7 +196,7 @@ namespace Hyprsoft.IoT.AppUpdates
 
                 // STEP 5 - Run our "before install" command if needed.
                 var installFolder = installUri.LocalPath.EndsWith(Path.DirectorySeparatorChar.ToString()) ? installUri.LocalPath : installUri.LocalPath + Path.DirectorySeparatorChar;
-                RunCommandAndWaitForExit(package.Application.BeforeInstallCommand, installFolder);
+                await RunCommandAndWaitForExitAsync(package.Application.BeforeInstallCommand, installFolder, TimeSpan.FromSeconds(2));
 
                 // STEP 6 - Kill application process.
                 await KillProcessIfRunning(package.Application.ExeFilename, _logger);
@@ -216,17 +216,16 @@ namespace Hyprsoft.IoT.AppUpdates
                 }   // using zip file.
 
                 // STEP 8 - Run our "after install" command if needed.
-                RunCommandAndWaitForExit(package.Application.AfterInstallCommand, installFolder);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    await RunCommandAndWaitForExitAsync($"chmod 744 {package.Application.ExeFilename}", installFolder, TimeSpan.Zero);
+                await RunCommandAndWaitForExitAsync(package.Application.AfterInstallCommand, installFolder, TimeSpan.FromSeconds(2));
 
                 // STEP 9 - Restart our process if needed.
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                    RunCommandAndWaitForExit($"chmod 744 {package.Application.ExeFilename}", installFolder);
-
                 // It's possible that our "after install" command started our process so let's check.
-                if (String.IsNullOrWhiteSpace(package.Application.AfterInstallCommand) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(package.Application.ExeFilename)).Length <= 0)
+                if (String.IsNullOrWhiteSpace(package.Application.AfterInstallCommand) || GetProcessesByName(package.Application.ExeFilename, _logger).Length <= 0)
                 {
                     var processFilename = Path.Combine(installFolder, package.Application.ExeFilename);
-                    _logger.LogInformation($"Starting process '{processFilename} {package.Application.CommandLine}'.");
+                    _logger.LogInformation($"Starting process '{processFilename}' with arguments '{(String.IsNullOrWhiteSpace((package.Application.CommandLine)) ? "[none]" : package.Application.CommandLine)}'.");
                     Process.Start(new ProcessStartInfo
                     {
                         Arguments = package.Application.CommandLine,
@@ -255,7 +254,7 @@ namespace Hyprsoft.IoT.AppUpdates
         /// <param name="logger">The application logger.  <see cref="SimpleLogManager"./></param>
         public static async Task KillProcessIfRunning(string exeFilename, ILogger logger)
         {
-            foreach (var process in Process.GetProcessesByName(Path.GetFileNameWithoutExtension(exeFilename)))
+            foreach (var process in GetProcessesByName(exeFilename, logger))
             {
                 logger.LogInformation($"Killing process '{process.ProcessName}' with id '{process.Id}'.");
                 process.Kill();
@@ -286,7 +285,7 @@ namespace Hyprsoft.IoT.AppUpdates
 
         public override string ToString() => $"Manifest: {ManifestUri.ToString().ToLower()} Applications: {Applications.Count}";
 
-        private void RunCommandAndWaitForExit(string command, string workingFolder)
+        private async Task RunCommandAndWaitForExitAsync(string command, string workingFolder, TimeSpan delay)
         {
             if (String.IsNullOrWhiteSpace(command))
                 return;
@@ -299,7 +298,20 @@ namespace Hyprsoft.IoT.AppUpdates
                 WorkingDirectory = workingFolder
             });
             process.WaitForExit();
+            if (delay != TimeSpan.Zero)
+                await Task.Delay(delay);
             _logger.LogInformation($"Command '{command}' ran successfully.");
+        }
+
+        private static Process[] GetProcessesByName(string exeFilename, ILogger logger)
+        {
+            // On Windows we typically have a exeFilename with an extension (i.e. .exe), on Linux we don't.
+            string processName = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? exeFilename : Path.GetFileNameWithoutExtension(exeFilename);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && processName.Length > 15)
+                processName = processName.Substring(0, 15);
+            var processes = Process.GetProcessesByName(processName);
+            logger.LogInformation($"Found '{processes.Length}' process(es) running using '{processName}'.");
+            return processes;
         }
 
         #endregion
