@@ -6,6 +6,8 @@
     "ExeFilename": "hyprsoft.iot.appupdates.testapp.exe",
     "VersionFilename": "hyprsoft.iot.appupdates.testapp.dll",
     "CommandLine": "param1",
+    "BeforeInstallCommand": null,
+    "AfterInstallCommand": null,
     "Packages": [
       {
         "Id": "02902554-4d3d-4159-b106-41e0ac158733",
@@ -32,6 +34,8 @@
     "ExeFilename": "hyprsoft.iot.appupdates.testapp.exe",
     "VersionFilename": "hyprsoft.iot.appupdates.testapp.dll",
     "CommandLine": "param1 param2",
+    "BeforeInstallCommand": null,
+    "AfterInstallCommand": null,
     "Packages": [
       {
         "Id": "97630359-bcdc-401f-917e-f940483b5a71",

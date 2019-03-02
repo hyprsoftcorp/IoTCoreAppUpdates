@@ -1,13 +1,13 @@
 [
   {
     "Id": "40eee2a1-e633-447d-932c-810c22a12e37",
-    "Name": "Test App",
-    "Description": "Test App",
+    "Name": "Test App (x86 and x64)",
+    "Description": "Test App (x86 and x64)",
     "ExeFilename": "Hyprsoft.IoT.AppUpdates.TestApp.exe",
     "VersionFilename": "Hyprsoft.IoT.AppUpdates.TestApp.dll",
     "CommandLine": null,
-    "BeforeInstallCommand": "systemctrl stop dnsmonitor.service",
-    "AfterInstallCommand": "systemctrl start dnsmonitor.service",
+    "BeforeInstallCommand": null,
+    "AfterInstallCommand": null,
     "Packages": [
       {
         "Id": "24373a34-92cf-4d0b-b9d1-2e7848022f18",

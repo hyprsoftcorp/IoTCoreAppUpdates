@@ -13,8 +13,8 @@ namespace Hyprsoft.IoT.AppUpdates
         [Required, JsonProperty]
         public string ClientSecret { get; set; }
 
-        [Required, JsonProperty]
-        public string Scope { get; set; }
+        [Required, JsonIgnore]
+        public string Scope { get; set; } = "appupdates";
 
         #endregion
     }
