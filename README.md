@@ -25,12 +25,11 @@ The service configuration Json file resides on each device.  <b>Note: If the adm
 {
   "ClientCredentials": {
     "ClientId": "<optional clientid>",
-    "ClientSecret": "<optional client secret>",
-    "Scope": "appupdates"
+    "ClientSecret": "<optional client secret>"
   },
   "CheckTime": "03:00:00",
   "NextCheckDate": "2018-10-17T03:00:00",
-  "ManifestUri": "http://www.yourdomain.com/app-updates-manifest.json",
+  "ManifestUri": "https://www.yourdomain.com/app-updates-manifest.json",
   "InstalledApps": [
     {
       "ApplicationId": "04fc007e-db18-430f-b4fa-f5b54de1e142",
@@ -58,7 +57,7 @@ The app update manifest Json file and app packages can reside on a website or an
         "IsAvailable": true,
         "Version": "1.0.0.0",
         "ReleaseDateUtc": "2018-09-01T00:00:00",
-        "SourceUri": "http://www.yourdomain.com/appupdates/apps/04fc007e-db18-430f-b4fa-f5b54de1e142/packages/download/hyprsoft.my.awesome.app-1000.zip",
+        "SourceUri": "https://www.yourdomain.com/appupdates/apps/04fc007e-db18-430f-b4fa-f5b54de1e142/packages/download/hyprsoft.my.awesome.app-1000.zip",
         "Checksum": "bddf0cd85b9b4985fb10a1555e10ab6d"
       },
       {
@@ -66,7 +65,7 @@ The app update manifest Json file and app packages can reside on a website or an
         "IsAvailable": true,
         "Version": "1.0.1.0",
         "ReleaseDateUtc": "2018-09-16T00:00:00",
-        "SourceUri": "http://www.yourdomain.com/appupdates/apps/04fc007e-db18-430f-b4fa-f5b54de1e142/packages/download/hyprsoft.my.awesome.app-1010.zip",
+        "SourceUri": "https://www.yourdomain.com/appupdates/apps/04fc007e-db18-430f-b4fa-f5b54de1e142/packages/download/hyprsoft.my.awesome.app-1010.zip",
         "Checksum": "e6276631b2c67664810132f1ee565d59"
       }
     ]
@@ -188,8 +187,9 @@ sudo systemctl daemon-reload
 sudo systemctl start appupdates.service
 ```
 
-Check the app log file:
+Check the service status and/or app log file:
 ```
+systemctl status appupdates.service
 sudo nano /usr/bin/appupdates/app-updates-log.log
 ```
 
