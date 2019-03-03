@@ -37,13 +37,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyprsoft.IoT.AppUpdates.Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Media", "Media", "{6EC7535D-0724-487C-8854-A8B942760EE7}"
 	ProjectSection(SolutionItems) = preProject
-		Media\apps-add.jpg = Media\apps-add.jpg
-		Media\apps-edit.jpg = Media\apps-edit.jpg
-		Media\apps-list.jpg = Media\apps-list.jpg
+		Media\apps-add-thumb.png = Media\apps-add-thumb.png
+		Media\apps-edit-thumb.png = Media\apps-edit-thumb.png
+		Media\apps-list-thumb.png = Media\apps-list-thumb.png
 		Media\file-properties.jpg = Media\file-properties.jpg
-		Media\login.jpg = Media\login.jpg
-		Media\packages-add.jpg = Media\packages-add.jpg
-		Media\packages-edit.jpg = Media\packages-edit.jpg
+		Media\login-thumb.png = Media\login-thumb.png
+		Media\packages-add-thumb.png = Media\packages-add-thumb.png
+		Media\packages-edit-thumb.png = Media\packages-edit-thumb.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{BE0DB9A2-6CA2-40A7-B5FF-D52ED603D820}"
