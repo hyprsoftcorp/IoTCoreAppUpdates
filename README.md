@@ -1,5 +1,5 @@
 # IoT App Updates Service
-We needed a way to remotely update .NET Core 2.2 apps (not UWP apps) installed on IoT devices running Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a remote host and updates locally installed apps on the device as needed.  Please note that this service was designed for and has only been tested with .NET Core 2.2 binaries.
+We needed a way to remotely update .NET Core 2.2 apps (not UWP apps) installed on IoT devices running Linux or Windows 10 IoT Core.  We created a standard Windows service that periodically reads an app update manifest from a remote host and updates locally installed apps on the device as needed.  Please note that this service was designed for and has only been tested with .NET Core 2.2 binaries.
 
 ## Current Features
 1. The app update manifest and associated app update packages can be hosted on any website, Azure storage, Dropbox, One Drive, Google Drive, etc.

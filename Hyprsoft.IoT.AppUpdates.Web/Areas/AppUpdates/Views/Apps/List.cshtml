@@ -6,7 +6,7 @@
     var manifestUri = Model.ManifestUri.ToString().Replace(new Uri(HostingEnvironment.WebRootPath).ToString(), $"{Context.Request.Scheme}://{Context.Request.Host}").ToLower();
 }
 
-<h3>@ViewData["Title"]</h3>
+<h3>@ViewData["Title"] <span class="badge badge-secondary">@Model.Applications.Count</span></h3>
 <p>
     <b>Manifest: <a href="@manifestUri" title="Manifest URI">@manifestUri</a></b>
 </p>
@@ -42,7 +42,7 @@ else
                             @Html.DisplayNameFor(model => model.Applications[0].Id)
                         </dt>
                         <dd class="col-md-9">
-                            <a href="@Url.Action("Edit", new { id = item.Id })">@Html.DisplayFor(modelItem => item.Id)</a>
+                            <span class="copy-src"><a href="@Url.Action("Edit", new { id = item.Id })">@Html.DisplayFor(modelItem => item.Id)</a> <a class="copy" href="#" onclick="return false" data-clipboard-text="@item.Id" title="Copy to clipboard"><i class="fas fa-copy"></i></a></span>
                         </dd>
                         <dt class="col-md-3 font-weight-normal">
                             @Html.DisplayNameFor(model => model.Applications[0].ExeFilename)
@@ -97,7 +97,7 @@ else
                         </dd>
                     </dl>
                     <hr />
-                    <h5>@Html.DisplayNameFor(model => model.Applications[0].Packages)</h5>
+                    <h5>@Html.DisplayNameFor(model => model.Applications[0].Packages) <span class="badge badge-secondary">@(item.Packages.Count)</span></h5>
                     <ul class="nav">
                         <li class="nav-item"><a class="nav-link pl-0" href="#packages-@item.Id" data-toggle="collapse">Show/Hide</a></li>
                         <li class="nav-item"><a class="nav-link" href="@Url.Action("Create", "Packages", new { applicationId = item.Id })">Add Package &raquo;</a></li>
@@ -158,7 +158,7 @@ else
                                                 </div>
                                             </td>
                                             <td scope="row" nowrap>
-                                                <a href="@Url.Action("Edit", "Packages", new { applicationId = item.Id, id = package.Id })" title="Edit Package">@Html.DisplayFor(modelItem => package.Id)</a>
+                                                <span class="copy-src"><a href="@Url.Action("Edit", "Packages", new { applicationId = item.Id, id = package.Id })" title="Edit Package">@Html.DisplayFor(modelItem => package.Id)</a> <a class="copy" href="#" onclick="return false" data-clipboard-text="@package.Id" title="Copy to clipboard"><i class="fas fa-copy"></i></a></span>
                                             </td>
                                             <td scope="row" nowrap>
                                                 @Html.DisplayFor(modelItem => package.FileVersion)
@@ -180,4 +180,12 @@ else
             <br />
         </section>
     }
+}
+@section scripts {
+    <script src="~/appupdates/js/clipboard.min.js"></script>
+    <script>
+        $(() => {
+            new ClipboardJS('a.copy');
+        });
+    </script>
 }

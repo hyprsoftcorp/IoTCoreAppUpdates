@@ -22,13 +22,13 @@ namespace Hyprsoft.IoT.AppUpdates
         [Required, JsonProperty]
         public string Description { get; set; }
 
-        [Required, JsonProperty, Display(Name = "Exe Filename")]
+        [Required, JsonProperty, Display(Name = "Launch Filename")]
         public string ExeFilename { get; set; }
 
         [Required, JsonProperty, Display(Name = "Version Filename")]
         public string VersionFilename { get; set; }
 
-        [JsonProperty, Display(Name = "Command Line")]
+        [JsonProperty, Display(Name = "Arguments")]
         public string CommandLine { get; set; }
 
         [JsonProperty, Display(Name = "Before Install Command")]

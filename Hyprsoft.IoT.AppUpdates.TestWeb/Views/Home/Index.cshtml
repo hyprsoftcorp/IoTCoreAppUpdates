@@ -1,6 +1,6 @@
 ﻿<div class="jumbotron mt-3">
-    <h1 class="display-4 text-primary">IoT Core App Updates</h1>
-    <p class="lead">Remotely update .NET Core 2.2 apps running on Windows 10 IoT Core devices.</p>
+    <h1 class="display-4 text-primary">App Updates</h1>
+    <p class="lead">Remotely update .NET Core 2.2 apps running on IoT devices running Linux or Windows 10 IoT Core.</p>
     <hr class="my-4">
     <p>
         This functionality can be added to any existing ASP.NET Core 2.2 MVC website by adding the Hyprsoft.IoT.AppUpdates.Web Nuget package
@@ -19,7 +19,7 @@ public class Program
     public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
         WebHost.CreateDefaultBuilder(args)
         .UseStartup<Startup>()
-        <b>.UseAppUpdates();</b>
+            <b>.UseAppUpdates();</b>
 }
 
 public class Startup
@@ -27,16 +27,16 @@ public class Startup
     public Startup(IConfiguration configuration, <b>IHostingEnvironment env</b>)
     {
         Configuration = configuration;
-        <b>HostingEnvironment = env;</b>
+            <b>HostingEnvironment = env;</b>
     }
 
     public IConfiguration Configuration { get; }
 
-    <b>public IHostingEnvironment HostingEnvironment { get; }</b>
+            <b>public IHostingEnvironment HostingEnvironment { get; }</b>
 
     public void ConfigureServices(IServiceCollection services)
     {
-        <b>services.AddAppUpdates(options =>
+            <b>services.AddAppUpdates(options =>
         {
             options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultManifestFilename));
             options.ClientCredentials.ClientId = Configuration["AppUpdates:ClientId"];
@@ -54,7 +54,7 @@ public class Startup
         else
             app.UseExceptionHandler("/Home/Error");
 
-        <b>app.UseAppUpdates();</b>
+            <b>app.UseAppUpdates();</b>
         app.UseMvc(routes => routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}"));
     }
 }

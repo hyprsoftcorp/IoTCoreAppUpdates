@@ -7,6 +7,7 @@
     <None Remove="wwwroot\css\site.css" />
     <None Remove="wwwroot\css\site.min.css" />
     <None Remove="wwwroot\js\bootstrap-bundle.min.js" />
+    <None Remove="wwwroot\js\clipboard.min.js" />
     <None Remove="wwwroot\js\validation-bundle.min.js" />
   </ItemGroup>
 
@@ -17,6 +18,7 @@
     <EmbeddedResource Include="wwwroot\css\site.css" />
     <EmbeddedResource Include="wwwroot\css\site.min.css" />
     <EmbeddedResource Include="wwwroot\js\bootstrap-bundle.min.js" />
+    <EmbeddedResource Include="wwwroot\js\clipboard.min.js" />
     <EmbeddedResource Include="wwwroot\js\validation-bundle.min.js" />
     <EmbeddedResource Include="wwwroot\webfonts\fa-brands-400.eot" />
     <EmbeddedResource Include="wwwroot\webfonts\fa-brands-400.svg" />
@@ -46,7 +48,7 @@
     <Product>Hyprsoft IoT App Updates Administrative Web</Product>
     <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
-    <Version>1.0.28</Version>
+    <Version>1.0.29</Version>
     <UseRazorBuildServer>false</UseRazorBuildServer>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Hyprsoft IoT App Updates Administrative Web</Description>
