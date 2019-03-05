@@ -7,25 +7,37 @@
     <h1 class="display-4 text-primary">App Updates</h1>
     <p class="lead">Remotely update .NET Core 2.2 apps running on IoT devices running Linux or Windows 10 IoT Core.</p>
     <p>This website allows authorized users to manage application updates and application installation packages.  <b class="text-danger">Unauthorized use of this platform is strictly prohibited and punishable by law.</b></p>
+    <small>Version: @typeof(Hyprsoft.IoT.AppUpdates.Web.Extensions).GetAssemblyInformationalVersion() | Build date: @Html.GetAssemblyBuildDateTime().ToLocalTime().ToString("f")</small>
 </div>
 
 <h3>@ViewData["Title"]</h3>
 
-<div class="card bg-light">
+<div class="card">
     <div class="card-body">
         <form asp-area="AppUpdates" asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Username"></label>
-                <input asp-for="Username" class="form-control" />
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    <input asp-for="Username" class="form-control" />
+                </div>
                 <span asp-validation-for="Username" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Password"></label>
-                <input asp-for="Password" class="form-control" />
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    </div>
+                    <input asp-for="Password" class="form-control" />
+                </div>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
+            <button type="reset" class="btn btn-secondary">Reset</button>
         </form>
     </div>
 </div>

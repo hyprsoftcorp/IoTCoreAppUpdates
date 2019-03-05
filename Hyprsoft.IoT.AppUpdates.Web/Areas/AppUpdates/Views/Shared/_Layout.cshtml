@@ -27,6 +27,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
                     <li class="nav-item @(requestPath == $"{nameof(Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers.AppsController)}-{nameof(Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers.AppsController.List)}" ? "active" : String.Empty)">
                         <a class="nav-link" asp-area="appupdates" asp-controller="Apps" asp-action="List">Apps</a>
                     </li>
@@ -68,21 +71,20 @@
         </div>
     </div>
 
-    <div id="feedback" aria-live="polite" aria-atomic="true" style="position: fixed; bottom: 1em; left: 1em;">
-        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header text-white">
-                <i class="fas fa-comment"></i>&nbsp;
-                <strong class="mr-auto"></strong>
-                <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="toast-body text-white"></div>
+    <div id="feedback" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed; bottom: 0; left: 1em;">
+        <div class="toast-header text-white">
+            <i class="fas fa-comment"></i>&nbsp;
+            <strong class="mr-auto"></strong>
+            <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
+        <div class="toast-body text-white"></div>
     </div>
 
     <script src="~/appupdates/js/bootstrap-bundle.min.js"></script>
     <script src="~/appupdates/js/validation-bundle.min.js"></script>
+    <script src="~/appupdates/js/clipboard.min.js"></script>
     <script>
         var page = {
             deleteConfirmationDialog: document.getElementById('deleteConfirmationDialog'),
@@ -92,6 +94,9 @@
                 token = $(token).val();
                 return token;
             },
+            showCopied: () => {
+                page.showFeedback('The text was successfully copied to clipboard.', false);
+            },
             showFeedback: (message, isError) => {
                 let feedback = document.getElementById("feedback");
 
@@ -99,9 +104,8 @@
                 header.classList.remove('bg-danger', 'bg-dark');
                 header.classList.add(isError ? 'bg-danger' : 'bg-dark');
 
-                let toast = feedback.querySelector('.toast');
-                toast.classList.remove('bg-danger', 'bg-dark');
-                toast.classList.add(isError ? 'bg-danger' : 'bg-dark');
+                feedback.classList.remove('bg-danger', 'bg-dark');
+                feedback.classList.add(isError ? 'bg-danger' : 'bg-dark');
 
                 feedback.querySelector('.toast-header strong').innerText = isError ? "Well that didn't go so well..." : 'Fantastic work!';
                 feedback.querySelector('.toast-body').innerText = message;
@@ -135,6 +139,8 @@
                 page.deleteConfirmationDialog.querySelector('button.btn.btn-primary').removeEventListener('click', page.deleteConfirmationDialogAction);
             });
             $('.toast').toast({ autohide: false });
+            new ClipboardJS('.copy');
+
             @if (TempData["Feedback"] != null)
             {
                 <text>page.showFeedback("@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(TempData["Feedback"].ToString().Replace("\r\n", " ")))", false);</text>

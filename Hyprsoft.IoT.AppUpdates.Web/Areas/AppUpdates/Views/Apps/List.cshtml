@@ -24,7 +24,11 @@ else
     @foreach (var item in Model.Applications.OrderBy(e => e.Name))
     {
         <section id="item-@item.Id">
-            <div class="card bg-light">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title"><i class="fas fa-cube"></i> @item.Name</h4>
+                    <p>@item.Description</p>
+                </div>
                 <div class="card-body">
                     <div class="dropdown float-right">
                         <button class="btn btn-link text-dark px-2 py-0" type="button" id="menu-@item.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -35,14 +39,12 @@ else
                             <a class="dropdown-item" href="#" onclick="page.delete('@Url.Action("Delete", new { id = item.Id })', 'item-@item.Id', 'Are you sure you want to permanently delete this app and all its associated packages?'); return false;">Delete</a>
                         </div>
                     </div>
-                    <h4 class="card-title">@item.Name</h4>
-                    <p>@item.Description</p>
                     <dl class="row">
                         <dt class="col-md-3 font-weight-normal">
                             @Html.DisplayNameFor(model => model.Applications[0].Id)
                         </dt>
                         <dd class="col-md-9">
-                            <span class="copy-src"><a href="@Url.Action("Edit", new { id = item.Id })">@Html.DisplayFor(modelItem => item.Id)</a> <a class="copy" href="#" onclick="return false" data-clipboard-text="@item.Id" title="Copy to clipboard"><i class="fas fa-copy"></i></a></span>
+                            <span class="copy-src"><a href="@Url.Action("Edit", new { id = item.Id })">@Html.DisplayFor(modelItem => item.Id)</a> <a class="copy" href="#" onclick="page.showCopied(); return false;" data-clipboard-text="@item.Id" title="Copy to clipboard"><i class="fas fa-copy"></i></a></span>
                         </dd>
                         <dt class="col-md-3 font-weight-normal">
                             @Html.DisplayNameFor(model => model.Applications[0].ExeFilename)
@@ -97,7 +99,7 @@ else
                         </dd>
                     </dl>
                     <hr />
-                    <h5>@Html.DisplayNameFor(model => model.Applications[0].Packages) <span class="badge badge-secondary">@(item.Packages.Count)</span></h5>
+                    <h5><i class="fas fa-cubes"></i> @Html.DisplayNameFor(model => model.Applications[0].Packages) <span class="badge badge-secondary">@(item.Packages.Count)</span></h5>
                     <ul class="nav">
                         <li class="nav-item"><a class="nav-link pl-0" href="#packages-@item.Id" data-toggle="collapse">Show/Hide</a></li>
                         <li class="nav-item"><a class="nav-link" href="@Url.Action("Create", "Packages", new { applicationId = item.Id })">Add Package &raquo;</a></li>
@@ -147,6 +149,7 @@ else
                                                     <div class="dropdown-menu" aria-labelledby="menu-@item.Id">
                                                         <a class="dropdown-item" href="@Url.Action("Edit", "Packages", new { applicationId = item.Id, id = package.Id })">Edit</a>
                                                         <a class="dropdown-item" href="#" onclick="page.delete('@Url.Action("Delete", "Packages", new { applicationId = item.Id, id = package.Id })', 'row-@package.Id', 'Are you sure you want to permanently delete this package?'); return false;">Delete</a>
+                                                        <div class="dropdown-divider"></div>
                                                         <a class="dropdown-item" href="@Url.Action("Download", "Packages", new { applicationId = item.Id, id = package.Id })">Download</a>
                                                     </div>
                                                 </div>
@@ -158,7 +161,7 @@ else
                                                 </div>
                                             </td>
                                             <td scope="row" nowrap>
-                                                <span class="copy-src"><a href="@Url.Action("Edit", "Packages", new { applicationId = item.Id, id = package.Id })" title="Edit Package">@Html.DisplayFor(modelItem => package.Id)</a> <a class="copy" href="#" onclick="return false" data-clipboard-text="@package.Id" title="Copy to clipboard"><i class="fas fa-copy"></i></a></span>
+                                                <span class="copy-src"><a href="@Url.Action("Edit", "Packages", new { applicationId = item.Id, id = package.Id })" title="Edit Package">@Html.DisplayFor(modelItem => package.Id)</a> <a class="copy" href="#" onclick="page.showCopied(); return false;" data-clipboard-text="@package.Id" title="Copy to clipboard"><i class="fas fa-copy"></i></a></span>
                                             </td>
                                             <td scope="row" nowrap>
                                                 @Html.DisplayFor(modelItem => package.FileVersion)
@@ -180,12 +183,4 @@ else
             <br />
         </section>
     }
-}
-@section scripts {
-    <script src="~/appupdates/js/clipboard.min.js"></script>
-    <script>
-        $(() => {
-            new ClipboardJS('a.copy');
-        });
-    </script>
 }
