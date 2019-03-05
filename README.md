@@ -158,6 +158,42 @@ If you have incorporated the app updates administrative website functionality in
 ### Security Concerns
 By default the app update service runs on the IoT device under the 'NT AUTHORITY\SYSTEM' user context and has full rights/access to the operating and file systems.  This means that the processes the service invokes after an update also run under the same unrestricted user context. **This can be a security risk!  Use at your own risk!**
 
+### File Sharing Services
+Most file sharing services, like DropBox, OneDrive and Google Drive, generate links that allow users to view the file in their browser instead of download the file.  This is problematic for the update mamanger as it needs the "direct" download link.
+Each file sharing service will almost certainly do this differently.
+#### Dropbox Example
+```
+Generated Link
+https://www.dropbox.com/s/l11fhdyl94zv8kt/testapp01_1000.zip?dl=0
+
+Edited Link for App Update Manifest SourceUri
+https://www.dropbox.com/s/l11fhdyl94zv8kt/testapp01_1000.zip?dl=1
+
+```
+In this case, changing the query string value from <b>dl=0</b> to <b>dl=1</b> will suffice.
+
+#### OneDrive Example
+```
+NOTE: For OneDrive you must use "Embed" instead of "Share" to generate links.
+
+Generated Embeded Link
+https://onedrive.live.com/embed?cid=2BAF65FE2D19A6AB&resid=2BAF65FE2D19A6AB%2118378&authkey=ADdOaVCFhHhXv9g
+
+Edited Link for App Update Manifest SourceUri
+https://onedrive.live.com/download?cid=2BAF65FE2D19A6AB&resid=2BAF65FE2D19A6AB%2118378&authkey=ADdOaVCFhHhXv9g
+```
+In this case, replacing <b>"embed"</b> with <b>"download"</b> will suffice.
+
+#### Google Drive Example
+```
+Generated Link
+https://drive.google.com/file/d/1UOmJNmQ-o2ZRUXca5g5k00gecP6Bft9Z/view?usp=sharing
+
+Edited Link for App Update Manifest SourceUri
+https://drive.google.com/uc?export=download&id=1UOmJNmQ-o2ZRUXca5g5k00gecP6Bft9Z
+```
+In this case, using the FILEID of <b>"1UOmJNmQ-o2ZRUXca5g5k00gecP6Bft9Z"</b> in the edited link will suffice.
+
 ### Start Service on Linux Boot
 Create an appupdates.service file:
 ```
