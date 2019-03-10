@@ -35,7 +35,7 @@ namespace Hyprsoft.IoT.AppUpdates.Web.Areas.AppUpdates.Controllers
             if (item == null)
                 return NotFound();
 
-            var package = item.Packages.FirstOrDefault(p => String.Compare(Path.GetFileName(p.SourceUri.ToString()), filename, true) == 0);
+            var package = item.Packages.FirstOrDefault(p => String.Compare(Path.GetFileName(p.SourceUri.ToString()), filename, true) == 0 && p.IsAvailable);
             if (package == null)
                 return NotFound();
 

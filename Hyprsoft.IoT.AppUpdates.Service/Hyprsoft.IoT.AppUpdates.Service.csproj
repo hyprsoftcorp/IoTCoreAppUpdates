@@ -8,7 +8,7 @@
     <Product>Hyprsoft IoT App Updates Service</Product>
     <Description>Hyprsoft IoT App Updates Service</Description>
     <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
   </PropertyGroup>
 
@@ -20,6 +20,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="2.2.0" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.5.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>

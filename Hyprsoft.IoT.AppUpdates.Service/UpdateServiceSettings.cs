@@ -31,6 +31,9 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         public string ConfigurationFilename => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), DefaultConfigFilename).ToLower();
 
         [JsonProperty]
+        public bool FirstRun { get; set; } = true;
+
+        [JsonProperty]
         public ClientCredentials ClientCredentials { get; set; } = new ClientCredentials();
 
         [JsonProperty]

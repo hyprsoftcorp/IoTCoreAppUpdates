@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,6 +15,8 @@ namespace Hyprsoft.IoT.AppUpdates.Service
     public class UpdateService : IHostedService
     {
         #region Fields
+
+        private const string DataProtectionApplicationName = "Hyprsoft.AppUpdates.Service";
 
         private bool _isFirstCheck = true;
         private Task _updateCheckTask;
@@ -136,6 +140,17 @@ namespace Hyprsoft.IoT.AppUpdates.Service
                 {
                     _logger.LogInformation($"Loading service configuration from '{Settings.ConfigurationFilename}'.");
                     Settings = JsonConvert.DeserializeObject<UpdateServiceSettings>(File.ReadAllText(Settings.ConfigurationFilename));
+
+                    // Encrypt our sensitive settings if this is our first run.
+                    if (Settings.FirstRun)
+                    {
+                        _logger.LogWarning("First run detected.  Encrypting sensitive settings.");
+                        Settings.FirstRun = false;
+                        SaveConfiguration();
+                    }   // First run?
+                    else
+                        Settings.ClientCredentials.ClientSecret = DecryptString(Settings.ClientCredentials.ClientSecret);
+
                     return;
                 }
                 catch (Exception ex)
@@ -153,7 +168,11 @@ namespace Hyprsoft.IoT.AppUpdates.Service
         {
             _logger.LogInformation($"Saving service configuration to '{Settings.ConfigurationFilename}'.");
             lock (_lockObject)
+            {
+                Settings.ClientCredentials.ClientSecret = EncryptString(Settings.ClientCredentials.ClientSecret);
                 File.WriteAllText(Settings.ConfigurationFilename, JsonConvert.SerializeObject(Settings, Formatting.Indented));
+                Settings.ClientCredentials.ClientSecret = DecryptString(Settings.ClientCredentials.ClientSecret);
+            }
         }
 
         private void UpdateNextCheckDate()
@@ -162,6 +181,26 @@ namespace Hyprsoft.IoT.AppUpdates.Service
             Settings.NextCheckDate = new DateTime(now.Year, now.Month, now.Day, Settings.CheckTime.Hours, Settings.CheckTime.Minutes, Settings.CheckTime.Seconds).AddDays(1);
             _logger.LogInformation($"Next check will be at '{Settings.NextCheckDate.ToString("g")}'.");
             SaveConfiguration();
+        }
+
+        private string EncryptString(string plainText)
+        {
+            if (String.IsNullOrWhiteSpace(plainText))
+                return plainText;
+
+            var dp = DataProtectionProvider.Create(DataProtectionApplicationName);
+            var protector = dp.CreateProtector(DataProtectionApplicationName);
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(protector.Protect(plainText)));
+        }
+
+        private string DecryptString(string secret)
+        {
+            if (String.IsNullOrWhiteSpace(secret))
+                return secret;
+
+            var dp = DataProtectionProvider.Create(DataProtectionApplicationName);
+            var protector = dp.CreateProtector(DataProtectionApplicationName);
+            return protector.Unprotect(System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(secret)));
         }
 
         #endregion
