@@ -1,8 +1,8 @@
 [
   {
     "Id": "40eee2a1-e633-447d-932c-810c22a12e37",
-    "Name": "Test App (x86 and x64)",
-    "Description": "Test App (x86 and x64)",
+    "Name": "Test App 1 (x86 and x64)",
+    "Description": "Test App 1 (x86 and x64) description.",
     "ExeFilename": "Hyprsoft.IoT.AppUpdates.TestApp.exe",
     "VersionFilename": "Hyprsoft.IoT.AppUpdates.TestApp.dll",
     "CommandLine": null,
@@ -26,5 +26,16 @@
         "Checksum": "f186cbd924b3dea18a02e2fb3f49cc67"
       }
     ]
+  },
+  {
+    "Id": "a8660345-6012-4d12-9042-09fa6b373645",
+    "Name": "Test App 2 (x86 and x64)",
+    "Description": "Test App 2 (x86 and x64) description.",
+    "ExeFilename": "Hyprsoft.IoT.AppUpdates.TestApp.exe",
+    "VersionFilename": "Hyprsoft.IoT.AppUpdates.TestApp.dll",
+    "CommandLine": null,
+    "BeforeInstallCommand": null,
+    "AfterInstallCommand": null,
+    "Packages": []
   }
 ]

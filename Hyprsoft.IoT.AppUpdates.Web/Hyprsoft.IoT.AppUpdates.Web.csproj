@@ -48,7 +48,7 @@
     <Product>Hyprsoft IoT App Updates Administrative Web</Product>
     <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
-    <Version>1.0.32</Version>
+    <Version>1.0.33</Version>
     <UseRazorBuildServer>false</UseRazorBuildServer>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Hyprsoft IoT App Updates Administrative Web</Description>

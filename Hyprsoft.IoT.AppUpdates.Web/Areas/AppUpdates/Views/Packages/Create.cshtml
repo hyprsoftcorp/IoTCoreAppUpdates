@@ -6,10 +6,9 @@
 
 <h3>@ViewData["Title"]</h3>
 <div class="card mt-3">
-    <div class="card-header">
-        <h4 class="card-title"><i class="fas fa-cube"></i> @Model.Application.Name</h4>
-    </div>
     <div class="card-body">
+        <h4 class="card-title"><i class="fas fa-cube"></i> @Model.Application.Name</h4>
+        <hr />
         <form asp-action="Create" method="post" class="form-horizontal" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input asp-for="Id" type="hidden" />
