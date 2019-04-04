@@ -8,9 +8,11 @@
     </p>
     <a class="btn btn-primary" href="~/appupdates" role="button">Get Started</a>
 </div>
-<p>
-    <code>
-        <pre>
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Sample Code</h4>
+        <code>
+            <pre>
 public class Program
 {
     public static void Main(string[] args)
@@ -21,7 +23,7 @@ public class Program
     public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
         WebHost.CreateDefaultBuilder(args)
         .UseStartup<Startup>()
-        <b>.UseAppUpdates();</b>
+            <b>.UseAppUpdates();</b>
 }
 
 public class Startup
@@ -29,16 +31,16 @@ public class Startup
     public Startup(IConfiguration configuration, <b>IHostingEnvironment env</b>)
     {
         Configuration = configuration;
-        <b>HostingEnvironment = env;</b>
+            <b>HostingEnvironment = env;</b>
     }
 
     public IConfiguration Configuration { get; }
 
-        <b>public IHostingEnvironment HostingEnvironment { get; }</b>
+            <b>public IHostingEnvironment HostingEnvironment { get; }</b>
 
     public void ConfigureServices(IServiceCollection services)
     {
-        <b>services.AddAppUpdates(options =>
+            <b>services.AddAppUpdates(options =>
         {
             options.ManifestUri = new Uri(Path.Combine(HostingEnvironment.WebRootPath, UpdateManager.DefaultManifestFilename));
             options.ClientCredentials.ClientId = Configuration["AppUpdates:ClientId"];
@@ -56,10 +58,11 @@ public class Startup
         else
             app.UseExceptionHandler("/Home/Error");
 
-        <b>app.UseAppUpdates();</b>
+            <b>app.UseAppUpdates();</b>
         app.UseMvc(routes => routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}"));
     }
 }
             </pre>
-    </code>
-</p>
+        </code>
+    </div>
+</div>
