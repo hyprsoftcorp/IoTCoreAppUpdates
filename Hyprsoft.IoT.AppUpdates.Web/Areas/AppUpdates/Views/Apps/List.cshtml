@@ -7,12 +7,12 @@
 }
 
 <h3>@ViewData["Title"] <span class="badge badge-secondary">@Model.Applications.Count</span></h3>
-<div class="alert alert-primary">
+<div class="alert alert-primary shadow">
     Manifest: <span class="copy-src"><a href="@manifestUri" title="Manifest URI">@manifestUri</a> <a class="copy" href="#" onclick="page.showCopied(); return false;" data-clipboard-text="@manifestUri" title="Copy to clipboard"><i class="fas fa-copy"></i></a></span>
 </div>
 
 <p>
-    <a asp-action="Create">Add App &raquo;</a>
+    <a class="btn btn-primary" asp-action="Create">Add App</a>
 </p>
 
 @if (Model.Applications.Count <= 0)
@@ -23,9 +23,9 @@ else
 {
     @foreach (var item in Model.Applications.OrderBy(e => e.Name))
     {
+        var latestPackage = item.GetLatestPackage();
         <section id="item-@item.Id">
-            <div class="card">
-
+            <div class="card shadow">
                 <div class="card-body">
                     <div class="dropdown float-right">
                         <button class="btn btn-link text-dark px-2 py-0" type="button" id="menu-@item.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -34,25 +34,36 @@ else
                         <div class="dropdown-menu" aria-labelledby="menu-@item.Id">
                             <a class="dropdown-item" href="@Url.Action("Edit", new { id = item.Id })">Edit</a>
                             <a class="dropdown-item" href="#" onclick="page.delete('@Url.Action("Delete", new { id = item.Id })', 'item-@item.Id', 'Are you sure you want to permanently delete this app and all its associated packages?'); return false;">Delete</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="@Url.Action("Create", "Packages", new { applicationId = item.Id })">Add Package</a>
                         </div>
                     </div>
-                    <h4 class="card-title"><i class="fas fa-cube"></i> @item.Name</h4>
+                    <h4 class="card-title">@item.Name</h4>
                     <p>@item.Description</p>
                     <hr />
                     <dl class="row">
-                        <dt class="col-md-3 font-weight-normal">
+                        <dt class="col-md-3">
                             @Html.DisplayNameFor(model => model.Applications[0].Id)
                         </dt>
                         <dd class="col-md-9">
                             <span class="copy-src"><a href="@Url.Action("Edit", new { id = item.Id })">@Html.DisplayFor(modelItem => item.Id)</a> <a class="copy" href="#" onclick="page.showCopied(); return false;" data-clipboard-text="@item.Id" title="Copy to clipboard"><i class="fas fa-copy"></i></a></span>
                         </dd>
-                        <dt class="col-md-3 font-weight-normal">
+                        @if (latestPackage != null)
+                        {
+                            <dt class="col-md-3">
+                                Latest Version
+                            </dt>
+                            <dd class="col-md-9">
+                                <a href="@Url.Action("Edit", "Packages", new { applicationId = latestPackage.Application.Id, id = latestPackage.Id })">@latestPackage.FileVersion</a>
+                            </dd>
+                        }
+                        <dt class="col-md-3">
                             @Html.DisplayNameFor(model => model.Applications[0].ExeFilename)
                         </dt>
                         <dd class="col-md-9">
                             @Html.DisplayFor(modelItem => item.ExeFilename)
                         </dd>
-                        <dt class="col-md-3 font-weight-normal">
+                        <dt class="col-md-3">
                             @Html.DisplayNameFor(model => model.Applications[0].VersionFilename)
                         </dt>
                         <dd class="col-md-9">
@@ -60,7 +71,7 @@ else
                         </dd>
                         @if (!String.IsNullOrWhiteSpace(item.CommandLine))
                         {
-                            <dt class="col-md-3 font-weight-normal">
+                            <dt class="col-md-3">
                                 @Html.DisplayNameFor(model => model.Applications[0].CommandLine)
                             </dt>
                             <dd class="col-md-9">
@@ -69,7 +80,7 @@ else
                         }
                         @if (!String.IsNullOrWhiteSpace(item.BeforeInstallCommand))
                         {
-                            <dt class="col-md-3 font-weight-normal">
+                            <dt class="col-md-3">
                                 @Html.DisplayNameFor(model => model.Applications[0].BeforeInstallCommand)
                             </dt>
                             <dd class="col-md-9">
@@ -78,20 +89,20 @@ else
                         }
                         @if (!String.IsNullOrWhiteSpace(item.AfterInstallCommand))
                         {
-                            <dt class="col-md-3 font-weight-normal">
+                            <dt class="col-md-3">
                                 @Html.DisplayNameFor(model => model.Applications[0].AfterInstallCommand)
                             </dt>
                             <dd class="col-md-9">
                                 @Html.DisplayFor(modelItem => item.AfterInstallCommand)
                             </dd>
                         }
+                        <dt class="col-md-3">
+                            Packages
+                        </dt>
+                        <dd class="col-md-9">
+                            <a href="#packages-@item.Id" data-toggle="collapse">@item.Packages.Count</a>
+                        </dd>
                     </dl>
-                    <hr />
-                    <h5><i class="fas fa-cubes"></i> @Html.DisplayNameFor(model => model.Applications[0].Packages) <span class="badge badge-secondary">@(item.Packages.Count)</span></h5>
-                    <ul class="nav">
-                        <li class="nav-item"><a class="nav-link pl-0" href="#packages-@item.Id" data-toggle="collapse">Show/Hide</a></li>
-                        <li class="nav-item"><a class="nav-link" href="@Url.Action("Create", "Packages", new { applicationId = item.Id })">Add Package &raquo;</a></li>
-                    </ul>
                     <div id="packages-@item.Id" class="table-responsive collapse">
                         <table class="table table-striped">
                             <thead class="thead-dark">
@@ -152,7 +163,7 @@ else
                                                 <span class="copy-src"><a href="@Url.Action("Edit", "Packages", new { applicationId = item.Id, id = package.Id })" title="Edit Package">@Html.DisplayFor(modelItem => package.Id)</a> <a class="copy" href="#" onclick="page.showCopied(); return false;" data-clipboard-text="@package.Id" title="Copy to clipboard"><i class="fas fa-copy"></i></a></span>
                                             </td>
                                             <td scope="row" nowrap>
-                                                @Html.DisplayFor(modelItem => package.FileVersion)
+                                                <a href="@Url.Action("Download", "Packages", new { applicationId = item.Id, id = package.Id })">@Html.DisplayFor(modelItem => package.FileVersion)</a>
                                             </td>
                                             <td scope="row" nowrap>
                                                 @Html.DisplayFor(modelItem => package.ReleaseDateUtc)
