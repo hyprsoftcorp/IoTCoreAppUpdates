@@ -8,7 +8,7 @@
     <Product>Hyprsoft IoT App Updates Service</Product>
     <Description>Hyprsoft IoT App Updates Service</Description>
     <Copyright>Copyright © 2019 by Hyprsoft Corporation</Copyright>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
     <PackageProjectUrl>http://www.hyprsoft.com/</PackageProjectUrl>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
   </PropertyGroup>

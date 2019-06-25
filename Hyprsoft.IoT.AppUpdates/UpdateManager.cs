@@ -133,12 +133,15 @@ namespace Hyprsoft.IoT.AppUpdates
 
             if (token.IsCancellationRequested) return;
 
+            var installFolder = (installUri.LocalPath.EndsWith(Path.DirectorySeparatorChar.ToString()) ? 
+                installUri.LocalPath : installUri.LocalPath + Path.DirectorySeparatorChar).ToLower();
+
             // STEP 1 - Make sure our install folder exists
-            if (!Directory.Exists(installUri.LocalPath))
-                Directory.CreateDirectory(installUri.LocalPath);
+            if (!Directory.Exists(installFolder))
+                Directory.CreateDirectory(installFolder);
 
             // STEP 2 - Check to see if our app needs to be updated.
-            var versionFilename = Path.Combine(installUri.LocalPath, package.Application.VersionFilename);
+            var versionFilename = Path.Combine(installFolder, package.Application.VersionFilename);
             _logger.LogInformation($"Checking '{package.Application.Name}' version using '{versionFilename}'.");
             if (File.Exists(versionFilename))
             {
@@ -147,6 +150,12 @@ namespace Hyprsoft.IoT.AppUpdates
                 if (package.FileVersion == fileVersion)
                 {
                     _logger.LogInformation($"Application is up to date.");
+                    // STEP 2A - Check to see if our app is running.
+                    if (GetProcessesByName(package.Application.ExeFilename, _logger).Length <= 0)
+                    {
+                        _logger.LogWarning($"'{package.Application.Name}' does not appear to be running.");
+                        RunExecutable(installFolder, package.Application.ExeFilename, package.Application.CommandLine);
+                    }
                     return;
                 }   // file versions the same?
             }   // version file exists?
@@ -195,19 +204,18 @@ namespace Hyprsoft.IoT.AppUpdates
                 }   // checksums match?
 
                 // STEP 5 - Run our "before install" command if needed.
-                var installFolder = installUri.LocalPath.EndsWith(Path.DirectorySeparatorChar.ToString()) ? installUri.LocalPath : installUri.LocalPath + Path.DirectorySeparatorChar;
-                await RunCommandAndWaitForExitAsync(package.Application.BeforeInstallCommand, installFolder, TimeSpan.FromSeconds(2));
+                await RunCommandAndWaitForExitAsync(installFolder, package.Application.BeforeInstallCommand, TimeSpan.FromSeconds(2));
 
                 // STEP 6 - Kill application process.
                 await KillProcessIfRunning(package.Application.ExeFilename, _logger);
 
                 // STEP 7 - Unzip our package to the install URI.
-                _logger.LogInformation($"Extracting package '{packageFilename}' to '{installUri.LocalPath.ToLower()}'.");
+                _logger.LogInformation($"Extracting package '{packageFilename}' to '{installFolder}'.");
                 using (var zip = ZipFile.Open(packageFilename, ZipArchiveMode.Read))
                 {
                     foreach (var entry in zip.Entries)
                     {
-                        var filename = Path.Combine(installUri.LocalPath, entry.FullName);
+                        var filename = Path.Combine(installFolder, entry.FullName);
                         var folder = Path.GetDirectoryName(filename);
                         if (!Directory.Exists(folder))
                             Directory.CreateDirectory(folder);
@@ -217,22 +225,13 @@ namespace Hyprsoft.IoT.AppUpdates
 
                 // STEP 8 - Run our "after install" command if needed.
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                    await RunCommandAndWaitForExitAsync($"chmod 744 {package.Application.ExeFilename}", installFolder, TimeSpan.Zero);
-                await RunCommandAndWaitForExitAsync(package.Application.AfterInstallCommand, installFolder, TimeSpan.FromSeconds(2));
+                    await RunCommandAndWaitForExitAsync(installFolder, $"chmod 744 {package.Application.ExeFilename}", TimeSpan.Zero);
+                await RunCommandAndWaitForExitAsync(installFolder, package.Application.AfterInstallCommand, TimeSpan.FromSeconds(2));
 
                 // STEP 9 - Restart our process if needed.
                 // It's possible that our "after install" command started our process so let's check.
                 if (String.IsNullOrWhiteSpace(package.Application.AfterInstallCommand) || GetProcessesByName(package.Application.ExeFilename, _logger).Length <= 0)
-                {
-                    var processFilename = Path.Combine(installFolder, package.Application.ExeFilename);
-                    _logger.LogInformation($"Starting process '{processFilename}' with arguments '{(String.IsNullOrWhiteSpace((package.Application.CommandLine)) ? "[none]" : package.Application.CommandLine)}'.");
-                    Process.Start(new ProcessStartInfo
-                    {
-                        Arguments = package.Application.CommandLine,
-                        FileName = processFilename,
-                        WorkingDirectory = installFolder
-                    });
-                }
+                    RunExecutable(installFolder, package.Application.ExeFilename, package.Application.CommandLine);
 
                 _logger.LogInformation($"'{package.Application.Name}' successfully updated to version '{package.FileVersion}'.");
             }
@@ -285,7 +284,7 @@ namespace Hyprsoft.IoT.AppUpdates
 
         public override string ToString() => $"Manifest: {ManifestUri.ToString().ToLower()} Applications: {Applications.Count}";
 
-        private async Task RunCommandAndWaitForExitAsync(string command, string workingFolder, TimeSpan delay)
+        private async Task RunCommandAndWaitForExitAsync(string workingFolder, string command, TimeSpan delay)
         {
             if (String.IsNullOrWhiteSpace(command))
                 return;
@@ -301,6 +300,18 @@ namespace Hyprsoft.IoT.AppUpdates
             if (delay != TimeSpan.Zero)
                 await Task.Delay(delay);
             _logger.LogInformation($"Command '{command}' ran successfully.");
+        }
+
+        private void RunExecutable(string installFolder, string exeFilename, string commandLine)
+        {
+            var processFilename = Path.Combine(installFolder, exeFilename);
+            _logger.LogInformation($"Starting process '{processFilename}' with arguments '{(String.IsNullOrWhiteSpace((commandLine)) ? "[none]" : commandLine)}'.");
+            Process.Start(new ProcessStartInfo
+            {
+                Arguments = commandLine,
+                FileName = processFilename,
+                WorkingDirectory = installFolder
+            });
         }
 
         private static Process[] GetProcessesByName(string exeFilename, ILogger logger)
